@@ -1,0 +1,346 @@
+import React, { useEffect, useState } from 'react';
+import { Edit } from 'lucide-react';
+import { formatBudget, formatWardNumber, toNepaliNumber } from '../../utils/formatters';
+import type { ProgramDetail } from '../../types/projectDetail';
+import BeneficiaryDialog, { type BeneficiaryData } from '../../modals/AddEditYojanaModal';
+import axios from 'axios';
+
+interface ProgramDetailsTabProps {
+  projectData: any;
+  loading?: boolean;
+}
+
+const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
+  projectData,
+  loading = false
+}) => {
+  // Default beneficiary data matching your image
+  const [beneficiaryData, setBeneficiaryData] = useState<any[]>([]);
+  const [beneficiaryLoading, setBeneficiaryLoading] = useState(false);
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<BeneficiaryData | null>(null);
+
+  useEffect(() => {
+    if (!projectData || !projectData.serial_number) return;
+    setBeneficiaryLoading(true);
+
+    fetch(`http://localhost:8000/api/projects/${projectData.serial_number}/beneficiaries/`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch beneficiary data');
+        return res.json();
+      })
+      .then((data) => {
+        setBeneficiaryData(Array.isArray(data) ? data : []);
+        setBeneficiaryLoading(false);
+      })
+      .catch(() => {
+        console.error('लाभान्वित विवरण लोड गर्न असफल भयो।');
+        setBeneficiaryLoading(false);
+      });
+  }, [projectData?.serial_number]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const nepaliLabels: Record<string, string> = {
+    total_households: 'जम्मा परिवार',
+    total_population: 'जम्मा जनसंख्या',
+    indigenous_families: 'आदिवासी जनजातिको परिवार संख्या',
+    dalit_families: 'दलित वर्गको परिवार संख्या',
+    children_population: 'बालबालिकाको जनसंख्या',
+    other_families: 'अन्य वर्गको परिवार संख्या'
+  };
+
+  const handleEditBeneficiary = () => {
+    const firstItem = beneficiaryData[0]; // or pick specific one
+    if (firstItem) {
+      setSelectedBeneficiary({
+        familyCount: firstItem.familyCount ?? 0,
+        totalPopulation: {
+          female: firstItem.female ?? 0,
+          male: firstItem.male ?? 0,
+          other: firstItem.other ?? 0
+        },
+        indigenousCount: firstItem.indigenousCount ?? 0,
+        dalitCount: firstItem.dalitCount ?? 0,
+        childrenPopulation: {
+          female: firstItem.children_female ?? 0,
+          male: firstItem.children_male ?? 0,
+          other: firstItem.children_other ?? 0
+        },
+        otherCategoryPopulation: {
+          female: firstItem.other_female ?? 0,
+          male: firstItem.other_male ?? 0,
+          other: firstItem.other_other ?? 0
+        }
+      });
+      setIsDialogOpen(true);
+    }
+  };
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2">लोड गर्दै...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Project Details Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                आयोजनाको नाम:
+              </label>
+              <p className="text-gray-900 font-semibold text-lg">{projectData.project_name}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                वडा नं:
+              </label>
+              <p className="text-gray-900">{formatWardNumber(projectData.ward_no)}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                विषयगत क्षेत्र:
+              </label>
+              <p className="text-gray-900">{projectData.area_name || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजना संचालन स्थल:
+              </label>
+              <p className="text-gray-900">{projectData.location_gps || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजनाको स्तर:
+              </label>
+              <p className="text-gray-900">{projectData.project_level_name || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                स्रोत:
+              </label>
+              <p className="text-gray-900">{projectData.source_name || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                आयोजना संचालन हुने आर्थिक वर्ष:
+              </label>
+              <p className="text-gray-900">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजना संचालन मिति:
+              </label>
+              <p className="text-gray-900">-</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                अपेक्षित:
+              </label>
+              <p className="text-gray-900">{projectData.status}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                आर्थिक प्रगति:
+              </label>
+              <p className="text-gray-900">०</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                भौतिक प्रगति:
+              </label>
+              <p className="text-gray-900">०</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                सम्झौता रकम रु.:
+              </label>
+              <p className="text-gray-900">रु. ०.००</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                आर्थिक वर्ष:
+              </label>
+              <p className="text-gray-900">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                उप-क्षेत्र:
+              </label>
+              <p className="text-gray-900">{projectData.sub_area_name || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                खर्च केन्द्र:
+              </label>
+              <p className="text-gray-900">{projectData.expenditure_center_name || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                विनियोजित रकम रु.:
+              </label>
+              <p className="text-gray-900">{formatBudget(toNepaliNumber(projectData.budget))}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                सम्पन्न गर्ने परिणाम:
+              </label>
+              <p className="text-gray-900">{projectData.outcome || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजना सुरु मिति:
+              </label>
+              <p className="text-gray-900">-</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजना संचालन स्थानको GPS CO-ORDINATE:
+              </label>
+              <p className="text-gray-900">{projectData.location_gps || 'N/A'}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                योजना समाप्त हुने मिति:
+              </label>
+              <p className="text-gray-900">-</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                लगत अनुमान रु.:
+              </label>
+              <p className="text-gray-900">रु.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                कन्टेजेन्सी रकम:
+              </label>
+              <p className="text-gray-900">रु.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                उपभोगिता समितिको खर्च रकम रु.:
+              </label>
+              <p className="text-gray-900">रु. ०.००</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Beneficiary Details Table */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            आयोजनाबाट लाभान्वित हुनेको विवरण :
+          </h3>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Edit className="w-4 h-4" />
+            <span>इडिट गर्नुहोस्</span>
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
+                  क्र.स.
+                </th>
+                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
+                  किसिम
+                </th>
+                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
+                  महिला
+                </th>
+                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
+                  पुरुष
+                </th>
+                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
+                  अन्य
+                </th>
+                <th className="text-center py-3 px-4 font-medium text-gray-900">
+                  जम्मा
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {beneficiaryLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-gray-500">लोड हुँदै...</td>
+                </tr>
+              ) : beneficiaryData.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-gray-500">डाटा उपलब्ध छैन।</td>
+                </tr>
+              ) : (
+                beneficiaryData.map((item, index) => (
+                  <tr key={item.id || index} className="border-b border-gray-200">
+                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(index + 1)}</td>
+                    <td className="text-left py-3 px-4 border-r border-gray-200">{nepaliLabels[item.title]}</td>
+                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.female) ?? ''}</td>
+                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.male) ?? ''}</td>
+                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.other) ?? ''}</td>
+                    <td className="text-center py-3 px-4">{toNepaliNumber(item.total)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {isDialogOpen && (
+        <BeneficiaryDialog
+          isOpen={isDialogOpen}
+          beneficiaryData={beneficiaryData}
+          onClose={() => setIsDialogOpen(false)}
+          onSave={(updatedData) => {
+            setBeneficiaryData(updatedData); // Set new data locally
+            setIsDialogOpen(false);
+            console.log("Save this to backend:", updatedData); // Save via API if needed
+          }}
+        />
+      )}
+
+    </div>
+  );
+};
+
+export default ProgramDetailsTab;
