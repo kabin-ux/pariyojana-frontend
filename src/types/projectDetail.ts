@@ -114,7 +114,7 @@ export interface ProjectAgreementDetail {
 }
 
 export interface Document {
-  id: number;
+  serial_no: number;
   project: number;
   title: string;
   date: string;

@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { projectDetailApi } from '../services/projectDetailApi';
-import type { 
-  ProgramDetail, 
-  InitiationProcess, 
-  ConsumerCommitteeDetail, 
-  OfficialDetail, 
-  MonitoringCommittee, 
-  CostEstimateDetail, 
-  MapCostEstimate, 
-  ProjectAgreementDetail, 
-  Document 
+import type {
+  ProgramDetail,
+  InitiationProcess,
+  ConsumerCommitteeDetail,
+  OfficialDetail,
+  MonitoringCommittee,
+  CostEstimateDetail,
+  MapCostEstimate,
+  ProjectAgreementDetail,
+  Document
 } from '../types/projectDetail';
 
 export const useProjectDetail = (projectId: number) => {
@@ -22,7 +22,8 @@ export const useProjectDetail = (projectId: number) => {
   const [mapCostEstimate, setMapCostEstimate] = useState<MapCostEstimate[]>([]);
   const [projectAgreementDetails, setProjectAgreementDetails] = useState<ProjectAgreementDetail[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
-  
+  const [otherdocuments, setOtherDocuments] = useState<Document[]>([]);
+
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -112,6 +113,18 @@ export const useProjectDetail = (projectId: number) => {
     }
   };
 
+  const loadOtherDocuments = async (documentType?: string) => {
+    setTabLoading('documents', true);
+    try {
+      const data = await projectDetailApi.getOtherDocuments(projectId, documentType);
+      setOtherDocuments(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setTabLoading('documents', false);
+    }
+  };
+
   const deleteOfficialDetail = async (id: number) => {
     try {
       await projectDetailApi.deleteOfficialDetail(id);
@@ -153,11 +166,11 @@ export const useProjectDetail = (projectId: number) => {
     mapCostEstimate,
     projectAgreementDetails,
     documents,
-    
+    otherdocuments,
     // Loading states
     loading,
     error,
-    
+
     // Load functions
     loadProgramDetails,
     loadInitiationProcess,
@@ -165,7 +178,8 @@ export const useProjectDetail = (projectId: number) => {
     loadCostEstimate,
     loadProjectAgreement,
     loadDocuments,
-    
+    loadOtherDocuments,
+
     // Delete functions
     deleteOfficialDetail,
     deleteMonitoringCommittee,

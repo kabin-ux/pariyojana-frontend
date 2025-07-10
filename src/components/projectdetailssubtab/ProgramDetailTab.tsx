@@ -91,176 +91,177 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
       {/* Project Details Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-4">
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 आयोजनाको नाम:
               </label>
-              <p className="text-gray-900 font-semibold text-lg">{projectData.project_name}</p>
+              <p className="text-gray-900 font-semibold text-sm">{projectData.project_name}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 वडा नं:
               </label>
-              <p className="text-gray-900">{formatWardNumber(projectData.ward_no)}</p>
+              <p className="text-gray-900 text-sm">{formatWardNumber(projectData.ward_no)}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 विषयगत क्षेत्र:
               </label>
-              <p className="text-gray-900">{projectData.area_name || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.area_name || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना संचालन स्थल:
               </label>
-              <p className="text-gray-900">{projectData.location_gps || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.location_gps || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजनाको स्तर:
               </label>
-              <p className="text-gray-900">{projectData.project_level_name || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.project_level_name || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 स्रोत:
               </label>
-              <p className="text-gray-900">{projectData.source_name || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.source_name || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 आयोजना संचालन हुने आर्थिक वर्ष:
               </label>
-              <p className="text-gray-900">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना संचालन मिति:
               </label>
-              <p className="text-gray-900">-</p>
+              <p className="text-gray-900 text-sm">-</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 अपेक्षित:
               </label>
-              <p className="text-gray-900">{projectData.status}</p>
+              <p className="text-gray-900 text-sm">{projectData.status}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 आर्थिक प्रगति:
               </label>
-              <p className="text-gray-900">०</p>
+              <p className="text-gray-900 text-sm">०</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 भौतिक प्रगति:
               </label>
-              <p className="text-gray-900">०</p>
+              <p className="text-gray-900 text-sm">०</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 सम्झौता रकम रु.:
               </label>
-              <p className="text-gray-900">रु. ०.००</p>
+              <p className="text-gray-900 text-sm">रु. ०.००</p>
             </div>
           </div>
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-4">
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 आर्थिक वर्ष:
               </label>
-              <p className="text-gray-900">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(projectData.fiscal_year_name) || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 उप-क्षेत्र:
               </label>
-              <p className="text-gray-900">{projectData.sub_area_name || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.sub_area_name || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 खर्च केन्द्र:
               </label>
-              <p className="text-gray-900">{projectData.expenditure_center_name || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.expenditure_center_name || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 विनियोजित रकम रु.:
               </label>
-              <p className="text-gray-900">{formatBudget(toNepaliNumber(projectData.budget))}</p>
+              <p className="text-gray-900 text-sm">{formatBudget(toNepaliNumber(projectData.budget))}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 सम्पन्न गर्ने परिणाम:
               </label>
-              <p className="text-gray-900">{projectData.outcome || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.outcome || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना सुरु मिति:
               </label>
-              <p className="text-gray-900">-</p>
+              <p className="text-gray-900 text-sm">-</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना संचालन स्थानको GPS CO-ORDINATE:
               </label>
-              <p className="text-gray-900">{projectData.location_gps || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.location_gps || 'N/A'}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना समाप्त हुने मिति:
               </label>
-              <p className="text-gray-900">-</p>
+              <p className="text-gray-900 text-sm">-</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 लगत अनुमान रु.:
               </label>
-              <p className="text-gray-900">रु.</p>
+              <p className="text-gray-900 text-sm">रु.</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 कन्टेजेन्सी रकम:
               </label>
-              <p className="text-gray-900">रु.</p>
+              <p className="text-gray-900 text-sm">रु.</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="flex gap-2">
+              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 उपभोगिता समितिको खर्च रकम रु.:
               </label>
-              <p className="text-gray-900">रु. ०.००</p>
+              <p className="text-gray-900 text-sm">रु. ०.००</p>
             </div>
           </div>
         </div>
       </div>
+
 
       {/* Beneficiary Details Table */}
       <div className="mt-8">

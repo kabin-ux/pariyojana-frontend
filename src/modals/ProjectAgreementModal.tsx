@@ -1,0 +1,247 @@
+import React, { useState, useEffect } from 'react';
+import { X, Calendar } from 'lucide-react';
+
+interface FormData {
+    totalAmount: string;
+    contractualAmount: string;
+    agreement_amount: string;
+    agreement_date: string;
+    municipality_amount: string;
+    municipality_percentage: string;
+    public_participation_amount: string;
+    public_participation_percentage: string;
+    work_order_date: string;
+    completion_date: string;
+}
+
+interface ProjectAgreementModalProps {
+    onClose: () => void;
+    onSave: () => void;
+}
+
+const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData, projectId }) => {
+    const [formData, setFormData] = useState<FormData>({
+        totalAmount: '',
+        contractualAmount: '',
+        agreement_amount: '',
+        agreement_date: '',
+        municipality_amount: '',
+        municipality_percentage: '',
+        public_participation_amount: '',
+        public_participation_percentage: '',
+        work_order_date: '',
+        completion_date: ''
+    });
+
+    useEffect(() => {
+        if (agreementData) {
+            setFormData(agreementData);
+        } else {
+            setFormData({
+                totalAmount: '',
+                contractualAmount: '',
+                agreement_amount: '',
+                agreement_date: '',
+                municipality_amount: '',
+                municipality_percentage: '',
+                public_participation_amount: '',
+                public_participation_percentage: '',
+                work_order_date: '',
+                completion_date: ''
+            });
+        }
+    }, [agreementData]);
+
+    const handleInputChange = (field: keyof FormData, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Calculate percentage values dynamically whenever amounts change
+    useEffect(() => {
+        const agreementAmount = parseFloat(formData.agreement_amount) || 0;
+        const municipalityAmount = parseFloat(formData.municipality_amount) || 0;
+        const publicAmount = agreementAmount - municipalityAmount;
+
+        const municipalityPercentage = agreementAmount > 0 ? ((municipalityAmount / agreementAmount) * 100).toFixed(2) : '0';
+        const publicPercentage = agreementAmount > 0 ? ((publicAmount / agreementAmount) * 100).toFixed(2) : '0';
+
+        setFormData((prev) => ({
+            ...prev,
+            public_participation_amount: publicAmount.toString(),
+            municipality_percentage: municipalityPercentage,
+            public_participation_percentage: publicPercentage
+        }));
+    }, [formData.agreement_amount, formData.municipality_amount]);
+
+    const handleSubmit = () => {
+        onSave(formData)    // You can perform API submission here if needed
+        onClose()
+    };
+
+    const handleCancel = () => {
+        onClose();
+    };
+
+    const handleClose = () => {
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b">
+                    <h2 className="text-lg font-semibold text-gray-800">योजना साझेदारी</h2>
+                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                {/* Form Content */}
+                <div className="p-6 space-y-6">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><span className="text-gray-600">लागत अनुमान:</span> <span className="ml-2 font-medium">रु. 2000</span></div>
+                        <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium">84%</span></div>
+                        <div><span className="text-gray-600">करारजन्य रकम:</span> <span className="ml-2 font-medium">रु.30</span></div>
+                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium">रु. 2030</span></div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        {/* Left Column */}
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    साझेदारी रकम रु. <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.agreement_amount}
+                                    onChange={(e) => handleInputChange('agreement_amount', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    नगरपालिकाले व्यहोर्ने रकम <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.municipality_amount}
+                                    onChange={(e) => handleInputChange('municipality_amount', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    जनसहभागिता <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.public_participation_amount}
+                                    onChange={(e) => handleInputChange('public_participation_amount', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    कार्यारम्भ मिति <span className="text-red-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="date"
+                                        value={formData.work_order_date}
+                                        onChange={(e) => handleInputChange('work_order_date', e.target.value)}
+                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column */}
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    साझेदारी मिति <span className="text-red-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="date"
+                                        value={formData.agreement_date}
+                                        onChange={(e) => handleInputChange('agreement_date', e.target.value)}
+                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    नगरपालिकाले व्यहोर्ने रकमको प्रतिशत (%)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.municipality_percentage}
+                                    readOnly
+                                    className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-700"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    जनसहभागिताले व्यहोर्ने रकमको प्रतिशत (%)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.public_participation_percentage}
+                                    readOnly
+                                    className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-700"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    कार्य समप्ति मिति <span className="text-red-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="date"
+                                        value={formData.completion_date}
+                                        onChange={(e) => handleInputChange('completion_date', e.target.value)}
+                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+                    <button
+                        onClick={handleCancel}
+                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                    >
+                        रद्द गर्नुहोस्
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                        {agreementData ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्'}
+
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default ProjectAgreementModal;

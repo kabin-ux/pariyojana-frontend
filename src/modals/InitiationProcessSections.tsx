@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Download, Copy } from 'lucide-react';
 import axios from 'axios';
 import DropdownMenu from './DropDownMenu';
+import * as BS from 'bikram-sambat-js';
+import { toNepaliNumber } from '../utils/formatters';
 
 const initiationChoices = [
     "उपभोक्ता समिति मार्फत",
@@ -18,8 +20,14 @@ interface InitiationProcessSectionProps {
 const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ projectId }) => {
     const [initiationProcess, setInitiationProcess] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [newEntry, setNewEntry] = useState<{ initiation_method: string }>({ initiation_method: '' });
-    const [adding, setAdding] = useState(false);
+    const [selectedMethod, setSelectedMethod] = useState<string>('');
+    const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
+    const [flags, setFlags] = useState({
+        is_confirmed: false,
+        has_consumer_committee: false,
+        has_agreement: false,
+        has_payment_installment: false,
+    });
 
     const fetchInitiationProcess = async () => {
         setLoading(true);
@@ -33,25 +41,29 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
         }
     };
 
-    const handleAdd = async () => {
-        if (!newEntry.initiation_method) return;
-        setAdding(true);
+    const handleFinalConfirm = async () => {
+        // Assuming you have the BS library properly imported
+        const today = new Date(); // current Gregorian date
+
+        const bsDate = BS.ADToBS(today); // Convert to BS
         try {
             await axios.post(`http://localhost:8000/api/projects/${projectId}/initiation-process/`, {
                 project: projectId,
-                initiation_method: newEntry.initiation_method,
-                is_confirmed:true,
-                has_consumer_committee: true,
-                has_agreement: true,
-                has_payment_installment: true
-                // dialog box
+                initiation_method: selectedMethod,
+                started_at: bsDate,
+                ...flags
             });
-            setNewEntry({ initiation_method: '' });
+            setSelectedMethod('');
+            setFlags({
+                is_confirmed: false,
+                has_consumer_committee: false,
+                has_agreement: false,
+                has_payment_installment: false
+            });
+            setShowConfirmDialog(false);
             fetchInitiationProcess();
         } catch (err) {
             console.error('Error adding initiation process:', err);
-        } finally {
-            setAdding(false);
         }
     };
 
@@ -83,24 +95,48 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                 <div className="flex gap-2 items-center">
                     <select
                         className="border rounded-md px-3 py-2 text-sm"
-                        value={newEntry.initiation_method}
-                        onChange={(e) => setNewEntry({ initiation_method: e.target.value })}
+                        value={selectedMethod}
+                        onChange={(e) => {
+                            setSelectedMethod(e.target.value);
+                            if (e.target.value) setShowConfirmDialog(true);
+                        }}
                     >
                         <option value="">प्रारम्भ विधि छान्नुहोस्</option>
                         {initiationChoices.map((choice, idx) => (
                             <option key={idx} value={choice}>{choice}</option>
                         ))}
                     </select>
-                    <button
-                        onClick={handleAdd}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 disabled:opacity-50"
-                        disabled={adding || !newEntry.initiation_method}
-                    >
-                        <Plus className="w-4 h-4" />
-                        <span>नयाँ थप्नुहोस्</span>
-                    </button>
                 </div>
             </div>
+
+            {showConfirmDialog && (
+                <div className="p-4 border rounded bg-gray-50">
+                    <h4 className="text-sm font-medium mb-2">विकल्पहरू चयन गर्नुहोस्:</h4>
+                    <div className="space-y-2">
+                        {Object.entries(flags).map(([key, value]) => (
+                            <div key={key} className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={value}
+                                    onChange={() => setFlags(prev => ({ ...prev, [key]: !prev[key as keyof typeof flags] }))}
+                                />
+                                <label className="text-sm">
+                                    {{
+                                        is_confirmed: 'पुष्टि',
+                                        has_consumer_committee: 'उपभोक्ता समिति',
+                                        has_agreement: 'सम्झौता',
+                                        has_payment_installment: 'किस्ता भुक्तानी'
+                                    }[key as keyof typeof flags]}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                        <button onClick={handleFinalConfirm} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">सेभ गर्नुहोस्</button>
+                        <button onClick={() => setShowConfirmDialog(false)} className="px-4 py-2 bg-gray-200 rounded-lg">रद्द गर्नुहोस्</button>
+                    </div>
+                </div>
+            )}
 
             {initiationProcess.length === 0 ? (
                 <div className="py-12 text-center">
@@ -133,7 +169,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="py-3 px-4 text-gray-900">{index + 1}</td>
                                     <td className="py-3 px-4 text-gray-900">{item.initiation_method}</td>
-                                    <td className="py-3 px-4 text-gray-900">{item.started_at ? new Date(item.started_at).toLocaleDateString() : '-'}</td>
+                                    <td className="py-3 px-4 text-gray-900">{item.started_at ? toNepaliNumber(new Date(item.started_at).toLocaleDateString()) : '-'}</td>
                                     <td className="py-3 px-4 text-gray-900">{item.is_confirmed ? '✓' : '✗'}</td>
                                     <td className="py-3 px-4 text-center">{item.has_consumer_committee ? '✓' : '✗'}</td>
                                     <td className="py-3 px-4 text-center">{item.has_agreement ? '✓' : '✗'}</td>

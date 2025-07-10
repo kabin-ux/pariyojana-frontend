@@ -15,7 +15,7 @@ export const formatBudget = (budget: number | undefined): string => {
 
 export const toNepaliNumber = (num: number | string): string => {
   const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-  return num.toString().split('').map(d => (/\d/.test(d) ? nepaliDigits[+d] : d)).join('');
+  return num?.toString().split('').map(d => (/\d/.test(d) ? nepaliDigits[+d] : d)).join('');
 };
 
 export const formatWardNumber = (wardNo: number | undefined): string => {

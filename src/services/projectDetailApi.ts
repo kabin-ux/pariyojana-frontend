@@ -168,7 +168,7 @@ export const projectDetailApi = {
   // Project Agreement Details
   getProjectAgreementDetails: async (projectId: number): Promise<ProjectAgreementDetail[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/project-agreement-details/?project=${projectId}`, {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/project-agreement-details/`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -188,7 +188,31 @@ export const projectDetailApi = {
   // Documents
   getDocuments: async (projectId: number, documentType?: string): Promise<Document[]> => {
     try {
-      let url = `${API_BASE_URL}/documents/?project=${projectId}`;
+      let url = `${API_BASE_URL}/other-documents/${projectId}`;
+      if (documentType) {
+        url += `&document_type=${documentType}`;
+      }
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results || data || [];
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      throw error;
+    }
+  },
+
+  getOtherDocuments: async (projectId: number, documentType?: string): Promise<Document[]> => {
+    try {
+      let url = `${API_BASE_URL}/${projectId}/documents`;
       if (documentType) {
         url += `&document_type=${documentType}`;
       }

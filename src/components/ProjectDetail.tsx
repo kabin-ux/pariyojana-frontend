@@ -11,6 +11,9 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import * as BS from 'bikram-sambat-js';
 import Modal from '../modals/AddOfficialDetailandMonitoringModal';
+import PaymentInstallment from './PaymentInstallment/PaymentInstallment';
+import ProjectAgreementModal from '../modals/ProjectAgreementModal';
+import AddDocumentModal from '../modals/AddDocumentModal';
 
 interface FormRow {
     id: number;
@@ -47,6 +50,27 @@ const BUDGET_ESTIMATE_TITLES = [
     { "serial_no": 6, "title": "लागत अनुमान स्विकृती सम्बन्धी टिप्पणी आदेश" },
 ]
 
+const PROJECT_AGREEMENT_TITLES = [
+    { "serial_no": 1, "title": "उपभोक्ता समिति बैठक र निर्णय", "description": "(खाता संन्चलन,योजना सम्झौता एवं अन्य अख्तियारी सम्बन्ध्मा)" },
+    { "serial_no": 2, "title": "उपभोक्ता समितिले सम्झौता सिफारिसका लागी वडामा दिने निवेदन", "description": "(वडाबाट महानगरपालिकामा सिफारिस गरिदिन)" },
+    { "serial_no": 3, "title": "योजना संचालन स्थलको फोटो - ४ प्रति", "description": "(कामगर्नु पुर्वको फोटो)" },
+    { "serial_no": 4, "title": "नयाँ बैंक खाता सञ्चालन सिफारिस का लागि उपभोक्ता समितिले पेस गर्ने निवेदन" },
+    { "serial_no": 5, "title": "वडा कार्यलयले महानगरपालिकालाई सम्झौताका लागी दिने सिफारिस", "description": "(नोट: वडाबाट सम्झौता हुने योजनालाई आवश्यक नभएको )" },
+]
+
+const PROJECT_AGREEMENT_WORK_TITLES = [
+    { "serial_no": 1, "title": "योजना सम्झौता टिप्पणी र आदेश" },
+    { "serial_no": 2, "title": "योजना/कार्यक्रम सम्झौताको लागि सम्झौता फाराम" },
+    { "serial_no": 3, "title": "आयोजना सन्चालन कार्यादेश" },
+    { "serial_no": 4, "title": "आयोजना सूचना पाटी को नमुना" },
+]
+
+const LOCATION_DETAILS_TTTLES = [
+    { "serial_no": 1, "title": "निर्माण कार्य गर्नु पुर्वको फोटोहरु" },
+    { "serial_no": 2, "title": "योजनाको निर्माण कार्य भैरहेको अवस्थाको फोटोहरु" },
+    { "serial_no": 3, "title": "योजनाको निर्माण कार्य सकिएपछीका फोटोहरु" }
+]
+
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [activeTab, setActiveTab] = useState('कार्यक्रमको विवरण');
     const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
@@ -54,8 +78,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [isCostModalOpen, setIsCostModalOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [committeeDetail, setCommitteeDetail] = useState<any>(null);
+    const [agreementDetail, setAgreementDetail] = useState<any>(null);
     const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
     const [isPositionModalOpen, setIsPositionModalOpen] = useState(false);
+    const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
+    const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+    const [documentDetail, setDocumentDetail] = useState<any>(null);
 
     const researchCommitteeRows: FormRow[] = [
         { id: 1, post: 'संयोजक', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
@@ -85,6 +113,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         mapCostEstimate,
         projectAgreementDetails,
         documents,
+        otherdocuments,
         loading,
         error,
         loadProgramDetails,
@@ -93,6 +122,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         loadCostEstimate,
         loadProjectAgreement,
         loadDocuments,
+        loadOtherDocuments,
         deleteOfficialDetail,
         deleteMonitoringCommittee,
         deleteDocument,
@@ -143,6 +173,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 break;
             case 'अन्य डकुमेन्ट':
                 loadDocuments();
+                loadOtherDocuments();
                 break;
             default:
                 break;
@@ -154,6 +185,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             setCommitteeDetail(consumerCommitteeDetails[0]);
         }
     }, [consumerCommitteeDetails]);
+
+    useEffect(() => {
+        if (projectAgreementDetails.length > 0) {
+            setAgreementDetail(projectAgreementDetails[0]);
+        }
+    }, [projectAgreementDetails]);
+
+    useEffect(() => {
+        if (otherdocuments.length > 0) {
+            setDocumentDetail(otherdocuments[0]);
+        }
+    }, [otherdocuments]);
 
     // Assuming you have the BS library properly imported
     const today = new Date(); // current Gregorian date
@@ -202,6 +245,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             // toast.error("सेभ गर्न सकिएन");
         }
     };
+
+
 
     const token = localStorage.getItem('access_token');
 
@@ -272,7 +317,211 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             alert("अनुगमन समिति सेभ गर्न सकिएन।");
         }
     };
+    const handleDownload = async (itemSerialNo: number, projectSerialNo: number) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/projects/consumer-committee/generate-pdf/${itemSerialNo}/${projectSerialNo}/`,
+                {
+                    responseType: 'blob', // Important to handle PDF blobs
+                }
+            );
 
+            // Create a blob URL and trigger download
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `committee-template-${itemSerialNo}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('PDF download failed:', error);
+            alert('डाउनलोड गर्न समस्या भयो।');
+        }
+    };
+
+    const handleDownloadProjectAgreement = async (itemSerialNo: number, projectSerialNo: number) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
+                {
+                    responseType: 'blob', // Important to handle PDF blobs
+                }
+            );
+
+            // Create a blob URL and trigger download
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `project-agreement-template-${itemSerialNo}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('PDF download failed:', error);
+            alert('डाउनलोड गर्न समस्या भयो।');
+        }
+    };
+
+    const handleDownloadProjectAgreementAndWorkLoad = async (itemSerialNo: number, projectSerialNo: number) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
+                {
+                    responseType: 'blob', // Important to handle PDF blobs
+                }
+            );
+
+            // Create a blob URL and trigger download
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `project-agreement-template-${itemSerialNo}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('PDF download failed:', error);
+            alert('डाउनलोड गर्न समस्या भयो।');
+        }
+    };
+
+    const handleAddProjectAgreement = async (data: any) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (agreementDetail) {
+                // Update existing committee
+                const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/${agreementDetail.id}/`;
+                await axios.patch(url, data, config);
+                toast.success("समिति विवरण सफलतापूर्वक अपडेट गरियो");
+            } else {
+                // Create new committee
+                const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/`;
+                await axios.post(url, { ...data, project: project.serial_number }, config);
+                toast.success("समिति विवरण सफलतापूर्वक थपियो");
+            }
+
+
+            await loadProjectAgreement();
+
+            setIsDialogOpen(false);
+        } catch (error) {
+            console.error("Failed to save committee details", error);
+            // toast.error("सेभ गर्न सकिएन");
+        }
+    }
+
+    const handleDownloadOtherDocument = async (itemSerialNo: number, projectSerialNo: number) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/projects/other-documents/download/${itemSerialNo}/${projectSerialNo}/`,
+                {
+                    responseType: 'blob', // Important to handle PDF blobs
+                }
+            );
+
+            // Create a blob URL and trigger download
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `other-document-template-${itemSerialNo}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('PDF download failed:', error);
+            alert('डाउनलोड गर्न समस्या भयो।');
+        }
+    }
+
+    const handleAddDocument = async (formPayload: FormData) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                }
+            };
+
+            const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/`;
+            await axios.post(url, formPayload, config);
+
+            toast.success("डकुमेन्ट सफलतापूर्वक अपलोड भयो।");
+            await loadOtherDocuments();
+            setIsDocumentModalOpen(false);
+
+        } catch (error) {
+            console.error("Failed to save document", error);
+            toast.error("डकुमेन्ट सेभ गर्न असफल भयो।");
+        }
+    };
+
+    const handleEditDocument = async (data: any) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            };
+
+            const formData = new FormData();
+            formData.append('title', data.title);
+            formData.append('description', data.description || '');
+            if (data.file) {
+                formData.append('file', data.file); // only append if updated
+            }
+
+            const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/${documentDetail.id}/`;
+            await axios.patch(url, formData, config);
+
+            toast.success("डकुमेन्ट सफलतापूर्वक सम्पादन भयो");
+            await loadOtherDocuments();
+            setIsDocumentModalOpen(false);
+            setDocumentDetail(null);
+        } catch (error) {
+            console.error("अपडेट गर्न असफल", error);
+            toast.error("अपडेट गर्न असफल भयो");
+        }
+    };
+
+    const handleDeleteDocument = async (id: number) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const res = axios.delete(`http://localhost:8000/api/projects/${project.serial_number}/documents/${id}/`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            )
+            await loadOtherDocuments();
+            toast.success('सफलतापूर्वक मेटाइयो')
+        } catch (error) {
+            console.error('error deleting')
+        }
+    }
+
+    const handleSaveDocument = (data: any) => {
+        if (documentDetail) {
+            handleEditDocument(data);
+        } else {
+            handleAddDocument(data);
+        }
+    };
 
     const handleDelete = async (id: number, type: 'official' | 'monitoring' | 'document') => {
         if (window.confirm('के तपाईं यो मेटाउन चाहनुहुन्छ?')) {
@@ -386,8 +635,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                         type="button"
                                                         className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
                                                         onClick={() => {
-                                                            // Your download PDF logic here
-                                                            console.log("Download PDF clicked");
+                                                            handleDownload(item.serial_no, project.serial_number)
                                                         }}
                                                     >
                                                         <DownloadCloud className="w-4 h-4" />
@@ -678,7 +926,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                         {/* Cost Summary */}
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900">लागत अनुमान तथा अन्य विवरण</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">लागत अनुमान तथा अन्य विवरण:</h3>
                                 <button
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
                                     onClick={() => setIsCostModalOpen(true)}
@@ -716,13 +964,71 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
                 return (
                     <div className="space-y-8">
+                        {/*  Project Agreement Recommendation and Others */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">योजना सम्झौता सिफारिस तथा अन्य</h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {PROJECT_AGREEMENT_TITLES.map((item, index) => (
+                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
+                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm">
+                                                    <div>{item.title}</div>
+                                                    <div className="text-gray-600 text-xs mt-1">{item.description}</div>
+                                                </td>
+
+                                                <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm" >{ }</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            // Your upload logic here
+                                                            console.log("Upload clicked");
+                                                        }}
+                                                    >
+                                                        <Upload className="w-4 h-4" />
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            // Your download PDF logic here
+                                                            handleDownloadProjectAgreement(item.serial_no, project.serial_number)
+                                                        }}
+                                                    >
+                                                        <FileCheck className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         {/* Project Agreement Details */}
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">योजना सम्झौता विवरण</h3>
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                    onClick={() => setIsProjectAgreementModalOpen(true)}
+                                >
                                     <Edit className="w-4 h-4" />
-                                    <span>इडिट गर्नुहोस्</span>
+                                    <span> {agreementDetail ? 'इडिट गर्नुहोस्' : 'थप गर्नुहोस्'}</span>
                                 </button>
                             </div>
                             {!agreementDetail ? (
@@ -731,90 +1037,312 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">स्वीकृत लागत अनुमान:</p>
-                                        <p className="text-lg font-semibold">{formatBudget(agreementDetail.approved_cost_estimate)}</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.cost_estimate))}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी प्रतिशत:</p>
-                                        <p className="text-lg font-semibold">{agreementDetail.contingency_percentage || '0'}%</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(agreementDetail.contingency_percentage) || '0'}%</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी रकम:</p>
-                                        <p className="text-lg font-semibold">{formatBudget(agreementDetail.contingency_amount)}</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.contingency_amount))}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">कुल लागत अनुमान:</p>
-                                        <p className="text-lg font-semibold">{formatBudget(agreementDetail.total_cost_estimate)}</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.total_cost_estimate))}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">सम्झौता रकम:</p>
-                                        <p className="text-lg font-semibold">{formatBudget(agreementDetail.agreement_amount)}</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.agreement_amount))}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">सम्झौता मिति:</p>
-                                        <p className="text-lg font-semibold">{agreementDetail.agreement_date || 'N/A'}</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(agreementDetail.agreement_date) || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">नगरपालिकाले ब्यहेर्ने रकम रु:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.municipality_amount))}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">नगरपालिकाले ब्यहेर्ने रकमको प्रतिशत:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(agreementDetail.municipality_percentage) || 'N/A'}%</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">जनसहभागिता रकम:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.public_participation_amount))}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">जनसहभागिताले ब्यहेर्ने रकमको प्रतिशत:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(agreementDetail.public_participation_percentage) || 'N/A'}%</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">कार्यादेश मिति:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(agreementDetail.work_order_date))}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-1">कार्य सम्पन्न गर्नुपर्ने मिति:</p>
+                                        <p className="text-lg font-semibold">{toNepaliNumber(agreementDetail.completion_date) || 'N/A'}</p>
                                     </div>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                );
 
-            case 'अन्य डकुमेन्ट':
-                if (loading.documents) return <LoadingSpinner />;
+                            {isProjectAgreementModalOpen && (<ProjectAgreementModal
+                                onClose={() => setIsProjectAgreementModalOpen(false)
+                                }
+                                onSave={handleAddProjectAgreement}
+                                agreementData={agreementDetail}
+                                projectId={project.serial_number}
+                            />)
 
-                return (
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">अन्य डकुमेन्ट</h3>
-                            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
-                                <Plus className="w-4 h-4" />
-                                <span>नयाँ डकुमेन्ट थप्नुहोस्</span>
-                            </button>
+                            }
                         </div>
 
-                        {documents.length === 0 ? (
-                            <EmptyState message="अन्य डकुमेन्ट उपलब्ध छैन।" />
-                        ) : (
+                        {/* Project Agreement and Work Order */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">योजना सम्झौता तथा कार्यादेश</h3>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full">
                                     <thead>
                                         <tr className="border-b border-gray-200">
                                             <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
                                             <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">प्रकार</th>
                                             <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
                                             <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {documents.map((item, index) => (
-                                            <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-                                                <td className="py-3 px-4 text-gray-900">{item.title}</td>
-                                                <td className="py-3 px-4 text-gray-900">{item.document_type}</td>
-                                                <td className="py-3 px-4 text-gray-900">{item.date}</td>
-                                                <td className="py-3 px-4">
-                                                    <div className="flex items-center space-x-2">
-                                                        <button className="text-blue-600 hover:text-blue-800">
-                                                            <Edit className="w-4 h-4" />
-                                                        </button>
-                                                        <button className="text-blue-600 hover:text-blue-800">
-                                                            <Download className="w-4 h-4" />
-                                                        </button>
-                                                        <button
-                                                            className="text-red-600 hover:text-red-800"
-                                                            onClick={() => handleDelete(item.id, 'document')}
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
+                                        {PROJECT_AGREEMENT_WORK_TITLES.map((item, index) => (
+                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
+                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm">
+                                                    <div>{item.title}</div>
                                                 </td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm" >{ }</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            // Your upload logic here
+                                                            console.log("Upload clicked");
+                                                        }}
+                                                    >
+                                                        <Upload className="w-4 h-4" />
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            handleDownloadProjectAgreementAndWorkLoad(item.serial_no, project.serial_number)
+                                                        }}
+                                                    >
+                                                        <FileCheck className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        )}
+                        </div>
+                    </div>
+                );
+
+
+
+            case 'संचालन स्थल':
+                if (loading.agreement) return <LoadingSpinner />;
+
+                const locationDetail = projectAgreementDetails[0];
+
+                return (
+                    <div className="space-y-8">
+                        {/*  Project Operation Location */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">योजना संचालन स्थलको फोटो</h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">फोटोहरु</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {LOCATION_DETAILS_TTTLES.map((item, index) => (
+                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
+                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm">
+                                                    <div>{item.title}</div>
+                                                    <div className="text-gray-600 text-xs mt-1">{item.description}</div>
+                                                </td>
+
+                                                <td className="py-3 px-4 text-gray-900 text-sm">{ }</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            // Your upload logic here
+                                                            console.log("Upload clicked");
+                                                        }}
+                                                    >
+                                                        <Upload className="w-4 h-4" />
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        onClick={() => {
+                                                            // Your download PDF logic here
+                                                            console.log("Download PDF clicked");
+                                                        }}
+                                                    >
+                                                        <FileCheck className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )
+            case 'किस्ता भुक्तानी सम्बन्धी':
+                if (loading.documents) return <LoadingSpinner />;
+
+                return (
+                    <PaymentInstallment project={project} />
+                )
+            case 'अन्य डकुमेन्ट':
+                if (loading.documents) return <LoadingSpinner />;
+
+                return (
+                    <div className="space-y-6">
+                        <div>
+                            {/* Important DOcuments */}
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900">अन्य आवश्यक कागजातहरु</h3>
+                            </div>
+
+                            {documents.length === 0 ? (
+                                <EmptyState message="अन्य डकुमेन्ट उपलब्ध छैन।" />
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full">
+                                        <thead>
+                                            <tr className="border-b border-gray-200">
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिती</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {documents.map((item, index) => (
+                                                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{item.title}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.date)}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{ }</td>
+                                                    <td className="py-3 px-4">
+                                                        <div className="flex items-center space-x-2">
+                                                            <button
+                                                                className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                                onClick={() => handleDownloadOtherDocument(item.serial_no, project.serial_number)}
+                                                            >
+                                                                <FileCheck className="w-5 h-5" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Other documents */}
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900">अन्य डकुमेन्टहरु</h3>
+                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+                                    onClick={() => setIsDocumentModalOpen(true)}
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>नयाँ प्रविष्टि गर्नुहोस्</span>
+                                </button>
+                            </div>
+
+                            {otherdocuments.length === 0 ? (
+                                <EmptyState message="अन्य डकुमेन्ट उपलब्ध छैन।" />
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full">
+                                        <thead>
+                                            <tr className="border-b border-gray-200">
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">फायलको नाम</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">अपलोड कर्ता	</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">अपलोड मिति</th>
+                                                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {otherdocuments.map((item, index) => (
+                                                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{item.title}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{item.uploaded_by_name}</td>
+                                                    <td className="py-3 px-4 text-gray-900">
+                                                        {toNepaliNumber(new Date(item.uploaded_at).toISOString().split('T')[0])}
+                                                    </td>
+                                                    <td className="py-3 px-4">
+                                                        <div className="flex items-center space-x-2">
+                                                            <button
+                                                                className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                                onClick={() => setIsDocumentModalOpen(true)}
+                                                            >
+                                                                <Edit className="w-5 h-5" />
+                                                            </button>
+                                                            <button
+                                                                className="text-red-600 hover:text-red-800 cursor-pointer"
+                                                                onClick={() => handleDeleteDocument(item.id)}
+                                                            >
+                                                                <Trash2 className="w-5 h-5" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {isDocumentModalOpen && (
+                                <AddDocumentModal
+                                    onSave={handleSaveDocument}
+                                    onClose={() => {
+                                        setIsDocumentModalOpen(false);
+                                        setDocumentDetail(null); // reset
+                                    }}
+                                    documentData={documentDetail}
+                                    projectId={project.serial_number}
+                                />
+                            )}
+
+                        </div>
                     </div>
                 );
 
