@@ -14,6 +14,7 @@ import Modal from '../modals/AddOfficialDetailandMonitoringModal';
 import PaymentInstallment from './PaymentInstallment/PaymentInstallment';
 import ProjectAgreementModal from '../modals/ProjectAgreementModal';
 import AddDocumentModal from '../modals/AddDocumentModal';
+import OperationSiteUploadModal from '../modals/UploadSiteModal';
 
 interface FormRow {
     id: number;
@@ -84,6 +85,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
     const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
     const [documentDetail, setDocumentDetail] = useState<any>(null);
+    const [showLocationModal, setShowLocationModal] = useState(false);
+    const [selectedSerialNo, setSelectedSerialNo] = useState<number | null>(null);
 
     const researchCommitteeRows: FormRow[] = [
         { id: 1, post: 'संयोजक', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
@@ -114,6 +117,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         projectAgreementDetails,
         documents,
         otherdocuments,
+        operationLocation,
         loading,
         error,
         loadProgramDetails,
@@ -123,6 +127,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         loadProjectAgreement,
         loadDocuments,
         loadOtherDocuments,
+        loadOperationDetails,
         deleteOfficialDetail,
         deleteMonitoringCommittee,
         deleteDocument,
@@ -170,6 +175,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 break;
             case 'योजना सम्झौता':
                 loadProjectAgreement();
+                break;
+            case 'संचालन स्थल':
+                loadOperationDetails();
                 break;
             case 'अन्य डकुमेन्ट':
                 loadDocuments();
@@ -276,6 +284,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                     }
                 );
             }
+            loadConsumerCommitteeDetails();
 
             alert("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
         } catch (error) {
@@ -546,6 +555,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         setDropdownOpen(null);
     };
 
+    const handleUploadOperationLocation = async () => {
+        try {
+
+        } catch (error) {
+
+        }
+    };
+
     const LoadingSpinner = () => (
         <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -813,12 +830,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                             monitoringCommittee.map((member, index) => (
                                                 <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
                                                     <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.position}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.name}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{member.post}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{member.full_name}</td>
                                                     <td className="py-3 px-4 text-gray-900">{member.address}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.contact_number}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{member.contact_no}</td>
                                                     <td className="py-3 px-4 text-gray-900">{member.gender}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.citizenship_number}</td>
+                                                    <td className="py-3 px-4 text-gray-900">{member.citizenship_no}</td>
                                                     <td className="py-3 px-4">
                                                         <div className="flex items-center space-x-2">
                                                             <button
@@ -1175,7 +1192,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {LOCATION_DETAILS_TTTLES.map((item, index) => (
+                                        {operationLocation.map((item, index) => (
                                             <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
                                                 <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
                                                 <td className="py-3 px-4 text-gray-900 text-sm">
@@ -1183,14 +1200,25 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                     <div className="text-gray-600 text-xs mt-1">{item.description}</div>
                                                 </td>
 
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{ }</td>
+                                                <td className="py-3 px-4 text-gray-900 text-sm">
+                                                    {item.photo ? (
+                                                        <img
+                                                            src={item.photo}
+                                                            alt={item.title || 'uploaded photo'}
+                                                            className="h-16 w-24 object-cover rounded shadow"
+                                                        />
+                                                    ) : (
+                                                        'फोटो उपलब्ध छैन'
+                                                    )}
+                                                </td>
                                                 <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
                                                     <button
                                                         type="button"
                                                         className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
                                                         onClick={() => {
-                                                            // Your upload logic here
-                                                            console.log("Upload clicked");
+                                                            setSelectedSerialNo(item.serial_no);
+
+                                                            setShowLocationModal(true)
                                                         }}
                                                     >
                                                         <Upload className="w-4 h-4" />
@@ -1213,6 +1241,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {showLocationModal && selectedSerialNo && (
+                                <OperationSiteUploadModal
+                                    onClose={() => setShowLocationModal(false)}
+                                    projectId={project.serial_number}
+                                    serialNo={selectedSerialNo}
+                                />
+                            )}
                         </div>
                     </div>
                 )

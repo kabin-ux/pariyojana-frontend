@@ -5,6 +5,7 @@ import { useSettings } from '../hooks/useSetting';
 import { useProjects } from '../hooks/useProject';
 import { projectApi } from '../services/projectsApi';
 import { formatBudget, formatWardNumber, formatStatus, getStatusColor, getNameById, toNepaliNumber } from '../utils/formatters';
+import toast from 'react-hot-toast';
 
 interface ProjectsProps {
   onProjectSelect?: (projectId: string) => void;
@@ -35,6 +36,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<NewProjectForm>({
     project_name: '',
@@ -89,8 +91,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     { value: 4, label: 'वडा नं. - ४' },
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
-    { value: 7, label: 'वडा नं. - ७' },
-    { value: 8, label: 'वडा नं. - ८' }
   ];
 
   // Filter sub-areas based on selected thematic area
@@ -141,6 +141,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       // Open the dialog for editing
       setIsDialogOpen(true);
       setDropdownOpen(null);
+      setEditingProjectId(projectToEdit.serial_number);
 
       // If you need to track the project being edited
       // setSelectedProject(projectToEdit);
@@ -209,11 +210,13 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         status: 'not_started'
       };
 
-      if (selectedProject) {
+      if (editingProjectId) {
         // Update existing project
-        await projectApi.update(selectedProject.id, submitData);
-        console.log('Project updated successfully');
-      } else {
+        await projectApi.update(editingProjectId, submitData);
+
+        toast.success('Project updated successfully');
+      }
+      else {
         // Create new project
         await projectApi.create(submitData);
         console.log('Project added successfully');
@@ -239,9 +242,11 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       });
       refetchProjects();
       setSelectedProject(null);
+      setEditingProjectId(null);
     } catch (error) {
       console.error('Error saving project:', error);
-      alert(selectedProject ? 'परियोजना अपडेट गर्न सकिएन' : 'परियोजना थप्न सकिएन');
+      toast.error(selectedProject ? 'परियोजना अपडेट गर्न सकिएन' : 'परियोजना थप्न सकिएन');
+      toast.error(editingProjectId ? 'परियोजना अपडेट गर्न सकिएन' : 'परियोजना थप्न सकिएन');
     } finally {
       setIsSubmitting(false);
     }
@@ -266,6 +271,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       description: '',
       fiscal_year: ''
     });
+    setEditingProjectId(null)
   };
 
   const handlePageChange = (page: number) => {
@@ -394,7 +400,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                       <td className="py-3 px-4 text-gray-900">{getNameById(sub_areas, project.sub_area)}</td>
                       <td className="py-3 px-4 text-gray-900">{getNameById(sources, project.source)}</td>
                       <td className="py-3 px-4 text-gray-900">{getNameById(expenditureCenters, project.expenditure_center)}</td>
-                      <td className="py-3 px-4 text-gray-900">{formatBudget(toNepaliNumber (project.budget))}</td>
+                      <td className="py-3 px-4 text-gray-900">{formatBudget(toNepaliNumber(project.budget))}</td>
                       <td className="py-3 px-4 text-gray-900">{formatWardNumber(project.ward_no)}</td>
                       <td className="py-3 px-4">
                         <span className={`text-sm ${getStatusColor(project.status)}`}>
@@ -736,7 +742,8 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                   disabled={isSubmitting}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {isSubmitting ? 'थप्दै...' : 'थप गर्नुहोस्'}
+                  {isSubmitting ? (editingProjectId ? 'अपडेट गर्दै...' : 'थप्दै...') : (editingProjectId ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्')}
+
                 </button>
               </div>
             </form>

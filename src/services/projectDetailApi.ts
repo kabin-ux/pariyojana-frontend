@@ -234,6 +234,30 @@ export const projectDetailApi = {
     }
   },
 
+  getOperationLocation: async (projectId: number, documentType?: string): Promise<Document[]> => {
+    try {
+      let url = `${API_BASE_URL}/${projectId}/operation-site-photos`;
+      if (documentType) {
+        url += `&document_type=${documentType}`;
+      }
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results || data || [];
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      throw error;
+    }
+  },
+
   // Delete operations
   deleteOfficialDetail: async (id: number): Promise<void> => {
     try {

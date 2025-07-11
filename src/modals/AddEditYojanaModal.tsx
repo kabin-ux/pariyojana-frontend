@@ -64,7 +64,7 @@ const BeneficiaryDialog: React.FC<BeneficiaryDialogProps> = ({
             onSave(res.data); // send updated data to parent
         } catch (error) {
             console.error('Failed to update beneficiary data:', error);
-            alert('डेटा सेभ गर्न असफल भयो!');
+            toast.error('डेटा सेभ गर्न असफल भयो!');
         }
     };
 
