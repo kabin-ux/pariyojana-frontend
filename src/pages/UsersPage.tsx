@@ -289,7 +289,7 @@ const UsersPage: React.FC = () => {
                                             <td className="py-4 px-6 text-sm text-gray-900">{index + 1}</td>
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                                    <div className="w-8 h-8  bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                                                         {user.full_name.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>

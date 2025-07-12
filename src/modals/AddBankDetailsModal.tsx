@@ -103,7 +103,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                     <h2 className="text-lg font-medium text-gray-900">
                         {bankDetails ? 'बैंक विवरण सम्पादन गर्नुहोस्' : 'बैंक खाता सञ्चालन गर्ने बारेमा'}
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
                         <X size={20} />
                     </button>
                 </div>
@@ -116,7 +116,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                         <div className="relative">
                             <button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white flex justify-between items-center"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white flex justify-between items-center cursor-pointer"
                             >
                                 <span>
                                     {bankOptions.find(b => b.id === formData.bank_id)?.name || 'बैंक छान्नुहोस्'}
@@ -133,7 +133,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                                                 setFormData(prev => ({ ...prev, bank_id: bank.id }));
                                                 setIsDropdownOpen(false);
                                             }}
-                                            className="w-full px-3 py-2 text-left hover:bg-gray-50"
+                                            className="w-full px-3 py-2 text-left hover:bg-gray-50 cursor-pointer"
                                         >
                                             {bank.name}
                                         </button>
@@ -171,7 +171,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                                                 {signatory.full_name} ({signatory.post})
                                                 <button
                                                     onClick={() => removeSignatory(signatory.id)}
-                                                    className="text-gray-400 hover:text-gray-600"
+                                                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                                 >
                                                     <X size={12} />
                                                 </button>
@@ -181,7 +181,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                                 </div>
                                 <button
                                     onClick={() => setIsSignatoryDropdownOpen(!isSignatoryDropdownOpen)}
-                                    className="w-full text-left text-gray-400 flex items-center justify-between"
+                                    className="w-full text-left text-gray-400 flex items-center justify-between cursor-pointer"
                                 >
                                     <span></span>
                                     <ChevronDown size={16} />
@@ -199,7 +199,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                                                     toggleSignatory(signatory);
                                                     setIsSignatoryDropdownOpen(false);
                                                 }}
-                                                className="w-full px-3 py-2 text-left hover:bg-gray-50"
+                                                className="w-full px-3 py-2 text-left hover:bg-gray-50 cursor-pointer"
                                             >
                                                 {signatory.full_name} ({signatory.post})
                                             </button>
@@ -214,13 +214,13 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
                 <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
                     <button
                         onClick={handleReset}
-                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100"
+                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100 cursor-pointer"
                     >
                         रद्द गर्नुहोस्
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                     >
                         {bankDetails ? 'अपडेट गर्नुहोस्' : 'सेभ गर्नुहोस्'}
                     </button>

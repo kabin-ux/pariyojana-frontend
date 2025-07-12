@@ -132,8 +132,8 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                         ))}
                     </div>
                     <div className="flex gap-2 mt-4">
-                        <button onClick={handleFinalConfirm} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">सेभ गर्नुहोस्</button>
-                        <button onClick={() => setShowConfirmDialog(false)} className="px-4 py-2 bg-gray-200 rounded-lg">रद्द गर्नुहोस्</button>
+                        <button onClick={handleFinalConfirm} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">सेभ गर्नुहोस्</button>
+                        <button onClick={() => setShowConfirmDialog(false)} className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer">रद्द गर्नुहोस्</button>
                     </div>
                 </div>
             )}
@@ -176,13 +176,13 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                                     <td className="py-3 px-4 text-center">{item.has_payment_installment ? '✓' : '✗'}</td>
                                     <td className="py-3 px-4">
                                         <div className="flex items-center space-x-2">
-                                            <button className="text-blue-600 hover:text-blue-800">
+                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
                                                 <Edit className="w-4 h-4" />
                                             </button>
-                                            <button className="text-blue-600 hover:text-blue-800">
+                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
                                                 <Download className="w-4 h-4" />
                                             </button>
-                                            <button className="text-blue-600 hover:text-blue-800">
+                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
                                                 <Copy className="w-4 h-4" />
                                             </button>
                                             <DropdownMenu id={item.id} onDelete={handleDelete} />

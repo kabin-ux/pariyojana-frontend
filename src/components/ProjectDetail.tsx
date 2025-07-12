@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Home, ChevronRight, Edit, Download, Copy, MoreHorizontal, Plus, Trash2, Upload, DownloadCloud, View, Notebook, ImageDown, Dock, File, FileMinus2, FileMinusIcon, FileCheck2, FileCheck } from 'lucide-react';
+import { ChevronLeft, Home, ChevronRight, Edit, Download, Copy, MoreHorizontal, Plus, Trash2, Upload, DownloadCloud, View, Notebook, ImageDown, Dock, File, FileMinus2, FileMinusIcon, FileCheck2, FileCheck, FileSearch } from 'lucide-react';
 import { useProjectDetail } from '../hooks/useProjectDetail';
 import { formatBudget, formatWardNumber, toNepaliNumber } from '../utils/formatters';
 import ProgramDetailsTab from '../components/projectdetailssubtab/ProgramDetailTab';
@@ -15,6 +15,7 @@ import PaymentInstallment from './PaymentInstallment/PaymentInstallment';
 import ProjectAgreementModal from '../modals/ProjectAgreementModal';
 import AddDocumentModal from '../modals/AddDocumentModal';
 import OperationSiteUploadModal from '../modals/UploadSiteModal';
+import AddAuthenticationFileModal from '../modals/AddAuthenticationFileModal';
 
 interface FormRow {
     id: number;
@@ -80,6 +81,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [committeeDetail, setCommitteeDetail] = useState<any>(null);
     const [agreementDetail, setAgreementDetail] = useState<any>(null);
+    const [operationLocationDetails, setOperationLocationDetails] = useState<any>(null);
     const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
     const [isPositionModalOpen, setIsPositionModalOpen] = useState(false);
     const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
@@ -87,6 +89,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [documentDetail, setDocumentDetail] = useState<any>(null);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [selectedSerialNo, setSelectedSerialNo] = useState<number | null>(null);
+    const [isAuthenticationFileModalOpen, setAuthenticationFileModalOpen] = useState(false);
+    const [editMapCostId, setEditMapCostId] = useState<number | null>(null);
+    const [mapCostDetails, setMapCostDetails] = useState<any>(null);
+    const [selectedMapCostItem, setSelectedMapCostItem] = useState<any>(null);
 
     const researchCommitteeRows: FormRow[] = [
         { id: 1, post: 'संयोजक', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
@@ -134,6 +140,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     } = useProjectDetail(projectIdNum);
 
     const transformedOfficialDetails: FormRow[] = officialDetails.map((member, index) => ({
+        id: index + 1,
+        post: member.post,
+        full_name: member.full_name,
+        gender: member.gender,
+        address: member.address,
+        citizenship_no: member.citizenship_no,
+        contact_no: member.contact_no,
+        citizenshipCopy: member.citizenship_front || member.citizenship_back ? 'अपलोड गरिएको' : '',
+        citizenship_front: member.citizenship_front, // You may handle this if editing upload later
+        citizenship_back: member.citizenship_back,
+    }));
+
+    const transformedMonitoringDetails: FormRow[] = monitoringCommittee.map((member, index) => ({
         id: index + 1,
         post: member.post,
         full_name: member.full_name,
@@ -195,16 +214,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     }, [consumerCommitteeDetails]);
 
     useEffect(() => {
+        if (otherdocuments.length > 0) {
+            setDocumentDetail(otherdocuments[0]);
+        }
+    }, [otherdocuments]);
+
+    useEffect(() => {
         if (projectAgreementDetails.length > 0) {
             setAgreementDetail(projectAgreementDetails[0]);
         }
     }, [projectAgreementDetails]);
 
     useEffect(() => {
-        if (otherdocuments.length > 0) {
-            setDocumentDetail(otherdocuments[0]);
+        if (mapCostEstimate.length > 0) {
+            setMapCostDetails(mapCostEstimate[0]);
         }
-    }, [otherdocuments]);
+    }, [mapCostEstimate]);
 
     // Assuming you have the BS library properly imported
     const today = new Date(); // current Gregorian date
@@ -273,19 +298,33 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 if (row.citizenship_front) formData.append("citizenship_front", row.citizenship_front);
                 if (row.citizenship_back) formData.append("citizenship_back", row.citizenship_back);
 
-                await axios.post(
-                    `http://localhost:8000/api/projects/${project.serial_number}/official-details/`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                if (row.id) {
+                    // Edit existing member
+                    await axios.patch(
+                        `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`,
+                        formData,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        }
+                    );
+                } else {
+                    // Add new member
+                    await axios.post(
+                        `http://localhost:8000/api/projects/${project.serial_number}/official-details/`,
+                        formData,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        }
+                    );
+                }
             }
             loadConsumerCommitteeDetails();
-
             alert("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
         } catch (error) {
             console.error("Error saving official details:", error);
@@ -326,6 +365,57 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             alert("अनुगमन समिति सेभ गर्न सकिएन।");
         }
     };
+
+    const handleFileUpload = async (data: any) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const formData = new FormData();
+
+            // Get the title from the selected map cost item
+            const titleToSend = selectedMapCostItem?.title || data.title;
+            formData.append('title', titleToSend);
+
+            if (data.file) {
+                formData.append('file', data.file);
+            }
+
+            if (data.remarks) {
+                formData.append('remarks', data.remarks);
+            }
+
+            let url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/`;
+            let method = 'post';
+
+            if (editMapCostId) {
+                url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`;
+                method = 'patch';
+            }
+
+            const response = await axios({
+                url,
+                method,
+                data: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            toast.success(editMapCostId ? 'फाइल अपलोड सम्पादन भयो' : 'फाइल अपलोड सफलतापूर्वक थपियो');
+
+            // Refresh map cost estimate details
+            await loadCostEstimate();
+
+            setAuthenticationFileModalOpen(false);
+            setEditMapCostId(null);
+            setSelectedMapCostItem(null);
+        } catch (error) {
+            console.error('File upload failed:', error);
+            toast.error('फाइल अपलोड गर्न सकिएन');
+        }
+    };
+
+
     const handleDownload = async (itemSerialNo: number, projectSerialNo: number) => {
         try {
             const response = await axios.get(
@@ -555,14 +645,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         setDropdownOpen(null);
     };
 
-    const handleUploadOperationLocation = async () => {
-        try {
-
-        } catch (error) {
-
-        }
-    };
-
     const LoadingSpinner = () => (
         <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -672,7 +754,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">उपभोक्ता समितिको विवरण</h3>
                                 <button
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
                                     onClick={committeeDetail ? handleEdit : handleAdd}
                                 >
                                     {committeeDetail ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -839,13 +921,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                     <td className="py-3 px-4">
                                                         <div className="flex items-center space-x-2">
                                                             <button
-                                                                className="text-blue-600 hover:text-blue-800"
+                                                                className="text-blue-600 hover:text-blue-800 cursor-pointer"
                                                                 onClick={() => {/* Edit functionality */ }}
                                                             >
                                                                 <Edit className="w-4 h-4" />
                                                             </button>
                                                             <button
-                                                                className="text-red-600 hover:text-red-800"
+                                                                className="text-red-600 hover:text-red-800 cursor-pointer"
                                                                 onClick={() => handleDelete(member.id, 'official')}
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
@@ -871,7 +953,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 isOpen={isResearchModalOpen}
                                 onClose={() => setIsResearchModalOpen(false)}
                                 title="अनुगमन तथा सहजिकरण समिति"
-                                rows={researchCommitteeRows}
+                                rows={monitoringCommittee.length > 0 ? transformedMonitoringDetails : researchCommitteeRows}
                                 onSave={handleSaveResearch}
                             />
 
@@ -885,7 +967,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 if (loading.cost) return <LoadingSpinner />;
 
                 const costDetail = costEstimateDetails.find(item => item.project === project?.id);
-
+                const mapDetail = mapCostEstimate?.find(item => item.project === project?.id)
                 return (
                     <div className="space-y-8">
                         {/* Cost Estimate Documents */}
@@ -903,41 +985,67 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {BUDGET_ESTIMATE_TITLES.map((item, index) => (
-                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{item.title}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm" >{ }</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            // Your upload logic here
-                                                            console.log("Upload clicked");
-                                                        }}
-                                                    >
-                                                        <Upload className="w-4 h-4" />
-                                                    </button>
+                                        {BUDGET_ESTIMATE_TITLES.map((item, index) => {
+                                            // Find matching item from mapCostEstimate
+                                            const mapCostItem = mapCostEstimate.find(mapItem => mapItem.serial_no === item.serial_no);
 
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            // Your download PDF logic here
-                                                            console.log("Download PDF clicked");
-                                                        }}
-                                                    >
-                                                        <FileCheck className="w-4 h-4" />
-                                                    </button>
-                                                </td>
+                                            return (
+                                                <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
+                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                                    <td className="py-3 px-4 text-gray-900 text-sm">{item.title}</td>
+                                                    <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
+                                                    <td className="py-3 px-4 text-gray-900 text-sm">
+                                                        {mapCostItem?.status === 'pending' ? 'अपलोड गरिएको' : mapCostItem?.status}
+                                                    </td>
+                                                    <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                            onClick={() => {
+                                                                setSelectedMapCostItem(item);
+                                                                setEditMapCostId(mapCostItem?.id || null);
+                                                                setAuthenticationFileModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <Upload className="w-5 h-5" />
+                                                        </button>
+                                                        <div className="relative group">
+                                                            <button
+                                                                type="button"
+                                                                className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer hover:"
+                                                                onClick={() => {
+                                                                    console.log("Download PDF clicked");
+                                                                }}
+                                                            >
+                                                                <FileSearch className="w-5 h-5" />
+                                                            </button>
 
-                                            </tr>
-                                        ))}
+                                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                प्रमाणिकरण
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
+                            {
+                                isAuthenticationFileModalOpen && (
+                                    <AddAuthenticationFileModal
+                                        onSave={handleFileUpload}
+                                        onClose={() => {
+                                            setAuthenticationFileModalOpen(false);
+                                            setSelectedMapCostItem(null);
+                                            setEditMapCostId(null);
+                                        }}
+                                        documentData={selectedMapCostItem}
+                                        projectId={projectIdNum}
+                                    />
+                                )
+                            }
+
                         </div>
 
                         {/* Cost Summary */}
@@ -945,7 +1053,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">लागत अनुमान तथा अन्य विवरण:</h3>
                                 <button
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
                                     onClick={() => setIsCostModalOpen(true)}
                                 >
                                     <Edit className="w-4 h-4" />
@@ -1041,7 +1149,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">योजना सम्झौता विवरण</h3>
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
                                     onClick={() => setIsProjectAgreementModalOpen(true)}
                                 >
                                     <Edit className="w-4 h-4" />
@@ -1244,7 +1352,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
                             {showLocationModal && selectedSerialNo && (
                                 <OperationSiteUploadModal
-                                    onClose={() => setShowLocationModal(false)}
+                                    onClose={() => {
+                                        setShowLocationModal(false)
+                                        loadOperationDetails()
+                                    }}
                                     projectId={project.serial_number}
                                     serialNo={selectedSerialNo}
                                 />

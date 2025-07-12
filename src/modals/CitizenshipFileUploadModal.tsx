@@ -45,7 +45,7 @@ const CitizenshipFileUploadModal: React.FC<FileUploadModalProps> = ({
           <h3 className="text-lg font-semibold text-gray-800">नागरिकता प्रतिलिपी</h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -100,7 +100,7 @@ const CitizenshipFileUploadModal: React.FC<FileUploadModalProps> = ({
         <div className="p-4">
           <button
             onClick={handleSave}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
           >
             सेभ गर्नुहोस
           </button>

@@ -75,7 +75,7 @@ const ConsumerCommitteeDialog: React.FC<Props> = ({
                     <h2 className="text-lg font-semibold">
                         उपभोक्ता समिति {committeeData ? 'सम्पादन' : 'थप्नुहोस्'}
                     </h2>
-                    <button onClick={onClose} className="text-gray-600 hover:text-black">
+                    <button onClick={onClose} className="text-gray-600 hover:text-black cursor-pointer">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -166,13 +166,13 @@ const ConsumerCommitteeDialog: React.FC<Props> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 cursor-pointer"
                         >
                             रद्द गर्नुहोस्
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer"
                         >
                             {committeeData ? 'अपडेट गर्नुहोस्' : 'थप्नुहोस्'}
                         </button>

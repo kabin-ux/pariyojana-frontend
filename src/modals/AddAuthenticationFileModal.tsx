@@ -1,46 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Upload, File, Camera } from 'lucide-react';
+import { X, Upload, File } from 'lucide-react';
 
 interface FormData {
     fileName: string;
     uploadedFile: File | null;
     description: string;
-    bank_account_number: string;
 }
 
 interface AddDocumentModalProps {
     onSave: (data: any) => void;
     onClose: () => void;
-    documentData?: any;
+    documentData?: any; // optional, for edit mode
     projectId: number;
-    isAccountPhoto?: boolean;
 }
 
-const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
+const AddAuthenticationFileModal: React.FC<AddDocumentModalProps> = ({
     onSave,
     onClose,
     documentData,
     projectId,
-    isAccountPhoto = false,
 }) => {
     const [formData, setFormData] = useState<FormData>({
-        fileName: 'बैंक खाता सञ्चालन सिफारिस',
+        fileName: '',
         uploadedFile: null,
         description: '',
-        bank_account_number: '',
     });
 
     const [dragActive, setDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Pre-fill form on edit
+    // 🔄 Pre-fill form on edit
     useEffect(() => {
         if (documentData) {
             setFormData({
-                fileName: documentData.title || 'बैंक खाता सञ्चालन सिफारिस',
+                fileName: documentData.title || '',
                 uploadedFile: null,
                 description: documentData.remarks || '',
-                bank_account_number: documentData.bank_account_number || '',
             });
         }
     }, [documentData]);
@@ -52,21 +47,21 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
         }));
     };
 
-    const handleFileUpload = (check_photo: File) => {
-        if (check_photo.size > 10 * 1024 * 1024) {
+    const handleFileUpload = (file: File) => {
+        if (file.size > 10 * 1024 * 1024) {
             alert('फाइल साइज 10MB भन्दा बढी हुन सक्दैन।');
             return;
         }
 
         const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
-        if (!allowedTypes.includes(check_photo.type)) {
+        if (!allowedTypes.includes(file.type)) {
             alert('केवल JPEG, PNG, PDF, र MP4 फाइलहरू मात्र अपलोड गर्न सकिन्छ।');
             return;
         }
 
         setFormData((prev) => ({
             ...prev,
-            uploadedFile: check_photo,
+            uploadedFile: file,
         }));
     };
 
@@ -96,45 +91,30 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
     };
 
     const handleCancel = () => {
-        setFormData({ fileName: '', uploadedFile: null, description: '', bank_account_number: '' });
+        setFormData({ fileName: '', uploadedFile: null, description: '' });
         onClose();
     };
 
     const handleSubmit = () => {
-        if (isAccountPhoto) {
-            // Validation for account photo
-            if (!formData.bank_account_number.trim()) {
-                alert('खाता नम्बर आवश्यक छ।');
-                return;
-            }
-        } else {
-            // Validation for bank recommendation
-            if (!formData.fileName.trim()) {
-                alert('फाइलको नाम आवश्यक छ।');
-                return;
-            }
+        if (!formData.fileName.trim()) {
+            alert('फाइलको नाम आवश्यक छ।');
+            return;
         }
 
-        const dataToSend = isAccountPhoto ? {
-            bank_account_number: formData.bank_account_number,
-            check_photo: formData.uploadedFile,
-            remarks: formData.description,
-            project: projectId.toString(),
-        } : {
+        const dataToSend = {
             title: formData.fileName,
-            check_photo: formData.uploadedFile,
+            file: formData.uploadedFile, // can be null if no change
             remarks: formData.description,
             project: projectId.toString(),
         };
 
-        onSave(dataToSend);
+        onSave(dataToSend); // Let parent decide if it's add/edit
 
         // Clear the form after saving
         setFormData({
             fileName: '',
             uploadedFile: null,
             description: '',
-            bank_account_number: '',
         });
     };
 
@@ -143,9 +123,7 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                        {isAccountPhoto ? 'खाता फोटो अपलोड गर्नुहोस्' : 'बैंक खाता सञ्चालन सिफारिस अपलोड गर्नुहोस्'}
-                    </h2>
+                    <h2 className="text-xl font-semibold text-gray-800">सम्भव्यता अध्यायन प्रतिवेदन अपलोड गर्नुहोस्</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
                         <X size={24} />
                     </button>
@@ -153,25 +131,10 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
 
                 {/* Form */}
                 <div className="p-6 space-y-6">
-                    {/* Title/Account Number Field */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {isAccountPhoto ? 'खाता नम्बर' : 'फाइलको नाम'} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            value={isAccountPhoto ? formData.bank_account_number : formData.fileName}
-                            onChange={(e) => handleInputChange(isAccountPhoto ? 'bank_account_number' : 'fileName', e.target.value)}
-                            placeholder={isAccountPhoto ? 'खाता नम्बर लेख्नुहोस्...' : 'फाइलको नाम लेख्नुहोस्...'}
-                            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                    </div>
-
                     {/* File Upload */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {isAccountPhoto ? 'चेकको फोटो अपलोड गर्नुहोस्' : 'फाइल अपलोड गर्नुहोस्'}
-                            {documentData ? '' : <span className="text-red-500">*</span>}
+                            फाइल अपलोड गर्नुहोस् {documentData ? '' : <span className="text-red-500">*</span>}
                         </label>
                         <div
                             className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
@@ -186,18 +149,14 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept={isAccountPhoto ? ".jpg,.jpeg,.png" : ".jpg,.jpeg,.png,.pdf,.mp4"}
+                                accept=".jpg,.jpeg,.png,.pdf,.mp4"
                                 onChange={handleFileInputChange}
                                 className="hidden"
                             />
 
                             {formData.uploadedFile ? (
                                 <div className="space-y-2">
-                                    {isAccountPhoto ? (
-                                        <Camera className="w-12 h-12 text-green-500 mx-auto" />
-                                    ) : (
-                                        <File className="w-12 h-12 text-green-500 mx-auto" />
-                                    )}
+                                    <File className="w-12 h-12 text-green-500 mx-auto" />
                                     <p className="text-sm">{formData.uploadedFile.name}</p>
                                     <p className="text-xs text-gray-500">
                                         {(formData.uploadedFile.size / 1024 / 1024).toFixed(2)} MB
@@ -208,14 +167,8 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
                                 </div>
                             ) : documentData?.file ? (
                                 <div className="space-y-2">
-                                    {isAccountPhoto ? (
-                                        <Camera className="w-12 h-12 text-blue-500 mx-auto" />
-                                    ) : (
-                                        <File className="w-12 h-12 text-blue-500 mx-auto" />
-                                    )}
-                                    <p className="text-sm text-gray-700">
-                                        हालको फाइल: {documentData.file.split('/').pop()}
-                                    </p>
+                                    <File className="w-12 h-12 text-blue-500 mx-auto" />
+                                    <p className="text-sm text-gray-700">हालको फाइल: {documentData.file}</p>
                                     <button
                                         onClick={handleUploadClick}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
@@ -226,18 +179,10 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
                             ) : (
                                 <div className="space-y-4">
                                     <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto">
-                                        {isAccountPhoto ? (
-                                            <Camera className="w-8 h-8 text-blue-600" />
-                                        ) : (
-                                            <Upload className="w-8 h-8 text-blue-600" />
-                                        )}
+                                        <Upload className="w-8 h-8 text-blue-600" />
                                     </div>
-                                    <p className="text-gray-700 font-medium">
-                                        {isAccountPhoto ? 'फोटो अपलोड गर्न यहाँ क्लिक गर्नुहोस्' : 'फाइल अपलोड गर्न यहाँ क्लिक गर्नुहोस्'}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        {isAccountPhoto ? 'JPEG, PNG, max 10 MB' : 'JPEG, PNG, PDF, MP4, max 10 MB'}
-                                    </p>
+                                    <p className="text-gray-700 font-medium">फाइल अपलोड गर्न यहाँ क्लिक गर्नुहोस्</p>
+                                    <p className="text-sm text-gray-500">JPEG, PNG, PDF, MP4, max 10 MB</p>
                                     <button
                                         onClick={handleUploadClick}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
@@ -251,13 +196,11 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
 
                     {/* Remarks */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {isAccountPhoto ? 'टिप्पणी' : 'कैफियत'}
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">कैफियत</label>
                         <textarea
                             value={formData.description}
                             onChange={(e) => handleInputChange('description', e.target.value)}
-                            placeholder={isAccountPhoto ? 'टिप्पणी लेख्नुहोस्...' : 'कैफियत लेख्नुहोस्...'}
+                            placeholder="कैफियत लेख्नुहोस्..."
                             rows={4}
                             className="w-full px-3 py-2 border rounded-md resize-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -276,7 +219,7 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
                         onClick={handleSubmit}
                         className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                     >
-                        {documentData ? 'अपडेट गर्नुहोस्' : 'सेभ गर्नुहोस्'}
+                        सेभ गर्नुहोस्
                     </button>
                 </div>
             </div>
@@ -284,4 +227,4 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
     );
 };
 
-export default AddBankRecommendationModal;
+export default AddAuthenticationFileModal;

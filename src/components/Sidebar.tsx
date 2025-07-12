@@ -60,7 +60,7 @@ const Sidebar: React.FC = () => {
   }, [currentPath]);
 
   return (
-    <div className="min-h-screen bg-white border-r border-gray-200 w-16 sm:w-20 xl:w-64">
+    <div className="min-h-screen bg-white border-r border-gray-200 w-16 sm:w-20 xl:w-64 mt-4">
       <nav className="py-8 px-2 space-y-4">
         <SidebarItem icon={<Home />} label="ड्यासबोर्ड" isActive={currentPath === '/'} onClick={() => navigate('/')} />
         <SidebarItem icon={<FileText />} label="परियोजनाहरू" isActive={currentPath === '/projects'} onClick={() => navigate('/projects')} />

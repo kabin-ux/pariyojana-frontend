@@ -124,7 +124,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">अन्य डकुमेन्टहरू सम्बन्धी विवरण</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
                         <X size={24} />
                     </button>
                 </div>
@@ -175,7 +175,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                                     <p className="text-xs text-gray-500">
                                         {(formData.uploadedFile.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
-                                    <button onClick={handleUploadClick} className="text-blue-600 text-sm">
+                                    <button onClick={handleUploadClick} className="text-blue-600 text-sm cursor-pointer">
                                         अर्को फाइल छान्नुहोस्
                                     </button>
                                 </div>
@@ -185,7 +185,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                                     <p className="text-sm text-gray-700">हालको फाइल: {documentData.file}</p>
                                     <button
                                         onClick={handleUploadClick}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
                                     >
                                         फाइल परिवर्तन गर्नुहोस्
                                     </button>
@@ -199,7 +199,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                                     <p className="text-sm text-gray-500">JPEG, PNG, PDF, MP4, max 10 MB</p>
                                     <button
                                         onClick={handleUploadClick}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
                                     >
                                         फाइल छान्नुहोस्
                                     </button>
@@ -225,13 +225,13 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
                     <button
                         onClick={handleCancel}
-                        className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                     >
                         रद्द गर्नुहोस्
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                     >
                         सेभ गर्नुहोस्
                     </button>

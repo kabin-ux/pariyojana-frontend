@@ -2,6 +2,8 @@
 import React, { useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useProjectDetail } from '../hooks/useProjectDetail';
 
 interface Props {
   onClose: () => void;
@@ -13,7 +15,7 @@ const OperationSiteUploadModal: React.FC<Props> = ({ onClose, projectId, serialN
   const [image, setImage] = useState<File | null>(null);
   const [description, setDescription] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const { loadOperationDetails } = useProjectDetail(projectId);
   const handleUpload = async () => {
     if (!image || !description) {
       alert("फोटो र कैफियत अनिवार्य छन्।");
@@ -35,11 +37,13 @@ const OperationSiteUploadModal: React.FC<Props> = ({ onClose, projectId, serialN
         },
       });
 
-      alert("अपलोड सफल भयो");
+      toast.success("अपलोड सफल भयो");
       onClose();
+      loadOperationDetails()
+
     } catch (error) {
       console.error('Upload failed:', error);
-      alert("अपलोड गर्न असफल भयो");
+      toast.error("अपलोड गर्न असफल भयो");
     }
   };
 

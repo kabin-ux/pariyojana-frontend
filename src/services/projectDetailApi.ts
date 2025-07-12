@@ -148,7 +148,7 @@ export const projectDetailApi = {
   // Map Cost Estimate
   getMapCostEstimate: async (projectId: number): Promise<MapCostEstimate[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/map-cost-estimate/?project=${projectId}`, {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/map-cost-estimate/`, {
         method: 'GET',
         headers: getHeaders(),
       });

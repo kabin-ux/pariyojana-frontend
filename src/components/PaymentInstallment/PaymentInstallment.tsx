@@ -194,11 +194,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             formData.append('remarks', data.remarks);
             formData.append('project', data.project);
             
-            if (data.file) {
-                formData.append('file', data.file);
+            if (data.check_photo) {
+                formData.append('check_photo', data.check_photo);
             }
 
-            let url = `http://localhost:8000/api/projects/${projectIdNum}/account-photos/?project=${projectIdNum}`;
+            let url = `http://localhost:8000/api/projects/${projectIdNum}/account-photos/`;
             let method = 'post';
 
             if (editAccountPhotoId) {
@@ -634,7 +634,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                         <div className="flex items-center space-x-2">
                                             <button
                                                 onClick={() => handleEditRecommendation(item.id)}
-                                                className="p-1 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                                                className="p-1 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50 cursor-pointer"
                                                 title="सम्पादन गर्नुहोस्"
                                             >
                                                 <Edit className="w-4 h-4" />
@@ -642,7 +642,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                             {item.file && (
                                                 <button
                                                     onClick={() => window.open(item.file, '_blank')}
-                                                    className="p-1 rounded text-green-600 hover:text-green-800 hover:bg-green-50"
+                                                    className="p-1 rounded text-green-600 hover:text-green-800 hover:bg-green-50 cursor-pointer"
                                                     title="फाइल हेर्नुहोस्"
                                                 >
                                                     <View className="w-4 h-4" />
@@ -679,7 +679,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                         </h3>
                         <button
                             type="button"
-                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                             onClick={() => setIsBankAccountPhotosModalOpen(true)}
                         >
                             <Plus className="w-4 h-4" />
@@ -717,7 +717,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                 />
                                                 <button
                                                     onClick={() => handleEditAccountPhoto(photo.id)}
-                                                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                                                 >
                                                     फोटो बदल्नुहोस्
                                                 </button>

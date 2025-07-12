@@ -1,6 +1,6 @@
 import React, { useState, type FC, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/bg2.png';
 import toplogo from '../assets/toplogo.png'
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/hooks';
@@ -31,7 +31,7 @@ const LoginPage: FC = () => {
 
             login({
                 id: res.data.user_id,
-                username: res.data.full_name,
+                full_name: res.data.full_name,
                 role: res.data.role,
             });
 

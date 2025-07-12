@@ -95,7 +95,7 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
                     <h2 className="text-lg font-semibold text-gray-800">योजना साझेदारी</h2>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
                         <X size={24} />
                     </button>
                 </div>
@@ -227,13 +227,13 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                 <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
                     <button
                         onClick={handleCancel}
-                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                     >
                         रद्द गर्नुहोस्
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                     >
                         {agreementData ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्'}
 

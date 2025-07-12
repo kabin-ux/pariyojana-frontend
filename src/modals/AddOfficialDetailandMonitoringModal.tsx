@@ -35,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
             console.log(rows)
         }
     }, [isOpen, rows]);
-    
+
 
     if (!isOpen) return null;
 
@@ -105,7 +105,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                     <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
                     >
                         <X size={24} />
                     </button>
@@ -189,7 +189,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                         <td className="border border-gray-300 p-2">
                                             <button
                                                 onClick={() => handleFileUpload(row.id)}
-                                                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors flex items-center gap-1"
+                                                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors flex items-center gap-1 cursor-pointer"
                                             >
                                                 <Download size={14} />
                                                 {row.citizenship_front || row.citizenship_back ? 'अपडेट गर्नुहोस्' : 'फाइल'}
@@ -204,7 +204,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                             {row.post === 'सदस्य' && formRows.length > rows.length && (
                                                 <button
                                                     onClick={() => handleDeleteRow(row.id)}
-                                                    className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors"
+                                                    className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors cursor-pointer"
                                                 >
                                                     <X size={12} />
                                                 </button>
@@ -219,7 +219,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                     <div className="mt-4 flex justify-end">
                         <button
                             onClick={handleAddMember}
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors flex items-center gap-2 cursor-pointer"
                         >
                             <span>+</span>
                             थप सदस्य
@@ -244,13 +244,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                     <div className="flex gap-3">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                         >
                             रद्द गर्नुहोस
                         </button>
                         <button
                             onClick={handleSave}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
                         >
                             सेभ गर्नुहोस
                         </button>

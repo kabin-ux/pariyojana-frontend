@@ -2,7 +2,6 @@ import React, { createContext, useContext, useReducer } from 'react';
 import type { GlobalState, AuthState, ProjectState } from './types';
 
 const storedUser = localStorage.getItem('user');
-console.log("stored user", storedUser)
 const initialAuthState: AuthState = {
   isAuthenticated: !!localStorage.getItem('access_token'),
   user: storedUser ? JSON.parse(storedUser) : null,
@@ -18,6 +17,7 @@ const initialProjectState: ProjectState = {
 const initialState: GlobalState = {
   auth: initialAuthState,
   projects: initialProjectState,
+
 };
 
 type Action =
