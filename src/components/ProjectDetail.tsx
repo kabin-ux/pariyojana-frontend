@@ -16,6 +16,7 @@ import ProjectAgreementModal from '../modals/ProjectAgreementModal';
 import AddDocumentModal from '../modals/AddDocumentModal';
 import OperationSiteUploadModal from '../modals/UploadSiteModal';
 import AddAuthenticationFileModal from '../modals/AddAuthenticationFileModal';
+import AuthenticationModal from '../modals/AuthenticationModal';
 
 interface FormRow {
     id: number;
@@ -90,6 +91,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [selectedSerialNo, setSelectedSerialNo] = useState<number | null>(null);
     const [isAuthenticationFileModalOpen, setAuthenticationFileModalOpen] = useState(false);
+    const [isAuthenticationModalOpen, setAuthenticationModalOpen] = useState(false);
     const [editMapCostId, setEditMapCostId] = useState<number | null>(null);
     const [mapCostDetails, setMapCostDetails] = useState<any>(null);
     const [selectedMapCostItem, setSelectedMapCostItem] = useState<any>(null);
@@ -415,6 +417,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
     };
 
+    const handleSendAuthentication = async (data: any) => {
+        console.log('Authentication sent successfully!');
+        toast.success('प्रमाणीकरण सफलतापूर्वक पठाइयो');
+        setAuthenticationModalOpen(false);
+        // Refresh data if needed
+        await loadCostEstimate();
+    };
 
     const handleDownload = async (itemSerialNo: number, projectSerialNo: number) => {
         try {
@@ -1014,7 +1023,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                                 type="button"
                                                                 className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer hover:"
                                                                 onClick={() => {
-                                                                    console.log("Download PDF clicked");
+                                                                     setSelectedMapCostItem(mapCostItem);
+                                                                    setEditMapCostId(mapCostItem?.id || null);
+                                                                    setAuthenticationModalOpen(true)
                                                                 }}
                                                             >
                                                                 <FileSearch className="w-5 h-5" />
@@ -1042,6 +1053,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                         }}
                                         documentData={selectedMapCostItem}
                                         projectId={projectIdNum}
+                                    />
+                                )
+                            }
+                            {
+                                isAuthenticationModalOpen && (
+                                    <AuthenticationModal
+                                        onSave={handleFileUpload}
+                                        onClose={() => {
+                                            setAuthenticationModalOpen(false);
+                                            setSelectedMapCostItem(null);
+                                            // editMapCostId={editMapCostId}
+                                        }}
+                                        documentData={selectedMapCostItem}
+                                        projectIdNum={projectIdNum}
+                                        editMapCostId={editMapCostId}
+                                        onAuthenticationSent={handleSendAuthentication}
                                     />
                                 )
                             }

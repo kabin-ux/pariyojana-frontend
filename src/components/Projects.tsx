@@ -80,9 +80,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     page: currentPage,
     search: searchTerm
   });
-  useEffect(() => {
-    console.log("Loaded projects:", projects);
-  }, [projects]);
+ 
   // Ward options with proper mapping
   const wardOptions = [
     { value: 1, label: 'वडा नं. - १' },

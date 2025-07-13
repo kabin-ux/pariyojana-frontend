@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Search, Filter, Plus, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import AddYojanaPravidhiModal from '../modals/AddYojanaPravidhiModal';
 
 const ProjectMethods: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <main className="flex-1 p-6">
@@ -32,7 +34,9 @@ const ProjectMethods: React.FC = () => {
           {/* Ward Level Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">वडा स्तरीय परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -41,7 +45,9 @@ const ProjectMethods: React.FC = () => {
           {/* City Level Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">नगर स्तरीय परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -50,7 +56,9 @@ const ProjectMethods: React.FC = () => {
           {/* Thematic Committee Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">वडाले मार्ग गर्ने विषयगत समितिका परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -59,7 +67,9 @@ const ProjectMethods: React.FC = () => {
           {/* Subject Committee Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">विषयगत समितिका परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -68,7 +78,9 @@ const ProjectMethods: React.FC = () => {
           {/* City Pride Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">नगर गौरव आयोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -77,7 +89,9 @@ const ProjectMethods: React.FC = () => {
           {/* Provincial Government Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">प्रदेश सरकार परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
@@ -86,13 +100,23 @@ const ProjectMethods: React.FC = () => {
           {/* Federal Government Projects */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">संघिय सरकार परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               <span>नयाँ परियोजना प्रविधि</span>
             </button>
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <AddYojanaPravidhiModal 
+        onClose = {() => setIsModalOpen(false)}
+        />
+      )
+
+      }
     </main>
   );
 };

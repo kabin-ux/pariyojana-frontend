@@ -9,6 +9,11 @@ import {
   FileText
 } from 'lucide-react';
 
+interface DropdownOption {
+  label: string;
+  value: string | number;
+}
+
 const Reports: React.FC = () => {
   const [dropdownData, setDropdownData] = useState<any>(null);
   const [selectedYear, setSelectedYear] = useState('');
@@ -22,20 +27,54 @@ const Reports: React.FC = () => {
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportDownloadUrl, setReportDownloadUrl] = useState('');
 
-
   useEffect(() => {
     axios.get('http://localhost:8000/api/reports/dropdowns/')
       .then(res => {
-        setDropdownData(res.data);
+        const data = res.data;
+        setDropdownData({
+          fiscal_years: data.fiscal_years.map((y: any) => ({
+            label: y.year,
+            value: y.id
+          })),
+          report_types: data.report_types.map((r: any) => ({
+            label: r,
+            value: r
+          })),
+          thematic_areas: data.thematic_areas.map((s: any) => ({
+            label: s.name,
+            value: s.id
+          })),
+          sub_areas: data.sub_areas.map((s: any) => ({
+            label: s.name,
+            value: s.id
+          })),
+          sources: data.sources.map((s: any) => ({
+            label: s.name,
+            value: s.id
+          })),
+          expenditure_centers: data.expenditure_centers.map((e: any) => ({
+            label: e.name,
+            value: e.id
+          })),
+          wards: data.wards.map((w: string) => ({
+            label: w,
+            value: parseInt(w.match(/\d+/)?.[0] || 0)
+          })),
+          statuses: data.statuses.map((s: any) => ({
+            label: s,
+            value: s
+          })),
+        });
 
-        if (res.data.fiscal_years.length > 0) setSelectedYear(res.data.fiscal_years[0].year);
-        if (res.data.report_types.length > 0) setSelectedReportType(res.data.report_types[0]);
-        if (res.data.thematic_areas.length > 0) setSelectedSector(res.data.thematic_areas[0].name);
-        if (res.data.sub_areas.length > 0) setSelectedSubSector(res.data.sub_areas[0].name);
-        if (res.data.sources.length > 0) setSelectedSource(res.data.sources[0].name);
-        if (res.data.expenditure_centers.length > 0) setSelectedCostCenter(res.data.expenditure_centers[0].name);
-        if (res.data.wards.length > 0) setSelectedWard(res.data.wards[0]);
-        if (res.data.statuses.length > 0) setSelectedStatus(res.data.statuses[0]);
+        // Set default values
+        if (data.fiscal_years.length > 0) setSelectedYear(data.fiscal_years[0].id);
+        if (data.report_types.length > 0) setSelectedReportType(data.report_types[0]);
+        if (data.thematic_areas.length > 0) setSelectedSector(data.thematic_areas[0].id);
+        if (data.sub_areas.length > 0) setSelectedSubSector(data.sub_areas[0].id);
+        if (data.sources.length > 0) setSelectedSource(data.sources[0].id);
+        if (data.expenditure_centers.length > 0) setSelectedCostCenter(data.expenditure_centers[0].id);
+        if (data.wards.length > 0) setSelectedWard(parseInt(data.wards[0].match(/\d+/)?.[0] || 0));
+        if (data.statuses.length > 0) setSelectedStatus(data.statuses[0]);
       })
       .catch(err => console.error('Failed to load dropdown data:', err));
   }, []);
@@ -52,28 +91,30 @@ const Reports: React.FC = () => {
   };
 
   const handleGenerateReport = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/api/reports/export-excel/', {
-        fiscal_year: selectedYear,
-        report_type: selectedReportType,
-        thematic_area: selectedSector,
-        sub_area: selectedSubSector,
-        source: selectedSource,
-        expenditure_center: selectedCostCenter,
-        ward: selectedWard,
-        status: selectedStatus
-      }, {
-        responseType: 'blob' // for downloading files
-      });
+  try {
+    const response = await axios.post('http://localhost:8000/api/reports/export-excel/', {
+      fiscal_year: selectedYear ? Number(selectedYear) : null,
+      report_type: selectedReportType,
+      thematic_area: selectedSector ? Number(selectedSector) : null,
+      sub_area: selectedSubSector ? Number(selectedSubSector) : null,
+      source: selectedSource ? Number(selectedSource) : null,
+      expenditure_center: selectedCostCenter ? Number(selectedCostCenter) : null,
+      ward: selectedWard ? Number(selectedWard) : null,
+      status: selectedStatus
+    }, {
+      responseType: 'blob'
+    });
 
-      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const url = window.URL.createObjectURL(blob);
-      setReportDownloadUrl(url);
-      setReportGenerated(true);
-    } catch (error) {
-      console.error('Report generation failed:', error);
-    }
-  };
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = window.URL.createObjectURL(blob);
+    setReportDownloadUrl(url);
+    setReportGenerated(true);
+  } catch (error) {
+    console.error('Report generation failed:', error);
+  }
+};
 
 
   const DropdownSelect = ({
@@ -82,9 +123,9 @@ const Reports: React.FC = () => {
     options,
     placeholder
   }: {
-    value: string;
+    value: string | number;
     onChange: (value: string) => void;
-    options: string[];
+    options: DropdownOption[];
     placeholder: string;
   }) => (
     <div className="relative">
@@ -95,7 +136,7 @@ const Reports: React.FC = () => {
       >
         <option value="" disabled>{placeholder}</option>
         {options.map((option, idx) => (
-          <option key={idx} value={option}>{option}</option>
+          <option key={idx} value={option.value}>{option.label}</option>
         ))}
       </select>
       <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -106,7 +147,6 @@ const Reports: React.FC = () => {
 
   return (
     <main className="flex-1 p-6">
-      {/* Breadcrumb */}
       <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
         <ChevronLeft className="w-4 h-4" />
         <div className="flex items-center space-x-2">
@@ -120,41 +160,34 @@ const Reports: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-8">रिपोर्टहरू</h1>
 
-        {/* Filter Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <DropdownSelect value={selectedYear} onChange={setSelectedYear} options={dropdownData.fiscal_years.map((y: any) => y.year)} placeholder="वर्ष चयन गर्नुहोस्" />
+          <DropdownSelect value={selectedYear} onChange={setSelectedYear} options={dropdownData.fiscal_years} placeholder="वर्ष चयन गर्नुहोस्" />
           <DropdownSelect value={selectedReportType} onChange={setSelectedReportType} options={dropdownData.report_types} placeholder="रिपोर्टको प्रकार चयन गर्नुहोस्" />
-          <DropdownSelect value={selectedSector} onChange={setSelectedSector} options={dropdownData.thematic_areas.map((s: any) => s.name)} placeholder="क्षेत्र" />
-          <DropdownSelect value={selectedSubSector} onChange={setSelectedSubSector} options={dropdownData.sub_areas.map((s: any) => s.name)} placeholder="उप-क्षेत्र" />
-          <DropdownSelect value={selectedSource} onChange={setSelectedSource} options={dropdownData.sources.map((s: any) => s.name)} placeholder="स्रोत" />
-          <DropdownSelect value={selectedCostCenter} onChange={setSelectedCostCenter} options={dropdownData.expenditure_centers.map((e: any) => e.name)} placeholder="खर्च केन्द्र" />
+          <DropdownSelect value={selectedSector} onChange={setSelectedSector} options={dropdownData.thematic_areas} placeholder="क्षेत्र" />
+          <DropdownSelect value={selectedSubSector} onChange={setSelectedSubSector} options={dropdownData.sub_areas} placeholder="उप-क्षेत्र" />
+          <DropdownSelect value={selectedSource} onChange={setSelectedSource} options={dropdownData.sources} placeholder="स्रोत" />
+          <DropdownSelect value={selectedCostCenter} onChange={setSelectedCostCenter} options={dropdownData.expenditure_centers} placeholder="खर्च केन्द्र" />
           <DropdownSelect value={selectedWard} onChange={setSelectedWard} options={dropdownData.wards} placeholder="वडा नं." />
           <DropdownSelect value={selectedStatus} onChange={setSelectedStatus} options={dropdownData.statuses} placeholder="स्थिति" />
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center justify-center space-x-4">
-          <button onClick={handleReset} className="flex items-center space-x-2 px-6 py-3 border cursor-pointer border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium">
+          <button onClick={handleReset} className="flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium">
             <RotateCcw className="w-4 h-4" />
             <span>रिसेट गर्नुहोस्</span>
           </button>
-          <button onClick={handleGenerateReport} className="flex items-center space-x-2 px-6 py-3 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+          <button onClick={handleGenerateReport} className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
             <FileText className="w-4 h-4" />
             <span>रिपोर्ट बनाउनुहोस्</span>
           </button>
         </div>
 
-        {/* Report Preview Area */}
         <div className="mt-8 p-6 border-2 border-dashed border-gray-300 rounded-lg text-center">
           {reportGenerated ? (
             <div className="text-center space-y-4">
               <h2 className="text-xl font-semibold text-green-700">रिपोर्ट सफलतापूर्वक तयार गरियो</h2>
               <p className="text-gray-700">तपाईंले बनाउन खोज्नु भएको रिपोर्ट तयार भइसकेको छ। कृपया डाउनलोड गर्नुहोस्।</p>
-              <a
-                href={reportDownloadUrl}
-                download="report.xlsx"
-                className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
+              <a href={reportDownloadUrl} download="Project-Report.xlsx" className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 डाउनलोड गर्नुहोस्
               </a>
             </div>
@@ -166,7 +199,6 @@ const Reports: React.FC = () => {
             </div>
           )}
         </div>
-
       </div>
     </main>
   );

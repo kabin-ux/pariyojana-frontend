@@ -150,22 +150,41 @@ const Dashboard: React.FC = () => {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600">खर्च</span>
-                  <span className="text-sm font-medium">{budget ? budget.expenditure_budget.toString() : '...'}</span>
+                  <span className="text-sm font-medium">
+                    {budget ? budget.expenditure_budget.toString() : '...'}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '64%' }}></div>
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                    style={{
+                      width: budget
+                        ? `${Math.min(
+                          (budget.expenditure_budget / budget.total_budget) * 100,
+                          100
+                        ).toFixed(2)}%`
+                        : '0%',
+                    }}
+                  ></div>
                 </div>
               </div>
+
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600">बजेट</span>
-                  <span className="text-sm font-medium">{budget ? budget.total_budget.toString() : '...'}</span>
+                  <span className="text-sm font-medium">
+                    {budget ? budget.total_budget.toString() : '...'}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-gray-400 h-2 rounded-full" style={{ width: '100%' }}></div>
+                  <div
+                    className="bg-gray-400 h-2 rounded-full"
+                    style={{ width: '100%' }}
+                  ></div>
                 </div>
               </div>
             </div>
+
             <div className="mt-4 text-right">
               <p className="text-sm text-gray-600">बाँकी बजेट</p>
               <p className="text-lg font-semibold">{budget ? budget.remaining_budget.toString() : '...'} <span className="text-sm text-gray-500">64%</span></p>
@@ -182,7 +201,7 @@ const Dashboard: React.FC = () => {
                   labels: areaData.map(d => d.label),
                   datasets: [{ data: areaData.map(d => d.value), backgroundColor: COLORS }],
                 }}
-                options={{ responsive: true,  plugins: { legend: { position: 'bottom' } } }}
+                options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
               />
             </div>
 

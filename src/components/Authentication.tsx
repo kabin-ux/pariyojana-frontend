@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Filter, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/hooks';
 
 interface AuthData {
   id: number;
@@ -11,8 +13,34 @@ interface AuthData {
 }
 
 const Authentication: React.FC = () => {
+  const { user } = useAuth();
+  const [authenticationDocuments, setAuthenticationDocuments] = useState();
   const [searchTerm, setSearchTerm] = useState('');
-  
+
+  // Fetch users on component mount
+  useEffect(() => {
+    fetchAutenticationDocuments();
+  }, []);
+
+  const fetchAutenticationDocuments = async () => {
+    const token = localStorage.getItem('access_token')
+    try {
+      const response = await fetch(`http://localhost:8000/api/authentication/verification-logs/?all=true`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch auth documents');
+      }
+      const userData = await response.json();
+      setAuthenticationDocuments(userData);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      toast.error("Error fetching auth documents")
+    }
+  };
+
   const authData: AuthData[] = [
     {
       id: 1,
@@ -24,8 +52,8 @@ const Authentication: React.FC = () => {
     }
   ];
 
-  const filteredData = authData.filter(item =>
-    item.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = authenticationDocuments?.filter(item =>
+    item?.file_title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -79,22 +107,22 @@ const Authentication: React.FC = () => {
                 <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">फाइल शीर्षक</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">प्रयोगकर्ता</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-900">भूमिका</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
               </tr>
             </thead>
             <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((item) => (
+              {filteredData?.length > 0 ? (
+                filteredData?.map((item) => (
                   <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4 text-gray-900">{item.id}</td>
-                    <td className="py-3 px-4 text-gray-900 max-w-md">{item.projectName}</td>
-                    <td className="py-3 px-4 text-gray-900">{item.currentStatus}</td>
-                    <td className="py-3 px-4 text-gray-900">{item.user}</td>
+                    <td className="py-3 px-4 text-gray-900 max-w-md">{item.project}</td>
+                    <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
+                    <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
                     <td className="py-3 px-4">
                       <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                        {item.date}
+                        {item.status}
                       </span>
                     </td>
                     <td className="py-3 px-4">
