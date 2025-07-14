@@ -5,7 +5,6 @@ import { useAuth } from '../context/hooks';
 
 const Header: FC = () => {
   const { user } = useAuth();
-  console.log(user)
   return (
     <header className="bg-teal-700 text-white px-6 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-3">

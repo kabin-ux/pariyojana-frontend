@@ -1,64 +1,131 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, Home, Check, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/hooks';
 
-interface AuthData {
+interface AuthDocument {
   id: number;
-  projectName: string;
-  currentStatus: string;
-  user: string;
-  date: string;
-  action: string;
+  file_title: string;
+  uploader_role: string;
+  status: string;
+  file_path: string;
+  project: number;
+  checker: number;
+  approver: number;
+  remarks: string | null;
 }
 
 const Authentication: React.FC = () => {
   const { user } = useAuth();
-  const [authenticationDocuments, setAuthenticationDocuments] = useState();
+  const [authenticationDocuments, setAuthenticationDocuments] = useState<AuthDocument[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDocument, setSelectedDocument] = useState<AuthDocument | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [comment, setComment] = useState('');
 
-  // Fetch users on component mount
   useEffect(() => {
-    fetchAutenticationDocuments();
+    fetchAuthenticationDocuments();
   }, []);
 
-  const fetchAutenticationDocuments = async () => {
-    const token = localStorage.getItem('access_token')
+  const fetchAuthenticationDocuments = async () => {
+    const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(`http://localhost:8000/api/authentication/verification-logs/?all=true`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch auth documents');
-      }
-      const userData = await response.json();
-      setAuthenticationDocuments(userData);
+      if (!response.ok) throw new Error('Failed to fetch auth documents');
+      const data = await response.json();
+      setAuthenticationDocuments(data);
     } catch (err) {
-      console.error('Error fetching users:', err);
-      toast.error("Error fetching auth documents")
+      console.error('Error fetching documents:', err);
+      toast.error("Error fetching auth documents");
     }
   };
 
-  const authData: AuthData[] = [
-    {
-      id: 1,
-      projectName: 'सुनाकोठी साक्षरता केन्द्र संचालन आधारभूत सुनाकोठी साक्षरता केन्द्र संचालन आधारभूत',
-      currentStatus: 'समायोजना अध्ययन प्रतिवेदन',
-      user: 'अपलोड गर्नी',
-      date: 'देख जानकारी लागी पत्राचारको',
-      action: 'view'
+  const handleDocumentClick = (document: AuthDocument) => {
+    setSelectedDocument(document);
+    setIsModalOpen(true);
+    setComment('');
+  };
+
+  const handleCheckDocument = async () => {
+    if (!selectedDocument) return;
+
+    const token = localStorage.getItem('access_token');
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/authentication/documents/${selectedDocument.source_id}/check/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            remarks: comment
+          })
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to check document');
+      toast.success("Document checked successfully");
+      fetchAuthenticationDocuments();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error checking document:', err);
+      toast.error("Error checking document");
     }
-  ];
+  };
 
-  const filteredData = authenticationDocuments?.filter(item =>
-    item?.file_title?.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleApproveDocument = async () => {
+    if (!selectedDocument) return;
+
+    const token = localStorage.getItem('access_token');
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/authentication/documents/${selectedDocument.source_id}/approve/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            remarks: comment
+          })
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to approve document');
+      toast.success("Document approved successfully");
+      fetchAuthenticationDocuments();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error approving document:', err);
+      toast.error("Error approving document");
+    }
+  };
+
+  // Determine if current user is the checker for this document
+  console.log(user)
+
+  const isChecker = selectedDocument?.checker === user?.id;
+  // Determine if current user is the approver for this document
+  console.log(user)
+  const isApprover = selectedDocument?.approver === user?.user_id;
+  // Document is ready for checking (based on status)
+  const needsChecking = selectedDocument?.status === 'चेक जाँचको लागी पठाइएको';
+  // Document is ready for approval (after being checked)
+  const needsApproval = selectedDocument?.status === 'checked';
+
+  const filteredData = authenticationDocuments.filter(item =>
+    item.file_title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   return (
     <main className="flex-1 p-6">
-      {/* Breadcrumb */}
+      {/* BreadCrumb */}
       <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
         <ChevronLeft className="w-4 h-4" />
         <div className="flex items-center space-x-2">
@@ -98,6 +165,76 @@ const Authentication: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Modal for document actions */}
+        {isModalOpen && selectedDocument && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">प्रमाणिकरण विवरण</h2>
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">फाइल शीर्षक:</p>
+                  <p className="text-gray-900 font-medium">{selectedDocument.file_title}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">स्थिति:</p>
+                  <p className="text-gray-900 font-medium">{selectedDocument.status}</p>
+                </div>
+                {selectedDocument.file_path && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">डकुमेन्ट:</p>
+                    <a
+                      href={selectedDocument.file_path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      डकुमेन्ट हेर्नुहोस्
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Check/Approve Section */}
+              <div className="mb-6">
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="टिप्पणी थप्नुहोस् (वैकल्पिक)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={3}
+                />
+
+                <div className="flex space-x-3 mt-3">
+                  {isChecker && needsChecking && (
+                    <button
+                      onClick={handleCheckDocument}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>जाँच गर्नुहोस्</span>
+                    </button>
+                  )}
+
+                  {isApprover && needsApproval && (
+                    <button
+                      onClick={handleApproveDocument}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                      <span>स्वीकृत गर्नुहोस्</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -105,7 +242,6 @@ const Authentication: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">फाइल शीर्षक</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">भूमिका</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
@@ -113,48 +249,31 @@ const Authentication: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData?.length > 0 ? (
-                filteredData?.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4 text-gray-900">{item.id}</td>
-                    <td className="py-3 px-4 text-gray-900 max-w-md">{item.project}</td>
-                    <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
-                    <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
-                    <td className="py-3 px-4">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <button className="text-blue-600 hover:text-blue-800">
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center">
-                    <div className="flex flex-col items-center justify-center text-gray-500">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <p className="text-lg font-medium">No data</p>
-                    </div>
+              {filteredData.map((item) => (
+                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-3 px-4 text-gray-900">{item.id}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-1 rounded text-sm ${item.status.includes('स्वीकृत') ? 'bg-green-100 text-green-800' :
+                      item.status.includes('जाँच') ? 'bg-blue-100 text-blue-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => handleDocumentClick(item)}
+                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex items-center justify-center mt-6">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">1</span>
-          </div>
         </div>
       </div>
     </main>

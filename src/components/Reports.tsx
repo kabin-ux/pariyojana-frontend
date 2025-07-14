@@ -16,14 +16,14 @@ interface DropdownOption {
 
 const Reports: React.FC = () => {
   const [dropdownData, setDropdownData] = useState<any>(null);
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedReportType, setSelectedReportType] = useState('');
-  const [selectedSector, setSelectedSector] = useState('');
-  const [selectedSubSector, setSelectedSubSector] = useState('');
-  const [selectedSource, setSelectedSource] = useState('');
-  const [selectedCostCenter, setSelectedCostCenter] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedYear, setSelectedYear] = useState<number | string>('');
+  const [selectedReportType, setSelectedReportType] = useState<string>('');
+  const [selectedSector, setSelectedSector] = useState<number | string>('');
+  const [selectedSubSector, setSelectedSubSector] = useState<number | string>('');
+  const [selectedSource, setSelectedSource] = useState<number | string>('');
+  const [selectedCostCenter, setSelectedCostCenter] = useState<number | string>('');
+  const [selectedWard, setSelectedWard] = useState<number | string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportDownloadUrl, setReportDownloadUrl] = useState('');
 
@@ -58,7 +58,7 @@ const Reports: React.FC = () => {
           })),
           wards: data.wards.map((w: string) => ({
             label: w,
-            value: parseInt(w.match(/\d+/)?.[0] || 0)
+            value: parseInt(w.match(/\d+/)?.[0] || '0')
           })),
           statuses: data.statuses.map((s: any) => ({
             label: s,
@@ -66,14 +66,13 @@ const Reports: React.FC = () => {
           })),
         });
 
-        // Set default values
         if (data.fiscal_years.length > 0) setSelectedYear(data.fiscal_years[0].id);
         if (data.report_types.length > 0) setSelectedReportType(data.report_types[0]);
         if (data.thematic_areas.length > 0) setSelectedSector(data.thematic_areas[0].id);
         if (data.sub_areas.length > 0) setSelectedSubSector(data.sub_areas[0].id);
         if (data.sources.length > 0) setSelectedSource(data.sources[0].id);
         if (data.expenditure_centers.length > 0) setSelectedCostCenter(data.expenditure_centers[0].id);
-        if (data.wards.length > 0) setSelectedWard(parseInt(data.wards[0].match(/\d+/)?.[0] || 0));
+        if (data.wards.length > 0) setSelectedWard(parseInt(data.wards[0].match(/\d+/)?.[0] || '0'));
         if (data.statuses.length > 0) setSelectedStatus(data.statuses[0]);
       })
       .catch(err => console.error('Failed to load dropdown data:', err));
@@ -91,31 +90,34 @@ const Reports: React.FC = () => {
   };
 
   const handleGenerateReport = async () => {
-  try {
-    const response = await axios.post('http://localhost:8000/api/reports/export-excel/', {
-      fiscal_year: selectedYear ? Number(selectedYear) : null,
-      report_type: selectedReportType,
-      thematic_area: selectedSector ? Number(selectedSector) : null,
-      sub_area: selectedSubSector ? Number(selectedSubSector) : null,
-      source: selectedSource ? Number(selectedSource) : null,
-      expenditure_center: selectedCostCenter ? Number(selectedCostCenter) : null,
-      ward: selectedWard ? Number(selectedWard) : null,
-      status: selectedStatus
-    }, {
-      responseType: 'blob'
-    });
+    const payload = {
+      fiscal_year: selectedYear || null,
+      report_type: selectedReportType || null,
+      thematic_area: selectedSector || null,
+      sub_area: selectedSubSector || null,
+      source: selectedSource || null,
+      expenditure_center: selectedCostCenter || null,
+      ward: selectedWard || null,
+      status: selectedStatus || null
+    };
 
-    const blob = new Blob([response.data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
-    const url = window.URL.createObjectURL(blob);
-    setReportDownloadUrl(url);
-    setReportGenerated(true);
-  } catch (error) {
-    console.error('Report generation failed:', error);
-  }
-};
+    console.log('📤 Payload being sent to backend:', payload);
 
+    try {
+      const response = await axios.post('http://localhost:8000/api/reports/export-excel/', payload, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const url = window.URL.createObjectURL(blob);
+      setReportDownloadUrl(url);
+      setReportGenerated(true);
+    } catch (error: any) {
+      console.error('❌ Report generation failed:', error?.response?.data || error.message);
+    }
+  };
 
   const DropdownSelect = ({
     value,
