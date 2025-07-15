@@ -3,8 +3,13 @@ import { Search, Filter, Plus, ChevronLeft, ChevronRight, Home } from 'lucide-re
 import AddYojanaPravidhiModal from '../modals/AddYojanaPravidhiModal';
 
 const ProjectMethods: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentType, setCurrentType] = useState<string | null>(null); // NEW
+
+  const openModalWithType = (type: string) => {
+    setCurrentType(type);
+    setIsModalOpen(true);
+  };
 
   return (
     <main className="flex-1 p-6">
@@ -29,94 +34,38 @@ const ProjectMethods: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">योजना प्रविधि</h1>
 
-        {/* Project Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* Ward Level Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">वडा स्तरीय परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
 
-          {/* City Level Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">नगर स्तरीय परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
+          {[
+            { title: 'वडा स्तरीय परियोजना', type: 'ward_level' },
+            { title: 'नगर स्तरीय परियोजना', type: 'municipality_level' },
+            { title: 'वडाले मार्ग गर्ने विषयगत समितिका परियोजना', type: 'ward_requested_thematic' },
+            { title: 'विषयगत समितिका परियोजना', type: 'thematic_committee' },
+            { title: 'नगर गौरव आयोजना', type: 'pride_project' },
+            { title: 'प्रदेश सरकार परियोजना', type: 'provincial' },
+            { title: 'संघिय सरकार परियोजना', type: 'federal' },
+          ].map(({ title, type }) => (
+            <div key={type} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+              <button
+                onClick={() => openModalWithType(type)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>नयाँ परियोजना प्रविधि</span>
+              </button>
+            </div>
+          ))}
 
-          {/* Thematic Committee Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">वडाले मार्ग गर्ने विषयगत समितिका परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
-
-          {/* Subject Committee Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">विषयगत समितिका परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
-
-          {/* City Pride Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">नगर गौरव आयोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
-
-          {/* Provincial Government Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">प्रदेश सरकार परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
-
-          {/* Federal Government Projects */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">संघिय सरकार परियोजना</h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full justify-center cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना प्रविधि</span>
-            </button>
-          </div>
         </div>
       </div>
 
       {isModalOpen && (
-        <AddYojanaPravidhiModal 
-        onClose = {() => setIsModalOpen(false)}
+        <AddYojanaPravidhiModal
+          onClose={() => setIsModalOpen(false)}
+          type={currentType} // pass the current type
         />
-      )
-
-      }
+      )}
     </main>
   );
 };
