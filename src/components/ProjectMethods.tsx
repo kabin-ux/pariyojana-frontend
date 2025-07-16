@@ -23,7 +23,7 @@ const ProjectMethods: React.FC = () => {
             <ChevronRight className="w-3 h-3" />
             <span>योजना तर्जुमा</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-gray-900 font-medium">योजना प्रविधि</span>
+            <span className="text-gray-900 font-medium">योजना प्रविष्टी</span>
           </div>
         </div>
         <div className="text-sm text-gray-600">
@@ -32,7 +32,7 @@ const ProjectMethods: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">योजना प्रविधि</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">योजना प्रविष्टी</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 

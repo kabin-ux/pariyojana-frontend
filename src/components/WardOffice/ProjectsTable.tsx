@@ -1,0 +1,186 @@
+import { Download, MoreHorizontal } from 'lucide-react';
+import { EmptyState } from './EmptyState';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+interface WardData {
+  id: number;
+  plan_name: string;
+  date: string;
+  thematic_area?: string;
+  sub_area?: string;
+  source?: string;
+  expenditure_center?: string;
+  budget?: string;
+  ward_no?: string;
+  status?: string;
+  priority_no?: string;
+}
+
+interface ProjectsTableProps {
+  data: WardData[];
+  searchTerm: string;
+  isWardLevel?: boolean;
+  tabType: string;
+  refetch?: () => void;
+}
+
+export const ProjectsTable = ({
+  data,
+  searchTerm,
+  isWardLevel = false,
+  tabType,
+  refetch
+}: ProjectsTableProps) => {
+  const filteredData = data.filter(item =>
+    item?.plan_name?.toLowerCase()?.includes(searchTerm?.toLowerCase() ?? '')
+  );
+
+  const handlePrioritize = async (id: number) => {
+    let endpoint = '';
+    if (tabType === 'वडा स्तरीय परियोजना') {
+      endpoint = `http://localhost:8000/api/planning/ward-office/ward-projects/${id}/prioritize/`;
+    } else if (tabType === 'विषयगत समितिका परियोजना') {
+      endpoint = `http://localhost:8000/api/planning/ward-office/ward-thematic-projects/${id}/prioritize/`;
+    } else {
+      return;
+    }
+
+    try {
+      await axios.post(endpoint);
+      toast.success('परियोजना प्राथमिकरण सफल भयो!');
+      refetch?.();
+    } catch (error) {
+      console.error('Error prioritizing project:', error);
+      toast.error('प्राथमिकरण असफल भयो।');
+    }
+  };
+
+  const handleRecommendtoBudget = async (id: number) => {
+    try {
+      await axios.post(`http://localhost:8000/api/planning/ward-office/prioritized-ward-projects/${id}/recommend-to-budget-committee/`);
+      toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
+      refetch?.();
+    } catch (error) {
+      console.error('Error recommending to budget committee:', error);
+      toast.error('परियोजना सिफारिस गर्न असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।');
+    }
+  };
+
+  const handleRecommendMunicipalProgramToBudget = async (id: number) => {
+    try {
+      await axios.post(`http://localhost:8000/api/planning/ward-office/municipality-projects/${id}/recommend-to-budget-committee/`);
+      toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
+      refetch?.();
+    } catch (error) {
+      console.error('Error recommending to budget committee:', error);
+      toast.error('परियोजना सिफारिस गर्न असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।');
+    }
+  };
+
+  // विषयगत समितिमा सिफारिस गर्ने
+  const handleRecommendtoThematic = async (id: number) => {
+    try {
+      await axios.post(`http://localhost:8000/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
+      toast.success('परियोजना सफलतापूर्वक विषयगत समितिमा सिफारिस गरियो।');
+      refetch?.();
+    } catch (error) {
+      console.error('Error recommending to thematic committee:', error);
+      toast.error('विषयगत समितिमा सिफारिस गर्न असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।');
+    }
+  };
+
+  const handleForward = (label: string) => {
+    alert(`${label} सफल भयो!`);
+    // You may trigger an API here instead of alert
+  };
+
+  const renderDynamicProjectsTable = () => (
+    <div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">परियोजनाहरू</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">क्षेत्र</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">उप-क्षेत्र</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">स्रोत</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">खर्च केन्द्र</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">बजेट</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">वडा नं.</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">प्राथमिकता नम्बर</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length > 0 ? (
+              filteredData.map((item) => (
+                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-3 px-4 text-gray-900">{item.id}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.plan_name}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.thematic_area || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.sub_area || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.source || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.expenditure_center || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.budget || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.ward_no || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.status || '-'}</td>
+                  <td className="py-3 px-4 text-gray-900">{item.priority_no || '-'}</td>
+                  <td className="py-3 px-4">
+                    {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
+                      <button
+                        onClick={() => handlePrioritize(item.id)}
+                        className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 cursor-pointer"
+                      >
+                        प्राथमिकरण गर्नुहोस्
+                      </button>
+                    ) : tabType === 'प्राथमिकरण भएका वडा स्तरीय परियोजना' ? (
+                      <button
+                        onClick={() => handleRecommendtoBudget(item.id)}
+                        className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
+                      >
+                        बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गर्नुहोस्
+                      </button>
+                    ) : tabType === 'नगर स्तरीय परियोजना' ? (
+                      <button
+                        onClick={() => handleRecommendMunicipalProgramToBudget(item.id)}
+                        className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
+                      >
+                        बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गर्नुहोस्
+                      </button>
+                    ) : tabType === 'प्राथमिकरण भएका विषयगत समितिका परियोजना' ? (
+                      <button
+                        onClick={() => handleRecommendtoThematic(item.id)}
+                        className="text-sm bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 cursor-pointer"
+                      >
+                        विषयगत समितिमा सिफारिस गर्नुहोस्
+                      </button>
+                    ) : (
+                      <MoreHorizontal className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={11} className="py-12 text-center">
+                  <EmptyState />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="mt-6">
+      {isWardLevel && renderStaticNoticesTable?.()}
+      {renderDynamicProjectsTable()}
+    </div>
+  );
+};

@@ -85,7 +85,7 @@ const Sidebar: React.FC = () => {
               onClick={() => navigate(path)}
             >
               {{
-                '/project-methods': 'योजना प्रविधि',
+                '/project-methods': 'योजना प्रविष्टी',
                 '/ward-office-new': 'वडा कार्यालय',
                 '/subject-committee': 'विषयगत समिति',
                 '/city-pride-project': 'नगर गौरव आयोजना',

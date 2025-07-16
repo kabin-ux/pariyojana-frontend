@@ -12,7 +12,21 @@ export interface Project {
 export const useWardOffice = () => {
   const [wardProjects, setWardProjects] = useState<Project[]>([]);
   const [municipalityProjects, setMunicipalityProjects] = useState<Project[]>([]);
+  const [wardThematicProjects, setWardThematicProjects] = useState<Project[]>([]);
+  const [prioritizedWardProjects, setPrioritizedWardProjects] = useState<Project[]>([]);
+  const [prioritizedWardThematicProjects, setPrioritizedWardThematicProjects] = useState<Project[]>([]);
   const [thematicProjects, setThematicProjects] = useState<Project[]>([]);
+  const [prioritizedThematicProjects, setPrioritizedThematicProjects] = useState<Project[]>([]);
+  const [municipalityPrideProjects, setMunicipalityPrideProjects] = useState<Project[]>([]);
+  const [recommendedThematicWardProjects, setRecommendedThematicWardProjects] = useState<Project[]>([]);
+  const [thematicBudget, setThematicBudget] = useState<Project[]>([]);
+  const [municipalityPrideBudget, setMunicipalityPrideBudget] = useState<Project[]>([]);
+  const [wardLevelBudget, setWardLevelBudget] = useState<Project[]>([]);
+  const [municipalityLevelBudget, setMunicipalityLevelBudget] = useState<Project[]>([]);
+  const [provincialGovernmentBudget, setProvincialGovernmentProject] = useState<Project[]>([]);
+  const [federalGovernmentBudget, setFederalGovernmentProject] = useState<Project[]>([]);
+  // const [municipalityPrideBudget, setMunicipalityPrideBudget] = useState<Project[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,15 +34,39 @@ export const useWardOffice = () => {
     setLoading(true);
     setError(null);
     try {
-      const [wardRes, muniRes, thematicRes] = await Promise.all([
+      const [wardRes, muniRes, wardThematicRes, prioritizedWardRes, prioritizedWardThematicRes, thematicRes, prioritizedThematicRes, municipalityPrideRes, recommendedThematicWardProjectsRes, thematicBudgetRes, municipalityPrideBudgetRes, wardLevelBudgetRes, municipalityLevelBudgetRes, provincialGovernmentBudgetRes, federalGovernmentBudgetRes] = await Promise.all([
         axios.get('http://localhost:8000/api/planning/ward-office/ward-projects/'),
         axios.get('http://localhost:8000/api/planning/ward-office/municipality-projects/'),
         axios.get('http://localhost:8000/api/planning/ward-office/ward-thematic-projects/'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-ward-projects/'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-ward-thematic/'),
+        axios.get('http://localhost:8000/api/planning/thematic/thematic-plans/'),
+        axios.get('http://localhost:8000/api/planning/thematic/prioritized-plans/'),
+        axios.get('http://localhost:8000/api/planning/municipality-pride-project/municipality-pride-projects/'),
+        axios.get('http://localhost:8000/api/planning/thematic/wardrecommend-project/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/thematic-committee/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipality-pride/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/budget-ward-projects/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipality-programs/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/provience-transfer-projects/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/federal-gov-projects/')
       ]);
 
       setWardProjects(wardRes.data || []);
       setMunicipalityProjects(muniRes.data || []);
+      setWardThematicProjects(wardThematicRes.data || []);
+      setPrioritizedWardProjects(prioritizedWardRes.data || []);
+      setPrioritizedWardThematicProjects(prioritizedWardThematicRes.data || []);
       setThematicProjects(thematicRes.data || []);
+      setPrioritizedThematicProjects(prioritizedThematicRes.data || []);
+      setMunicipalityPrideProjects(municipalityPrideRes.data || []);
+      setRecommendedThematicWardProjects(recommendedThematicWardProjectsRes.data || []);
+      setThematicBudget(thematicBudgetRes.data || []);
+      setMunicipalityPrideBudget(municipalityPrideBudgetRes.data || []);
+      setWardLevelBudget(wardLevelBudgetRes.data || []);
+      setMunicipalityLevelBudget(municipalityLevelBudgetRes.data || []);
+      setProvincialGovernmentProject(provincialGovernmentBudgetRes.data || []);
+      setFederalGovernmentProject(federalGovernmentBudgetRes.data || []);
     } catch (err: any) {
       setError('डेटा लोड गर्न असफल भयो।');
     } finally {
@@ -43,8 +81,21 @@ export const useWardOffice = () => {
   return {
     wardProjects,
     municipalityProjects,
+    wardThematicProjects,
+    prioritizedWardProjects,
+    prioritizedWardThematicProjects,
     thematicProjects,
+    prioritizedThematicProjects,
+    municipalityPrideProjects,
+    recommendedThematicWardProjects,
+    thematicBudget,
+    municipalityPrideBudget,
+    wardLevelBudget,
+    municipalityLevelBudget,
+    provincialGovernmentBudget,
+    federalGovernmentBudget,
     loading,
     error,
+    refetch: fetchData,
   };
 };

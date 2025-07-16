@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Download, MoreHorizontal } from 'lucide-react';
-import { Breadcrumb } from '../components/yojanatarjuma/BreadCrumbs';
-import { MainTabs } from '../components/yojanatarjuma/WardTabs';
-import { ReportTabs } from '../components/yojanatarjuma/ReportTabs';
-import { ReportContent } from '../components/yojanatarjuma/ReportContent';
-import { ProjectsTable } from '../components/yojanatarjuma/ProjectsTable';
-import { SearchAndFilter } from '../components/yojanatarjuma/SearchFilterBar';
-import { EmptyState } from '../components/yojanatarjuma/EmptyState';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { useWardOffice } from '../hooks/useWardOffice';
+import { Breadcrumb } from './BreadCrumbs';
+import { MainTabs } from './WardTabs';
+import { ReportTabs } from './ReportTabs';
+import { ReportContent } from './ReportContent';
+import { ProjectsTable } from './ProjectsTable';
+import { SearchAndFilter } from './SearchFilterBar';
+import { EmptyState } from './EmptyState';
+import { LoadingSpinner } from '../common/LoadingSpinner';
+import { useWardOffice } from '../../hooks/useWardOffice';
 
 interface WardData {
   id: number;
@@ -58,11 +58,12 @@ const WardOfficeNew: React.FC = () => {
   const {
     wardProjects = [],
     municipalityProjects = [],
-    thematicProjects = [],
+    wardThematicProjects = [],
     prioritizedWardProjects = [],
-    prioritizedThematicProjects = [],
+    prioritizedWardThematicProjects = [],
     loading,
     error,
+    refetch
   } = useWardOffice();
 
   const getDataForActiveTab = (): WardData[] => {
@@ -72,11 +73,11 @@ const WardOfficeNew: React.FC = () => {
       case 'नगर स्तरीय परियोजना':
         return municipalityProjects;
       case 'विषयगत समितिका परियोजना':
-        return thematicProjects;
+        return wardThematicProjects;
       case 'प्राथमिकरण भएका वडा स्तरीय परियोजना':
         return prioritizedWardProjects;
       case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
-        return prioritizedThematicProjects;
+        return prioritizedWardThematicProjects;
       default:
         return [];
     }
@@ -156,8 +157,9 @@ const WardOfficeNew: React.FC = () => {
             data={filteredData}
             searchTerm={searchTerm}
             tabType={activeTab}
+            refetch={refetch} // ✅ Pass refetch here
           />
-          
+
         ) : (
           <EmptyState />
         )}
