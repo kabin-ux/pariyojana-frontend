@@ -1023,7 +1023,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                                 type="button"
                                                                 className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer hover:"
                                                                 onClick={() => {
-                                                                     setSelectedMapCostItem(mapCostItem);
+                                                                    setSelectedMapCostItem(mapCostItem);
                                                                     setEditMapCostId(mapCostItem?.id || null);
                                                                     setAuthenticationModalOpen(true)
                                                                 }}

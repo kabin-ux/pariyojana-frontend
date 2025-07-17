@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWardOffice } from '../../hooks/useWardOffice';
+import { usePlanning } from '../../hooks/usePlanning';
 import { MunicipalityPrideTabs } from './MunicipalityPrideTabs';
 import { MunicipalityPrideBreadcrumb } from './MunicipalityPrideBreadCrumb';
 import { MunicipalityPrideSearch } from './MunicipalityPrideSearch';
@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 const MunicipalityPrideProject: React.FC = () => {
   const [activeTab, setActiveTab] = useState('प्रविष्टी भएका नगर गौरव आयोजना');
   const [searchTerm, setSearchTerm] = useState('');
-  const { municipalityPrideProjects = [], municipalityPrideBudget= [] } = useWardOffice();
+  const { municipalityPrideProjects = [], municipalityPrideBudget= [] } = usePlanning();
 
   const filteredProjects = municipalityPrideProjects?.filter(item =>
     item.plan_name.toLowerCase().includes(searchTerm.toLowerCase())

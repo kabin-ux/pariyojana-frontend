@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useWardOffice } from '../../hooks/useWardOffice';
-import { SubjectCommitteeBreadcrumb } from './SubjectCommitteeBreadcrumb';
+import { usePlanning } from '../../hooks/usePlanning';
 import { SubjectCommitteeTabs } from './SubjectCommitteeTabs';
 import { SubjectCommitteeSearch } from './SubjectCommitteeSearch';
 import { SubjectCommitteeTable } from './SubjectCommitteeTable';
 import toast from 'react-hot-toast';
+import { SubjectCommitteeBreadcrumb } from './SubjectCommitteeBreadCrumb';
 
 const SubjectCommittee: React.FC = () => {
   const [activeTab, setActiveTab] = useState('वडाबाट सिफारिस भएका परियोजना');
@@ -15,7 +15,7 @@ const SubjectCommittee: React.FC = () => {
     recommendedThematicWardProjects = [],
     thematicProjects = [],
     prioritizedThematicProjects = []
-  } = useWardOffice();
+  } = usePlanning();
 
   // 🔁 Select appropriate data based on active tab
   const getActiveTabData = () => {

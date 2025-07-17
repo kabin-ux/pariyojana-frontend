@@ -8,7 +8,7 @@ import { ProjectsTable } from './ProjectsTable';
 import { SearchAndFilter } from './SearchFilterBar';
 import { EmptyState } from './EmptyState';
 import { LoadingSpinner } from '../common/LoadingSpinner';
-import { useWardOffice } from '../../hooks/useWardOffice';
+import { usePlanning } from '../../hooks/usePlanning';
 
 interface WardData {
   id: number;
@@ -64,7 +64,7 @@ const WardOfficeNew: React.FC = () => {
     loading,
     error,
     refetch
-  } = useWardOffice();
+  } = usePlanning();
 
   const getDataForActiveTab = (): WardData[] => {
     switch (activeTab) {
@@ -86,7 +86,6 @@ const WardOfficeNew: React.FC = () => {
   const filteredData = getDataForActiveTab().filter((item) =>
     (item.title || item.plan_name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log(filteredData)
 
   if (loading) {
     return (
@@ -105,7 +104,7 @@ const WardOfficeNew: React.FC = () => {
         <Breadcrumb wardNumber="१" />
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="text-center text-red-500">
-            <p>Error loading data: {error.message}</p>
+            <p>Error loading data: {error}</p>
           </div>
         </div>
       </div>
@@ -157,7 +156,7 @@ const WardOfficeNew: React.FC = () => {
             data={filteredData}
             searchTerm={searchTerm}
             tabType={activeTab}
-            refetch={refetch} // ✅ Pass refetch here
+            refetch={refetch} 
           />
 
         ) : (
@@ -201,6 +200,7 @@ const WardOfficeNew: React.FC = () => {
         />
         {filteredData.length > 0 ? (
           <ProjectsTable
+            searchTerm={searchTerm}
             data={filteredData}
             tabType={activeTab}
           />

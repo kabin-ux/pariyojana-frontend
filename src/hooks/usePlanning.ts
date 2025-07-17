@@ -1,4 +1,3 @@
-// src/hooks/useWardOffice.ts
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -9,7 +8,7 @@ export interface Project {
   [key: string]: any;
 }
 
-export const useWardOffice = () => {
+export const usePlanning = () => {
   const [wardProjects, setWardProjects] = useState<Project[]>([]);
   const [municipalityProjects, setMunicipalityProjects] = useState<Project[]>([]);
   const [wardThematicProjects, setWardThematicProjects] = useState<Project[]>([]);
@@ -25,7 +24,10 @@ export const useWardOffice = () => {
   const [municipalityLevelBudget, setMunicipalityLevelBudget] = useState<Project[]>([]);
   const [provincialGovernmentBudget, setProvincialGovernmentProject] = useState<Project[]>([]);
   const [federalGovernmentBudget, setFederalGovernmentProject] = useState<Project[]>([]);
-  // const [municipalityPrideBudget, setMunicipalityPrideBudget] = useState<Project[]>([]);
+  const [preAssemblyProjects, setPreAssemblyProjects] = useState<Project[]>([]);
+  const [councilProjects, setCouncilProjects] = useState<Project[]>([]);
+  const [submittedProjects, setSubmittedProjects] = useState<Project[]>([]);
+  const [approvedProjects, setApprovedProjects] = useState<Project[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export const useWardOffice = () => {
     setLoading(true);
     setError(null);
     try {
-      const [wardRes, muniRes, wardThematicRes, prioritizedWardRes, prioritizedWardThematicRes, thematicRes, prioritizedThematicRes, municipalityPrideRes, recommendedThematicWardProjectsRes, thematicBudgetRes, municipalityPrideBudgetRes, wardLevelBudgetRes, municipalityLevelBudgetRes, provincialGovernmentBudgetRes, federalGovernmentBudgetRes] = await Promise.all([
+      const [wardRes, muniRes, wardThematicRes, prioritizedWardRes, prioritizedWardThematicRes, thematicRes, prioritizedThematicRes, municipalityPrideRes, recommendedThematicWardProjectsRes, thematicBudgetRes, municipalityPrideBudgetRes, wardLevelBudgetRes, municipalityLevelBudgetRes, provincialGovernmentBudgetRes, federalGovernmentBudgetRes, preAssemblyProjectsRes, councilProjectsRes, submittedProjectsRes, approvedProjectsRes] = await Promise.all([
         axios.get('http://localhost:8000/api/planning/ward-office/ward-projects/'),
         axios.get('http://localhost:8000/api/planning/ward-office/municipality-projects/'),
         axios.get('http://localhost:8000/api/planning/ward-office/ward-thematic-projects/'),
@@ -49,7 +51,11 @@ export const useWardOffice = () => {
         axios.get('http://localhost:8000/api/planning/budget-committee/budget-ward-projects/'),
         axios.get('http://localhost:8000/api/planning/budget-committee/municipality-programs/'),
         axios.get('http://localhost:8000/api/planning/budget-committee/provience-transfer-projects/'),
-        axios.get('http://localhost:8000/api/planning/budget-committee/federal-gov-projects/')
+        axios.get('http://localhost:8000/api/planning/budget-committee/federal-gov-projects/'),
+        axios.get('http://localhost:8000/api/planning/municipality-executive/pre-assembly-projects/'),
+        axios.get('http://localhost:8000/api/planning/municipality-executive/council-submitted-projects/'),
+        axios.get('http://localhost:8000/api/planning/municipal-assembly/submitted-projects/'),
+        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/approved-projects/')
       ]);
 
       setWardProjects(wardRes.data || []);
@@ -67,6 +73,10 @@ export const useWardOffice = () => {
       setMunicipalityLevelBudget(municipalityLevelBudgetRes.data || []);
       setProvincialGovernmentProject(provincialGovernmentBudgetRes.data || []);
       setFederalGovernmentProject(federalGovernmentBudgetRes.data || []);
+      setPreAssemblyProjects(preAssemblyProjectsRes.data || []);
+      setCouncilProjects(councilProjectsRes.data || []);
+      setSubmittedProjects(submittedProjectsRes.data || []);
+      setApprovedProjects(approvedProjectsRes.data || []);
     } catch (err: any) {
       setError('डेटा लोड गर्न असफल भयो।');
     } finally {
@@ -94,6 +104,10 @@ export const useWardOffice = () => {
     municipalityLevelBudget,
     provincialGovernmentBudget,
     federalGovernmentBudget,
+    preAssemblyProjects,
+    councilProjects,
+    submittedProjects,
+    approvedProjects,
     loading,
     error,
     refetch: fetchData,

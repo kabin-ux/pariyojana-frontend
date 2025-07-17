@@ -18,7 +18,7 @@ interface WardData {
 }
 
 interface ProjectsTableProps {
-  data: WardData[];
+  data: any[];
   searchTerm: string;
   isWardLevel?: boolean;
   tabType: string;
@@ -179,7 +179,7 @@ export const ProjectsTable = ({
 
   return (
     <div className="mt-6">
-      {isWardLevel && renderStaticNoticesTable?.()}
+      {/* {isWardLevel && ?.()} */}
       {renderDynamicProjectsTable()}
     </div>
   );
