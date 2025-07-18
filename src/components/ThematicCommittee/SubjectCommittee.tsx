@@ -6,9 +6,19 @@ import { SubjectCommitteeSearch } from './SubjectCommitteeSearch';
 import { SubjectCommitteeTable } from './SubjectCommitteeTable';
 import toast from 'react-hot-toast';
 import { SubjectCommitteeBreadcrumb } from './SubjectCommitteeBreadCrumb';
+import { EmptyState } from '../WardOffice/EmptyState';
+import { ReportContent } from './ReportContent';
+import { ReportTabs } from './ReportTabs';
 
 const SubjectCommittee: React.FC = () => {
   const [activeTab, setActiveTab] = useState('वडाबाट सिफारिस भएका परियोजना');
+  const reportTabs = [
+    'वडा समितिले सिफारिस गरेका योजना',
+    'विषयगत समितिले प्रविष्ट गरेको योजना',
+    'विषयगत समितिले प्राथमिकरण गरिएको परियोजना',
+  ];
+  const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const {
@@ -67,6 +77,43 @@ const SubjectCommittee: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+    if (activeTab === 'रिपोर्ट') {
+      return (
+        <div className="mt-8">
+          <ReportTabs
+            tabs={reportTabs}
+            activeTab={activeReportTab}
+            onTabChange={setActiveReportTab}
+          />
+          <ReportContent activeTab={activeReportTab} />
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <SubjectCommitteeSearch
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+        {filteredData.length > 0 ? (
+          <SubjectCommitteeTable
+            activeTab={activeTab}
+            data={filteredData}
+            onPrioritizeThematicWard={handlePrioritizeThematicWardProject}
+            onPrioritize={handlePrioritize}
+            onRecommend={handleRecommendtoBudget}
+          />
+        ) : (
+          <div className="mt-8">
+            <EmptyState />
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <main className="flex-1 p-6">
       <SubjectCommitteeBreadcrumb wardNumber="१" />
@@ -75,14 +122,7 @@ const SubjectCommittee: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">विषयगत समिति</h1>
 
         <SubjectCommitteeTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        <SubjectCommitteeSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        <SubjectCommitteeTable
-          activeTab={activeTab}
-          data={filteredData}
-          onPrioritizeThematicWard={handlePrioritizeThematicWardProject}
-          onPrioritize={handlePrioritize}
-          onRecommend={handleRecommendtoBudget}
-        />
+        {renderContent()}
       </div>
     </main>
   );

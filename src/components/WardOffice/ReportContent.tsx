@@ -1,16 +1,204 @@
 import { Download } from 'lucide-react';
 import { useReports } from '../../hooks/useReports';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import React from 'react';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 interface ReportContentProps {
   activeTab: string;
 }
 
 export const ReportContent = ({ activeTab }: ReportContentProps) => {
-  const { wardLevelChart = {} } = useReports();
+  const {
+    wardLevelChart = {},
+    wardLevelThematicChart = {},
+    municipalityLevelChart = {},
+    prioritizedWardChart = {},
+    prioritizedWardThematicChart = {},
 
-  const { budget_distribution = [], project_count_distribution = [] } = wardLevelChart;
+    wardLevelReport,
+    wardLevelThematicReport,
+    municipalityLevelReport,
+    prioritizedWardReport,
+    prioritizedWardThematicReport,
 
-  if (activeTab === 'वडा परियोजना प्रतिवेदन') {
+    wardLevelReportPDF,
+    wardLevelThematicReportPDF,
+    municipalityLevelReportPDF,
+    prioritizedWardReportPDF,
+    prioritizedWardThematicReportPDF,
+  } = useReports();
+
+  let chartData = {};
+  let reportTitle = '';
+  let excelLink = '';
+  let pdfLink = '';
+
+  switch (activeTab) {
+    case 'वडा परियोजना प्रविष्टी':
+      chartData = wardLevelChart;
+      reportTitle = 'वडा परियोजना प्रविष्टी';
+      excelLink = wardLevelReport;
+      pdfLink = wardLevelReportPDF;
+      console.log('URLs:', { excelLink, pdfLink });
+      break;
+    case 'नगर परियोजना प्रविष्टी':
+      chartData = municipalityLevelChart;
+      reportTitle = 'नगर परियोजना प्रविष्टी';
+      excelLink = municipalityLevelReport;
+      pdfLink = municipalityLevelReportPDF;
+      break;
+    case 'विषयगत समितिका परियोजना':
+      chartData = wardLevelThematicChart;
+      reportTitle = 'विषयगत समितिका परियोजना';
+      excelLink = wardLevelThematicReport;
+      pdfLink = wardLevelThematicReportPDF;
+      break;
+    case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
+      chartData = prioritizedWardChart;
+      reportTitle = 'वडा समितिले प्राथमिकरण गरिएको परियोजना';
+      excelLink = prioritizedWardReport;
+      pdfLink = prioritizedWardReportPDF;
+      break;
+    case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
+      chartData = prioritizedWardThematicChart;
+      reportTitle = 'प्राथमिकरण भएका विषयगत समितिका परियोजना';
+      excelLink = prioritizedWardThematicReport;
+      pdfLink = prioritizedWardThematicReportPDF;
+      break;
+    default:
+      chartData = {};
+  }
+
+  const { budget_distribution = [], project_count_distribution = [] } = chartData;
+
+  // Validate URL function
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Direct download approach (for same-origin URLs)
+  const handleDirectDownload = (url: string, filename: string) => {
+    if (!url || url.trim() === '') {
+      alert('डाउनलोड लिंक उपलब्ध छैन।');
+      return;
+    }
+
+    const safeUrl = encodeURI(url); // <-- fix here
+    console.log('Attempting direct download:', safeUrl);
+
+    const link = document.createElement('a');
+    link.href = safeUrl;
+    link.setAttribute('download', filename);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
+  // Fetch-based download with improved error handling
+  const handleFetchDownload = async (url: string, filename: string) => {
+    if (!url || url.trim() === '') {
+      alert('डाउनलोड लिंक उपलब्ध छैन।');
+      return;
+    }
+
+    // Validate URL format
+    if (!isValidUrl(url)) {
+      console.error('Invalid URL:', url);
+      alert('अमान्य URL। कृपया फेरि प्रयास गर्नुहोस्।');
+      return;
+    }
+
+    try {
+      console.log('Fetching:', url);
+      const safeUrl = encodeURI(url)
+
+      const response = await fetch(safeUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': '*/*',
+          // Add any required authentication headers here
+          // 'Authorization': 'Bearer ' + token,
+        },
+        mode: 'cors', // explicitly set CORS mode
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Check if blob is valid
+      if (blob.size === 0) {
+        throw new Error('Empty file received');
+      }
+
+      console.log('Blob size:', blob.size);
+      console.log('Blob type:', blob.type);
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      console.log('Download completed successfully');
+    } catch (error) {
+      console.error('Download failed:', error);
+
+      // Provide more specific error messages
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        alert('नेटवर्क त्रुटि। कृपया इन्टरनेट जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।');
+      } else if (error instanceof Error && error.message.includes('HTTP error')) {
+        alert(`सर्भर त्रुटि: ${error.message}। कृपया फेरि प्रयास गर्नुहोस्।`);
+      } else {
+        alert('डाउनलोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।');
+      }
+
+      // Fallback to direct download
+      console.log('Attempting fallback to direct download');
+      handleDirectDownload(url, filename);
+    }
+  };
+
+  // Main download handler that tries different approaches
+  const handleDownload = async (url: string, filename: string) => {
+    console.log('Download requested:', { url, filename });
+
+    // Check if URL is from same origin or if it's a relative path
+    const currentOrigin = window.location.origin;
+    const isRelativeUrl = !url.startsWith('http');
+    const isSameOrigin = isRelativeUrl || url.startsWith(currentOrigin);
+
+    if (isSameOrigin) {
+      // For same-origin URLs, try direct download first
+      console.log('Same origin detected, trying direct download');
+      handleDirectDownload(url, filename);
+    } else {
+      // For cross-origin URLs, try fetch first, then fallback to direct
+      console.log('Cross-origin detected, trying fetch download');
+      await handleFetchDownload(url, filename);
+    }
+  };
+
+  if (activeTab && chartData) {
     const topBudget = budget_distribution[0];
     const topProject = project_count_distribution[0];
 
@@ -18,7 +206,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
       <div>
         {/* Report Download Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">रिपोर्ट डाउनलोड</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">रिपोर्ट डाउनलोड ({reportTitle})</h3>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -35,51 +223,70 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <button
+                onClick={() => handleDownload(excelLink, `${reportTitle}.xlsx`)}
+                disabled={!excelLink}
+                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
+                  ? 'hover:bg-gray-50 cursor-pointer'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+              >
                 <Download className="w-4 h-4" />
                 <span>Excel</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+
+              <button
+                onClick={() => handleDownload(pdfLink, `${reportTitle}.pdf`)}
+                disabled={!pdfLink}
+                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
+                  ? 'hover:bg-gray-50 cursor-pointer'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+              >
                 <Download className="w-4 h-4" />
                 <span>PDF</span>
               </button>
             </div>
           </div>
           <div className="flex items-center space-x-2 mt-4">
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
               रिपोर्ट यूनिफाइड
             </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               रिपोर्ट बनाउनुहोस्
             </button>
           </div>
+
+          {/* Debug info (remove in production) */}
+          {/* {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Debug Info:</strong><br />
+                Excel URL: {excelLink || 'Not available'}<br />
+                PDF URL: {pdfLink || 'Not available'}
+              </p>
+            </div>
+          )} */}
         </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Budget Distribution Chart */}
           <ChartCard
             title="क्षेत्रगत बजेट वितरण"
-            value={topBudget?.value}
-            percentage={topBudget?.percentage}
-            label={topBudget?.label}
+            data={budget_distribution}
             unit="रु"
           />
-
-          {/* Project Count Distribution */}
           <ChartCard
             title="क्षेत्रगत योजनाहरूको तथ्याङ्क"
-            value={topProject?.value}
-            percentage={topProject?.percentage}
-            label={topProject?.label}
+            data={project_count_distribution}
             unit="परियोजना"
           />
+
         </div>
       </div>
     );
   }
 
-  // Fallback
   return (
     <div className="text-center py-12">
       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -98,48 +305,83 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 };
 
 // Reusable chart component
-const ChartCard = ({
+const ChartCard = React.memo(function ChartCard({
   title,
-  value = 0,
-  percentage = 0,
-  label = 'डेटा छैन',
+  data = [],
   unit = ''
 }: {
   title: string;
-  value: number;
-  percentage: number;
-  label: string;
+  data: { label: string; percentage: number; value: number }[];
   unit?: string;
-}) => (
-  <div className="bg-white p-6 rounded-lg border border-gray-200">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-    <div className="flex items-center justify-center mb-4">
-      <div className="relative w-48 h-48">
-        <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="20"
-            strokeDasharray={`${(percentage * 2.51).toFixed(1)} 251.2`}
-            className="opacity-100"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-blue-600">{percentage}%</span>
+}) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-lg border border-gray-200 text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        <p className="text-gray-500">डेटा उपलब्ध छैन</p>
+      </div>
+    );
+  }
+
+  // Limit to top 10 + "अन्य"
+  const topData = data.slice(0, 10);
+  const rest = data.slice(10);
+  if (rest.length > 0) {
+    const otherSum = rest.reduce(
+      (acc, cur) => ({
+        label: 'अन्य',
+        value: acc.value + cur.value,
+        percentage: acc.percentage + cur.percentage,
+      }),
+      { label: 'अन्य', value: 0, percentage: 0 }
+    );
+    topData.push(otherSum);
+  }
+
+  const labels = topData.map(d => d.label);
+  const percentages = topData.map(d => d.percentage);
+  const values = topData.map(d => d.value);
+  const totalValue = values.reduce((sum, v) => sum + v, 0);
+
+  const colors = [
+    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e', '#a3e635',
+    '#ec4899', '#14b8a6', '#6366f1', '#facc15', '#fb923c', '#4ade80'
+  ];
+
+  const pieData = {
+    labels,
+    datasets: [
+      {
+        data: percentages,
+        backgroundColor: colors.slice(0, labels.length),
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    animation: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom' as const,
+      },
+    },
+    cutout: '70%',
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+      <div className="flex flex-col items-center justify-center mb-4 relative h-48">
+        <Doughnut data={pieData} options={options} />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-sm font-semibold text-gray-600 text-center">
+            जम्मा: <br />
+            {unit} {unit === 'रु' ? totalValue.toLocaleString('ne-NP') : totalValue}
+          </span>
         </div>
       </div>
     </div>
-    <div className="flex items-center justify-center space-x-2">
-      <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-      <span className="text-sm text-gray-600">{label}</span>
-    </div>
-    <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-      <p className="text-sm text-gray-700">
-        <span className="font-semibold">मूल्य:</span> {unit} {unit === 'रु' ? value?.toLocaleString('ne-NP') : value}
-      </p>
-    </div>
-  </div>
-);
+  );
+});

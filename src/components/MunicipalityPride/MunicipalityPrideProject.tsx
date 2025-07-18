@@ -6,22 +6,30 @@ import { MunicipalityPrideSearch } from './MunicipalityPrideSearch';
 import { MunicipalityPrideTable } from './MunicipalityPrideTable';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { ReportTabs } from './ReportTabs';
+import { ReportContent } from './ReportContent';
+import { EmptyState } from '../WardOffice/EmptyState';
 
 
 const MunicipalityPrideProject: React.FC = () => {
   const [activeTab, setActiveTab] = useState('प्रविष्टी भएका नगर गौरव आयोजना');
+  const reportTabs = [
+    'प्रविष्टी भएका नगर गौरव आयोजना',
+    'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना',
+  ];
+  const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
-  const { municipalityPrideProjects = [], municipalityPrideBudget= [] } = usePlanning();
+  const { municipalityPrideProjects = [], municipalityPrideBudget = [] } = usePlanning();
 
   const filteredProjects = municipalityPrideProjects?.filter(item =>
     item.plan_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-   const filteredBudget = municipalityPrideBudget?.filter(item =>
+  const filteredBudget = municipalityPrideBudget?.filter(item =>
     item.plan_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-   const handleRecommendtoBudget = async (id: number) => {
+  const handleRecommendtoBudget = async (id: number) => {
     try {
       await axios.post(`http://localhost:8000/api/planning/municipality-pride-project/municipality-pride-projects/${id}/recommend-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
@@ -32,25 +40,53 @@ const MunicipalityPrideProject: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+    if (activeTab === 'रिपोर्ट') {
+      return (
+        <div className="mt-8">
+          <ReportTabs
+            tabs={reportTabs}
+            activeTab={activeReportTab}
+            onTabChange={setActiveReportTab}
+          />
+          <ReportContent activeTab={activeReportTab} />
+        </div>
+      );
+    }
+
+
+    return (
+      <>
+        <MunicipalityPrideSearch
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          activeTab={activeTab}
+        />
+        {filteredProjects.length > 0 || filteredBudget.length > 0 ? (
+          <MunicipalityPrideTable
+            activeTab={activeTab}
+            projects={filteredProjects}
+            budget={filteredBudget}
+            onRecommend={handleRecommendtoBudget}
+          />
+        ) : (
+          <div className="mt-8">
+            <EmptyState />
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <main className="flex-1 p-6">
       <MunicipalityPrideBreadcrumb wardNumber="१" />
-      
+
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">नगर गौरव आयोजना</h1>
 
         <MunicipalityPrideTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        <MunicipalityPrideSearch 
-          searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm}
-          activeTab={activeTab}
-        />
-        <MunicipalityPrideTable 
-          activeTab={activeTab} 
-          projects={filteredProjects} 
-          budget={filteredBudget}
-          onRecommend={handleRecommendtoBudget}
-        />
+        {renderContent()}
       </div>
     </main>
   );

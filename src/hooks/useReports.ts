@@ -34,6 +34,67 @@ export const useReports = () => {
   const [submittedChart, setSubmittedChart] = useState([]);
   const [approvedChart, setApprovedChart] = useState([]);
 
+
+  // REports Excel and PDF
+
+  // Ward tab
+  const [wardLevelReportPDF, setWardLevelReportPDF] = useState([]);
+  const [wardLevelThematicReportPDF, setWardLevelThematicReportPDF] = useState([]);
+  const [municipalityLevelReportPDF, setMunicipalityLevelReportPDF] = useState([]);
+  const [prioritizedWardReportPDF, setPrioritizedWardReportPDF] = useState([]);
+  const [prioritizedWardThematicReportPDF, setPrioritizedWardThematicReportPDF] = useState([]);
+
+  const [wardLevelReport, setWardLevelReport] = useState([]);
+  const [wardLevelThematicReport, setWardLevelThematicReport] = useState([]);
+  const [municipalityLevelReport, setMunicipalityLevelReport] = useState([]);
+  const [prioritizedWardReport, setPrioritizedWardReport] = useState([]);
+  const [prioritizedWardThematicReport, setPrioritizedWardThematicReport] = useState([]);
+
+  // Thematic tab
+  const [wardRecommendedReport, setWardRecommendedReport] = useState([]);
+  const [thematicReport, setThematicReport] = useState([]);
+  const [thematicRecommendedReport, setThematicRecommendedReport] = useState([]);
+
+  const [wardRecommendedReportPDF, setWardRecommendedReportPDF] = useState([]);
+  const [thematicReportPDF, setThematicReportPDF] = useState([]);
+  const [thematicRecommendedReportPDF, setThematicRecommendedReportPDF] = useState([]);
+
+  // Municipality Pride
+  const [municipalityPrideReport, setMunicipalityPrideReport] = useState([]);
+  const [municipalityPrideSubmitBudgetReport, setMunicipalityPrideSubmitBudgetReport] = useState([]);
+
+  const [municipalityPrideReportPDF, setMunicipalityPrideReportPDF] = useState([]);
+  const [municipalityPrideSubmitBudgetReportPDF, setMunicipalityPrideSubmitBudgetReportPDF] = useState([]);
+
+  // Budget tab
+  const [municipalityLevelBudgetReport, setMunicipalityLevelBudgetReport] = useState([]);
+  const [federalGovernmentBudgetReport, setFederalGovernmentBudgetReport] = useState([]);
+  const [municipalityPrideBudgetReport, setMunicipalityPrideBudgetReport] = useState([]);
+  const [provincialGovernmentBudgetReport, setProvincialGovernmentBudgetReport] = useState([]);
+  const [thematicBudgetReport, setThematicBudgetReport] = useState([]);
+  const [wardLevelBudgetReport, setWardLevelBudgetReport] = useState([]);
+
+  const [municipalityLevelBudgetReportPDF, setMunicipalityLevelBudgetReportPDF] = useState([]);
+  const [federalGovernmentBudgetReportPDF, setFederalGovernmentBudgetReportPDF] = useState([]);
+  const [municipalityPrideBudgetReportPDF, setMunicipalityPrideBudgetReportPDF] = useState([]);
+  const [provincialGovernmentBudgetReportPDF, setProvincialGovernmentBudgetReportPDF] = useState([]);
+  const [thematicBudgetReportPDF, setThematicBudgetReportPDF] = useState([]);
+  const [wardLevelBudgetReportPDF, setWardLevelBudgetReportPDF] = useState([]);
+
+  // Municipal Executive
+  const [preAssemblyReport, setPreAssemblyReport] = useState([]);
+  const [councilReport, setCouncilReport] = useState([]);
+
+  const [preAssemblyReportPDF, setPreAssemblyReportPDF] = useState([]);
+  const [councilReportPDF, setCouncilReportPDF] = useState([]);
+
+  // City Council
+  const [submittedReport, setSubmittedReport] = useState([]);
+  const [approvedReport, setApprovedReport] = useState([]);
+
+  const [submittedReportPDF, setSubmittedReportPDF] = useState([]);
+  const [approvedReportPDF, setApprovedReportPDF] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +127,59 @@ export const useReports = () => {
         councilChartRes,
 
         submittedChartRes,
-        approvedChartRes
+        approvedChartRes,
+
+        wardLevelReportRes,
+        wardLevelThematicReportRes,
+        municipalityLevelReportRes,
+        prioritizedWardReportRes,
+        prioritizedWardThematicReportRes,
+
+        wardRecommendedReportRes,
+        thematicReportRes,
+        thematicRecommendedReportRes,
+
+        municipalityPrideReportRes,
+        municipalityPrideSubmitBudgetReportRes,
+
+        municipalityLevelBudgetReportRes,
+        federalGovernmentBudgetReportRes,
+        municipalityPrideBudgetReportRes,
+        provincialGovernmentBudgetReportRes,
+        thematicBudgetReportRes,
+        wardLevelBudgetReportRes,
+
+        preAssemblyReportRes,
+        councilReportRes,
+
+        submittedReportRes,
+        approvedReportRes,
+
+        wardLevelReportPDFRes,
+        wardLevelThematicReportPDFRes,
+        municipalityLevelReportPDFRes,
+        prioritizedWardReportPDFRes,
+        prioritizedWardThematicReportPDFRes,
+
+        wardRecommendedReportPDFRes,
+        thematicReportPDFRes,
+        thematicRecommendedReportPDFRes,
+
+        municipalityPrideReportPDFRes,
+        municipalityPrideSubmitBudgetReportPDFRes,
+
+        municipalityLevelBudgetReportPDFRes,
+        federalGovernmentBudgetReportPDFRes,
+        municipalityPrideBudgetReportPDFRes,
+        provincialGovernmentBudgetReportPDFRes,
+        thematicBudgetReportPDFRes,
+        wardLevelBudgetReportPDFRes,
+
+        preAssemblyReportPDFRes,
+        councilReportPDFRes,
+
+        submittedReportPDFRes,
+        approvedReportPDFRes,
       ] = await Promise.all([
         axios.get('http://localhost:8000/api/planning/ward-office/wardlevel-chart/'),
         axios.get('http://localhost:8000/api/planning/ward-office/wardlevelthemtic-chart/'),
@@ -75,7 +188,7 @@ export const useReports = () => {
         axios.get('http://localhost:8000/api/planning/ward-office/prioritizedwardthematic-chart/'),
 
         axios.get('http://localhost:8000/api/planning/thematic/wardlevel-chart/'),
-        axios.get('http://localhost:8000/api/planning/thematic/wardlevelthematic-chart/'),
+        axios.get('http://localhost:8000/api/planning/thematic/wardlevelthemtic-chart/'),
         axios.get('http://localhost:8000/api/planning/thematic/Wardrecommended-chart/'),
 
         axios.get('http://localhost:8000/api/planning/municipality-pride-project/entered-municipality-chart/'),
@@ -85,14 +198,69 @@ export const useReports = () => {
         axios.get('http://localhost:8000/api/planning/budget-committee/federalgov-chart/'),
         axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride-chart/'),
         axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer-chart/'),
-        axios.get('http://localhost:8000/api/planning/budget-committee/thematic-committee-chart/'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee-chart/'),
         axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel-chart/'),
 
         axios.get('http://localhost:8000/api/planning/municipality-executive/preassembly-chart/'),
         axios.get('http://localhost:8000/api/planning/municipality-executive/councilsubmitted-chart/'),
 
         axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedproject-chart/'),
-        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove-chart/')
+        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove-chart/'),
+
+
+
+        axios.get('http://localhost:8000/api/planning/ward-office/ward-level/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/ward-office/ward-thematic/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/ward-office/municipality/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-ward/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-wardthematic/report/?type=excel'),
+
+        axios.get('http://localhost:8000/api/planning/thematic/wardlevel-chart/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/thematic/wardlevelthemtic-chart/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/thematic/Wardrecommended-chart/report/?type=excel'),
+
+        axios.get('http://localhost:8000/api/planning/municipality-pride-project/entered-municipality/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/municipality-pride-project/submitted-budget/report/?type=excel'),
+
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipalitylevel/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/federalgov/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel/report/?type=excel'),
+
+        axios.get('http://localhost:8000/api/planning/municipality-executive/preassembly/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/municipality-executive/councilsubmitted/report/?type=excel'),
+
+        axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedprojectt/report/?type=excel'),
+        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove/report/?type=excel'),
+
+
+        axios.get('http://localhost:8000/api/planning/ward-office/ward-level/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/ward-office/ward-thematic/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/ward-office/municipality/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-ward/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/ward-office/prioritized-wardthematic/report/?type=pdf'),
+
+        axios.get('http://localhost:8000/api/planning/thematic/wardlevel-chart/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/thematic/wardlevelthemtic-chart/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/thematic/Wardrecommended-chart/report/?type=pdf'),
+
+        axios.get('http://localhost:8000/api/planning/municipality-pride-project/entered-municipality/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/municipality-pride-project/submitted-budget/report/?type=pdf'),
+
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipalitylevel/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/federalgov/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel/report/?type=pdf'),
+
+        axios.get('http://localhost:8000/api/planning/municipality-executive/preassembly/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/municipality-executive/councilsubmitted/report/?type=pdf'),
+
+        axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedprojectt/report/?type=pdf'),
+        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove/report/?type=pdf')
       ]);
 
       // Ward
@@ -126,6 +294,71 @@ export const useReports = () => {
       // City Council
       setSubmittedChart(submittedChartRes.data || []);
       setApprovedChart(approvedChartRes.data || []);
+
+
+      // Ward
+      setWardLevelReport(wardLevelReportRes.data || []);
+      setWardLevelThematicReport(wardLevelThematicReportRes.data || []);
+      setMunicipalityLevelReport(municipalityLevelReportRes.data || []);
+      setPrioritizedWardReport(prioritizedWardReportRes.data || []);
+      setPrioritizedWardThematicReport(prioritizedWardThematicReportRes.data || []);
+
+      // Thematic
+      setWardRecommendedReport(wardRecommendedReportRes.data || []);
+      setThematicReport(thematicReportRes.data || []);
+      setThematicRecommendedReport(thematicRecommendedReportRes.data || []);
+
+      // Municipality Pride
+      setMunicipalityPrideReport(municipalityPrideReportRes.data || []);
+      setMunicipalityPrideSubmitBudgetReport(municipalityPrideSubmitBudgetReportRes.data || []);
+
+      // Budget
+      setMunicipalityLevelBudgetReport(municipalityLevelBudgetReportRes.data || []);
+      setFederalGovernmentBudgetReport(federalGovernmentBudgetReportRes.data || []);
+      setMunicipalityPrideBudgetReport(municipalityPrideBudgetReportRes.data || []);
+      setProvincialGovernmentBudgetReport(provincialGovernmentBudgetReportRes.data || []);
+      setThematicBudgetReport(thematicBudgetReportRes.data || []);
+      setWardLevelBudgetReport(wardLevelBudgetReportRes.data || []);
+
+      // Municipal Executive
+      setPreAssemblyReport(preAssemblyReportRes.data || []);
+      setCouncilReport(councilReportRes.data || []);
+
+      // City Council
+      setSubmittedReport(submittedReportRes.data || []);
+      setApprovedReport(approvedReportRes.data || []);
+
+      // Ward
+      setWardLevelReportPDF(wardLevelReportPDFRes.data || []);
+      setWardLevelThematicReportPDF(wardLevelThematicReportPDFRes.data || []);
+      setMunicipalityLevelReportPDF(municipalityLevelReportPDFRes.data || []);
+      setPrioritizedWardReportPDF(prioritizedWardReportPDFRes.data || []);
+      setPrioritizedWardThematicReportPDF(prioritizedWardThematicReportPDFRes.data || []);
+
+      // Thematic
+      setWardRecommendedReportPDF(wardRecommendedReportPDFRes.data || []);
+      setThematicReportPDF(thematicReportPDFRes.data || []);
+      setThematicRecommendedReportPDF(thematicRecommendedReportPDFRes.data || []);
+
+      // Municipality Pride
+      setMunicipalityPrideReportPDF(municipalityPrideReportPDFRes.data || []);
+      setMunicipalityPrideSubmitBudgetReportPDF(municipalityPrideSubmitBudgetReportPDFRes.data || []);
+
+      // Budget
+      setMunicipalityLevelBudgetReportPDF(municipalityLevelBudgetReportPDFRes.data || []);
+      setFederalGovernmentBudgetReportPDF(federalGovernmentBudgetReportPDFRes.data || []);
+      setMunicipalityPrideBudgetReportPDF(municipalityPrideBudgetReportPDFRes.data || []);
+      setProvincialGovernmentBudgetReportPDF(provincialGovernmentBudgetReportPDFRes.data || []);
+      setThematicBudgetReportPDF(thematicBudgetReportPDFRes.data || []);
+      setWardLevelBudgetReportPDF(wardLevelBudgetReportPDFRes.data || []);
+
+      // Municipal Executive
+      setPreAssemblyReportPDF(preAssemblyReportPDFRes.data || []);
+      setCouncilReportPDF(councilReportPDFRes.data || []);
+
+      // City Council
+      setSubmittedReportPDF(submittedReportPDFRes.data || []);
+      setApprovedReportPDF(approvedReportPDFRes.data || []);
 
     } catch (err) {
       console.error(err);
@@ -167,6 +400,60 @@ export const useReports = () => {
     councilChart,
     // City Council
     submittedChart,
-    approvedChart
+    approvedChart,
+
+    // Ward
+    wardLevelReport,
+    wardLevelThematicReport,
+    municipalityLevelReport,
+    prioritizedWardReport,
+    prioritizedWardThematicReport,
+    // Thematic
+    wardRecommendedReport,
+    thematicReport,
+    thematicRecommendedReport,
+    // Municipality Pride
+    municipalityPrideReport,
+    municipalityPrideSubmitBudgetReport,
+    // Budget
+    municipalityLevelBudgetReport,
+    federalGovernmentBudgetReport,
+    municipalityPrideBudgetReport,
+    provincialGovernmentBudgetReport,
+    thematicBudgetReport,
+    wardLevelBudgetReport,
+    // Municipal Executive
+    preAssemblyReport,
+    councilReport,
+    // City Council
+    submittedReport,
+    approvedReport,
+
+    // Ward
+    wardLevelReportPDF,
+    wardLevelThematicReportPDF,
+    municipalityLevelReportPDF,
+    prioritizedWardReportPDF,
+    prioritizedWardThematicReportPDF,
+    // Thematic
+    wardRecommendedReportPDF,
+    thematicReportPDF,
+    thematicRecommendedReportPDF,
+    // Municipality Pride
+    municipalityPrideReportPDF,
+    municipalityPrideSubmitBudgetReportPDF,
+    // Budget
+    municipalityLevelBudgetReportPDF,
+    federalGovernmentBudgetReportPDF,
+    municipalityPrideBudgetReportPDF,
+    provincialGovernmentBudgetReportPDF,
+    thematicBudgetReportPDF,
+    wardLevelBudgetReportPDF,
+    // Municipal Executive
+    preAssemblyReportPDF,
+    councilReportPDF,
+    // City Council
+    submittedReportPDF,
+    approvedReportPDF
   };
 };

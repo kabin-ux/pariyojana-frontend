@@ -19,7 +19,7 @@ const MunicipalOfficeTabs: React.FC<MunicipalOfficeTabsProps> = ({ activeTab, se
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+            className={`py-3 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${
               activeTab === tab
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'

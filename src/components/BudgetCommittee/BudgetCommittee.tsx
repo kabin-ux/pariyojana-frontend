@@ -6,9 +6,21 @@ import { usePlanning } from '../../hooks/usePlanning';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { BudgetCommitteeBreadcrumb } from './BudgetCommitteeBreadcrumb';
+import { EmptyState } from '../WardOffice/EmptyState';
+import { ReportContent } from './ReportContent';
+import { ReportTabs } from './ReportTabs';
 
 const BudgetCommittee: React.FC = () => {
   const [activeTab, setActiveTab] = useState('वडा स्तरीय कार्यक्रम');
+  const reportTabs = [
+    'वडा स्तरीय कार्यक्रम',
+    'नगर स्तरीय कार्यक्रम',
+    'विषयगत समितिको कार्यक्रम',
+    'नगर गौरव आयोजना',
+    'संघिय सरकारबाट हस्तान्तरित कार्यक्रम',
+    'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम',
+  ];
+  const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const {
     municipalityPrideBudget = [],
@@ -128,6 +140,42 @@ const BudgetCommittee: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+    if (activeTab === 'रिपोर्ट') {
+      return (
+        <div className="mt-8">
+          <ReportTabs
+            tabs={reportTabs}
+            activeTab={activeReportTab}
+            onTabChange={setActiveReportTab}
+          />
+          <ReportContent activeTab={activeReportTab} />
+        </div>
+      );
+    }
+
+
+    return (
+      <>
+        <BudgetCommitteeSearch
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+        {filteredProjects.length > 0 ? (
+          <BudgetCommitteeTable
+            activeTab={activeTab}
+            projects={filteredProjects}
+            onRecommend={getRecommendHandler()}
+          />
+        ) : (
+          <div className="mt-8">
+            <EmptyState />
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <main className="flex-1 p-6">
       <BudgetCommitteeBreadcrumb wardNumber="१" />
@@ -137,16 +185,7 @@ const BudgetCommittee: React.FC = () => {
 
         <BudgetCommitteeTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <BudgetCommitteeSearch
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
-
-        <BudgetCommitteeTable
-          activeTab={activeTab}
-          projects={filteredProjects}
-          onRecommend={getRecommendHandler()}
-        />
+        {renderContent()}
       </div>
     </main>
   );

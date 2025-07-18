@@ -6,9 +6,17 @@ import MunicipalOfficeSearch from './MunicipalOfficeSearch';
 import MunicipalOfficeTable from './MunicipalOfficeTable';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { EmptyState } from '../WardOffice/EmptyState';
+import { ReportContent } from './ReportContent';
+import { ReportTabs } from './ReportTabs';
 
 const MunicipalOffice: React.FC = () => {
   const [activeTab, setActiveTab] = useState('नगर सभामा पेश गर्नु अघिको परियोजना');
+  const reportTabs = [
+    'नगर सभामा पेश गर्नु अघिको परियोजना',
+    'नगर सभा पेश भएका परियोजना',
+  ];
+  const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const { preAssemblyProjects = [], councilProjects = [] } = usePlanning();
 
@@ -34,22 +42,49 @@ const MunicipalOffice: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+    if (activeTab === 'रिपोर्ट') {
+      return (
+        <div className="mt-8">
+          <ReportTabs
+            tabs={reportTabs}
+            activeTab={activeReportTab}
+            onTabChange={setActiveReportTab}
+          />
+          <ReportContent activeTab={activeReportTab} />
+        </div>
+      );
+    }
+
+
+    return (
+      <>
+        <MunicipalOfficeSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+        {filteredData.length > 0 ? (
+          <MunicipalOfficeTable
+            activeTab={activeTab}
+            data={filteredData}
+            onRecommend={handleCouncilProjects}
+          />
+        ) : (
+          <div className="mt-8">
+            <EmptyState />
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <main className="flex-1 p-6">
       <MunicipalOfficeBreadcrumb />
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">नगरकार्यपालिकाको कार्यालय</h1>
-
         <MunicipalOfficeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        <MunicipalOfficeSearch
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-        <MunicipalOfficeTable
-          activeTab={activeTab}
-          data={filteredData}
-          onRecommend={handleCouncilProjects}
-        />
+        {renderContent()}
       </div>
     </main>
   );
