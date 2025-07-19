@@ -8,6 +8,7 @@ import { useInstallmentDetails } from '../../hooks/useInstallments';
 import BankAccountModal from '../../modals/AddBankDetailsModal';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
 import AddBankRecommendationModal from '../../modals/AddBankRecommendationModal';
+import PaymentDetailModal from '../../modals/AddPaymentDetailsModal';
 
 interface ProjectDetailProps {
     project: {
@@ -66,6 +67,8 @@ const INSTALLMENT_DESC = [
     { "serial_no": 3, "title": "अन्तिम किस्ता भुक्तानी	" }
 ]
 
+
+
 // Assuming you have the BS library properly imported
 const today = new Date(); // current Gregorian date
 const bsDate = BS.ADToBS(today); // Convert to BS
@@ -80,6 +83,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
     const [editBankId, setEditBankId] = useState<number | null>(null);
     const [editRecommendationId, setEditRecommendationId] = useState<number | null>(null);
     const [editAccountPhotoId, setEditAccountPhotoId] = useState<number | null>(null);
+    const [isPaymentDetailModalOpen, setPaymentDetailModalOpen] = useState(false);
 
     const projectIdNum = parseInt(project?.serial_number);
     const {
@@ -144,11 +148,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         try {
             const token = localStorage.getItem('access_token');
             const formData = new FormData();
-            
+
             formData.append('title', data.title);
             formData.append('remarks', data.remarks);
             formData.append('project', data.project);
-            
+
             if (data.file) {
                 formData.append('file', data.file);
             }
@@ -172,11 +176,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             });
 
             toast.success(editRecommendationId ? 'बैंक सिफारिस सम्पादन भयो' : 'बैंक सिफारिस सफलतापूर्वक थपियो');
-            
+
             // Refresh recommendation details
             const updatedData = await fetchBankRecommendationDetails(projectIdNum);
             setBankRecommendationDetails(updatedData);
-            
+
             setIsBankRecommendationModalOpen(false);
             setEditRecommendationId(null);
         } catch (error) {
@@ -189,11 +193,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         try {
             const token = localStorage.getItem('access_token');
             const formData = new FormData();
-            
+
             formData.append('bank_account_number', data.bank_account_number);
             formData.append('remarks', data.remarks);
             formData.append('project', data.project);
-            
+
             if (data.check_photo) {
                 formData.append('check_photo', data.check_photo);
             }
@@ -217,11 +221,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             });
 
             toast.success(editAccountPhotoId ? 'खाता फोटो सम्पादन भयो' : 'खाता फोटो सफलतापूर्वक थपियो');
-            
+
             // Refresh account photos
             const updatedData = await fetchBankAccountPhotos(projectIdNum);
             setBankAccountPhotos(updatedData);
-            
+
             setIsBankAccountPhotosModalOpen(false);
             setEditAccountPhotoId(null);
         } catch (error) {
@@ -270,6 +274,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         firstInstallment,
         secondInstallment,
         thirdInstallment,
+        paymentDetails,
         firstLoading,
         secondLoading,
         thirdLoading,
@@ -292,16 +297,32 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         'भुक्तानी विवरण'
     ];
 
-    // Sample installment data
-    const installmentData = [
-        {
-            id: 1,
-            title: 'बैंक खाता सञ्चालन सिफारिस',
-            date: '२०९०-०३-१४',
-            status: 'अपलोड गरिएको',
-            description: '(बैंक वा नगरपालिकाले दिने सिफारिस)'
+    const savePaymentDetails = async (data: BudgetFormData) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const url = `http://localhost:8000/api/projects/${projectIdNum}/payment-details/`;
+
+            const response = await axios.post(url, {
+                title: data.title,
+                amount_paid: data.amount_paid,
+                payment_percent: data.payment_percent,
+                physical_progress: data.physical_progress,
+                agreement_amount: data.agreement_amount
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            toast.success('भुक्तानी विवरण सफलतापूर्वक थपियो');
+            refetch(); // Refresh the payment details
+            setPaymentDetailModalOpen(false);
+        } catch (error) {
+            console.error('Payment details submission failed:', error);
+            toast.error('भुक्तानी विवरण सेभ गर्न सकिएन');
         }
-    ];
+    };
 
     const uploadFirstInstallment = async (file: File, projectId: number, serial_no: number) => {
         try {
@@ -419,11 +440,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             });
             toast.success(editBankId ? 'बैंक विवरण सम्पादन भयो' : 'बैंक विवरण सफलतापूर्वक थपियो');
             refetch();
-            
+
             // Refresh bank details
             const updatedData = await fetchBankDetails(projectIdNum);
             setBankDetails(updatedData);
-            
+
             setIsBankModalOpen(false);
             setEditBankId(null);
         } catch (error) {
@@ -471,6 +492,15 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             </span>
         );
     };
+
+    const totalPaid = paymentDetails.reduce((sum, item) => sum + parseFloat(item.amount_paid || '0'), 0);
+    const totalPercent = paymentDetails.reduce(
+        (sum, item) => sum + (Number(item.payment_percent) || 0),
+        0
+    );
+    const maxProgress = paymentDetails.reduce((max, item) => Math.max(max, item.physical_progress || 0), 0);
+    const remainingAmount = parseFloat(project.budget || '0') - totalPaid;
+
 
     const ActionButton = ({ icon: Icon, onClick, className = "", title }: {
         icon: any;
@@ -703,16 +733,16 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                             </p>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="space-y-4">
                                         <label className="text-sm font-medium text-gray-600 mb-2 block">
                                             चेकको फोटो:
                                         </label>
                                         {photo.file ? (
                                             <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300">
-                                                <img 
-                                                    src={photo.file} 
-                                                    alt="Check Photo" 
+                                                <img
+                                                    src={photo.file}
+                                                    alt="Check Photo"
                                                     className="w-full h-40 object-cover rounded-lg"
                                                 />
                                                 <button
@@ -964,6 +994,12 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                     <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">भुक्तानी सम्बन्धी विवरण</h3>
                         <div className="overflow-x-auto">
+                            <button
+                                type="button"
+                                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                onClick={() => setPaymentDetailModalOpen(true)}>
+                                नयाँ प्रविष्टी गर्नुहोस
+                            </button>
                             <table className="min-w-full">
                                 <thead>
                                     <tr className="border-b border-gray-200">
@@ -977,16 +1013,16 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {INSTALLMENT_DESC.map((item, index) => (
+                                    {paymentDetails.map((item, index) => (
                                         <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.id)}</td>
                                             <td className="py-3 px-4 text-gray-900 text-sm">
                                                 <div>{item.title}</div>
                                             </td>
                                             <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">-</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">-</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">-</td>
+                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.amount_paid)}</td>
+                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.payment_percent)}%</td>
+                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.physical_progress)}%</td>
                                             <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
                                                 <button
                                                     type="button"
@@ -1018,22 +1054,40 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तानी गरिएको रकम:</p>
-                                    <p className="text-lg font-semibold">-</p>
+                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(totalPaid.toFixed(2))}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तानी हुन बाकी रकम:</p>
-                                    <p className="text-lg font-semibold">-</p>
+                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(remainingAmount.toFixed(2))}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तनी प्रतिशत (%):</p>
-                                    <p className="text-lg font-semibold">-%</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(totalPercent.toFixed(2))}%
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भौतिक प्रगती (%):</p>
-                                    <p className="text-lg font-semibold">-%</p>
+                                    <p className="text-lg font-semibold">{toNepaliNumber(maxProgress)}%</p>
                                 </div>
                             </div>
                         </div>
+
+                        {isPaymentDetailModalOpen && (
+                            <PaymentDetailModal
+                                onClose={() => setPaymentDetailModalOpen(false)}
+                                onSave={savePaymentDetails}
+                                usedTitles={paymentDetails.map(p => p.title)} // Pass used titles here
+                                initialData={{
+                                    title: '',
+                                    amount_paid: '',
+                                    payment_percent: 0,
+                                    physical_progress: 0,
+                                    agreement_amount: parseFloat(project.budget) || 0
+                                }}
+                            />
+                        )}
+
                     </div>
                 )
             default:
@@ -1057,7 +1111,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${activeTab === tab
+                                    className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap transition-colors duration-200 ${activeTab === tab
                                         ? 'border-blue-500 text-blue-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}

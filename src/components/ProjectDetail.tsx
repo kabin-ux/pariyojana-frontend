@@ -285,54 +285,54 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
     const token = localStorage.getItem('access_token');
 
-    const handleSavePosition = async (rows: FormRow[]) => {
-        try {
-            for (const row of rows) {
-                const formData = new FormData();
-                formData.append("serial_no", row.id.toString());
-                formData.append("project", project.serial_number);
-                formData.append("post", row.post);
-                formData.append("full_name", row.full_name);
-                formData.append("address", row.address);
-                formData.append("gender", row.gender);
-                formData.append("citizenship_no", row.citizenship_no);
-                formData.append("contact_no", row.contact_no);
-                if (row.citizenship_front) formData.append("citizenship_front", row.citizenship_front);
-                if (row.citizenship_back) formData.append("citizenship_back", row.citizenship_back);
+   const handleSavePosition = async (rows: FormRow[]) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
 
-                if (row.id) {
-                    // Edit existing member
-                    await axios.patch(
-                        `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`,
-                        formData,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        }
-                    );
-                } else {
-                    // Add new member
-                    await axios.post(
-                        `http://localhost:8000/api/projects/${project.serial_number}/official-details/`,
-                        formData,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        }
-                    );
-                }
-            }
-            loadConsumerCommitteeDetails();
-            alert("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
-        } catch (error) {
-            console.error("Error saving official details:", error);
-            alert("पदाधिकारी विवरण सेभ गर्न सकिएन।");
-        }
-    };
+    const savePromises = rows.map(async (row) => {
+      const formData = new FormData();
+      formData.append("project", project.serial_number);
+      formData.append("post", row.post);
+      formData.append("full_name", row.full_name);
+      formData.append("address", row.address);
+      formData.append("gender", row.gender);
+      formData.append("citizenship_no", row.citizenship_no);
+      formData.append("contact_no", row.contact_no);
+      
+      // More reliable file checking
+      if (row.citizenship_front && typeof row.citizenship_front === 'object') {
+        formData.append("citizenship_front", row.citizenship_front);
+      }
+      if (row.citizenship_back && typeof row.citizenship_back === 'object') {
+        formData.append("citizenship_back", row.citizenship_back);
+      }
+
+      const url = row.id 
+        ? `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`
+        : `http://localhost:8000/api/projects/${project.serial_number}/official-details/`;
+
+      return axios({
+        method: row.id ? 'patch' : 'post',
+        url,
+        data: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    });
+
+    await Promise.all(savePromises);
+    loadConsumerCommitteeDetails();
+    toast.success("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
+  } catch (error) {
+    console.error("Error saving official details:", error);
+    toast.error("पदाधिकारी विवरण सेभ गर्न सकिएन।");
+  }
+};
 
     const handleSaveResearch = async (rows: FormRow[]) => {
         try {
@@ -783,7 +783,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">उपभोक्ता समिति गठन मिति:</p>
-                                        <p className="text-gray-900">{committeeDetail.formation_date || '-'}</p>
+                                        <p className="text-gray-900">{toNepaliNumber(committeeDetail.formation_date) || '-'}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">प्रतिनिधिको नाम:</p>
@@ -1090,19 +1090,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">लागत अनुमान:</p>
-                                    <p className="text-lg font-semibold">{formatBudget(costDetail?.estimated_cost)}</p>
+                                    <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.estimated_cost))}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी प्रतिशत:</p>
-                                    <p className="text-lg font-semibold">{costDetail?.contingency_percent || '0'}%</p>
+                                    <p className="text-lg font-semibold">{toNepaliNumber(costDetail?.contingency_percent) || '0'}%</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी रकम:</p>
-                                    <p className="text-lg font-semibold">{formatBudget(costDetail?.contingency_amount)}</p>
+                                    <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.contingency_amount))}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल लागत अनुमान:</p>
-                                    <p className="text-lg font-semibold">{formatBudget(costDetail?.total_estimated_cost)}</p>
+                                    <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.total_estimated_cost))}</p>
                                 </div>
                             </div>
                         </div>
@@ -1544,7 +1544,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                     </div>
                 </div>
                 <div className="text-sm text-gray-600">
-                    <span className="text-gray-900 font-medium">परियोजना ID: {project.serial_number}</span>
+                    <span className="text-gray-900 font-medium">परियोजना ID: {toNepaliNumber(project.serial_number)}</span>
                 </div>
             </div>
 

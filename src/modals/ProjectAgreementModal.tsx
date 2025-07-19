@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
+import NepaliDate from 'nepali-date-converter';
+import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
+import 'nepali-datepicker-reactjs/dist/index.css';
 
 interface FormData {
     totalAmount: string;
@@ -16,7 +19,9 @@ interface FormData {
 
 interface ProjectAgreementModalProps {
     onClose: () => void;
-    onSave: () => void;
+    onSave: (data: FormData) => void;
+    agreementData?: FormData;
+    projectId?: string;
 }
 
 const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData, projectId }) => {
@@ -59,6 +64,15 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
         }));
     };
 
+    const handleDateChange = (field: keyof FormData, nepaliDate: string) => {
+        // Convert Nepali date to English date if needed for backend
+        // Or store as Nepali date if your backend supports it
+        setFormData(prev => ({
+            ...prev,
+            [field]: nepaliDate
+        }));
+    };
+
     // Calculate percentage values dynamically whenever amounts change
     useEffect(() => {
         const agreementAmount = parseFloat(formData.agreement_amount) || 0;
@@ -77,8 +91,8 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
     }, [formData.agreement_amount, formData.municipality_amount]);
 
     const handleSubmit = () => {
-        onSave(formData)    // You can perform API submission here if needed
-        onClose()
+        onSave(formData);
+        onClose();
     };
 
     const handleCancel = () => {
@@ -153,13 +167,13 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                                     कार्यारम्भ मिति <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <input
-                                        type="date"
+                                    <NepaliDatePicker
                                         value={formData.work_order_date}
-                                        onChange={(e) => handleInputChange('work_order_date', e.target.value)}
-                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        onChange={(value) => handleDateChange('work_order_date', value)}
+                                        options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                        inputClassName="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        className="border border-gray-300 rounded-md"
                                     />
-                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                                 </div>
                             </div>
                         </div>
@@ -171,13 +185,13 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                                     साझेदारी मिति <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <input
-                                        type="date"
+                                    <NepaliDatePicker
                                         value={formData.agreement_date}
-                                        onChange={(e) => handleInputChange('agreement_date', e.target.value)}
-                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        onChange={(value) => handleDateChange('agreement_date', value)}
+                                        options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                        inputClassName="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        className="border border-gray-300 rounded-md"
                                     />
-                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                                 </div>
                             </div>
 
@@ -210,13 +224,13 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                                     कार्य समप्ति मिति <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <input
-                                        type="date"
+                                    <NepaliDatePicker
                                         value={formData.completion_date}
-                                        onChange={(e) => handleInputChange('completion_date', e.target.value)}
-                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        onChange={(value) => handleDateChange('completion_date', value)}
+                                        options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                        inputClassName="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        className="border border-gray-300 rounded-md"
                                     />
-                                    <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                                 </div>
                             </div>
                         </div>
@@ -236,7 +250,6 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                         className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                     >
                         {agreementData ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्'}
-
                     </button>
                 </div>
             </div>

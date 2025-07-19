@@ -7,15 +7,19 @@ export const useInstallmentDetails = (projectId: number) => {
     const [secondInstallment, setSecondInstallment] = useState<InstallmentDetails[] | null>(null);
     const [thirdInstallment, setThirdInstallment] = useState<InstallmentDetails[] | null>(null);
 
+    const [paymentDetails, setPaymentDetails] = useState([]);
+
     const [bankLoading, setBankLoading] = useState(true);
     const [firstLoading, setFirstLoading] = useState(true);
     const [secondLoading, setSecondLoading] = useState(true);
     const [thirdLoading, setThirdLoading] = useState(true);
+    const [fourthLoading, setFourthLoading] = useState(true);
 
     const [bankError, setBankError] = useState<string | null>(null);
     const [firstError, setFirstError] = useState<string | null>(null);
     const [secondError, setSecondError] = useState<string | null>(null);
     const [thirdError, setThirdError] = useState<string | null>(null);
+    const [fourthError, setFourthError] = useState<string | null>(null);
 
     const fetchBanks = async () => {
         try {
@@ -65,12 +69,25 @@ export const useInstallmentDetails = (projectId: number) => {
         }
     };
 
+    const fetchPaymentDetails = async () => {
+        try {
+            setFourthLoading(true);
+            const res = await axios.get(`http://localhost:8000/api/projects/${projectId}/payment-details/`);
+            setPaymentDetails(res.data);
+        } catch (err) {
+            setFourthError('तेस्रो किस्ताको विवरण लोड गर्न समस्या भयो।');
+        } finally {
+            setFirstLoading(false);
+        }
+    };
+
     const refetch = () => {
         if (projectId) {
             fetchBanks();
             fetchFirst();
             fetchSecond();
             fetchThird();
+            fetchPaymentDetails();
         }
     };
 
@@ -83,12 +100,15 @@ export const useInstallmentDetails = (projectId: number) => {
         firstInstallment,
         secondInstallment,
         thirdInstallment,
+        paymentDetails,
         firstLoading,
         secondLoading,
         thirdLoading,
+        fourthLoading,
         firstError,
         secondError,
         thirdError,
+        fourthError,
         refetch, // 👈 expose this for reuse after upload
     };
 };

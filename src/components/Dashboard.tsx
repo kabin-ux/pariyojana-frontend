@@ -218,7 +218,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Ward Wise budget Distribution */}
-            <div className="bg-white rounded-lg shadow border p-6 md:col-span-2">
+            <div className="bg-white rounded-lg shadow p-6 mt-6 md:col-span-2">
               <h3 className="text-lg font-semibold mb-4">वडागत वितिय विनियोजन (%)</h3>
               <Bar
                 data={{

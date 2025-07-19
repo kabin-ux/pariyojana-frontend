@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import type { SettingsItem, ThematicArea, SubThematicArea, Group, Unit, Template } from '../types/settings';
 import { dependentDataApi } from '../services/settingsApi';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface AddEditModalProps {
     open: boolean;
@@ -271,7 +272,7 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
                         </label>
                         <input
                             type="text"
-                            value={formData.year || ''}
+                            value={toNepaliNumber (formData.year) || ''}
                             onChange={(e) => handleInputChange('year', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             required

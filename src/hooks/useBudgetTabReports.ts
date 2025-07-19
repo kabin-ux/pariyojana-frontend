@@ -1,0 +1,146 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+export const useBudgetReports = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Chart States
+    const [municipalityLevelBudgetChart, setMunicipalityLevelBudgetChart] = useState([]);
+    const [federalGovernmentBudgetChart, setFederalGovernmentBudgetChart] = useState([]);
+    const [municipalityPrideBudgetChart, setMunicipalityPrideBudgetChart] = useState([]);
+    const [provincialGovernmentBudgetChart, setProvincialGovernmentBudgetChart] = useState([]);
+    const [thematicBudgetChart, setThematicBudgetChart] = useState([]);
+    const [wardLevelBudgetChart, setWardLevelBudgetChart] = useState([]);
+
+    // Excel Report States
+    const [municipalityLevelBudgetReport, setMunicipalityLevelBudgetReport] = useState([]);
+    const [federalGovernmentBudgetReport, setFederalGovernmentBudgetReport] = useState([]);
+    const [municipalityPrideBudgetReport, setMunicipalityPrideBudgetReport] = useState([]);
+    const [provincialGovernmentBudgetReport, setProvincialGovernmentBudgetReport] = useState([]);
+    const [thematicBudgetReport, setThematicBudgetReport] = useState([]);
+    const [wardLevelBudgetReport, setWardLevelBudgetReport] = useState([]);
+
+    // PDF Report States
+    const [municipalityLevelBudgetReportPDF, setMunicipalityLevelBudgetReportPDF] = useState([]);
+    const [federalGovernmentBudgetReportPDF, setFederalGovernmentBudgetReportPDF] = useState([]);
+    const [municipalityPrideBudgetReportPDF, setMunicipalityPrideBudgetReportPDF] = useState([]);
+    const [provincialGovernmentBudgetReportPDF, setProvincialGovernmentBudgetReportPDF] = useState([]);
+    const [thematicBudgetReportPDF, setThematicBudgetReportPDF] = useState([]);
+    const [wardLevelBudgetReportPDF, setWardLevelBudgetReportPDF] = useState([]);
+
+    const fetchBudgetReports = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [
+                municipalityLevelBudgetChartRes,
+                federalGovernmentBudgetChartRes,
+                municipalityPrideBudgetChartRes,
+                provincialGovernmentBudgetChartRes,
+                thematicBudgetChartRes,
+                wardLevelBudgetChartRes,
+
+                municipalityLevelBudgetReportRes,
+                federalGovernmentBudgetReportRes,
+                municipalityPrideBudgetReportRes,
+                provincialGovernmentBudgetReportRes,
+                thematicBudgetReportRes,
+                wardLevelBudgetReportRes,
+
+                municipalityLevelBudgetReportPDFRes,
+                federalGovernmentBudgetReportPDFRes,
+                municipalityPrideBudgetReportPDFRes,
+                provincialGovernmentBudgetReportPDFRes,
+                thematicBudgetReportPDFRes,
+                wardLevelBudgetReportPDFRes,
+            ] = await Promise.all([
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitylevel-chart/'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/federalgov-chart/'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride-chart/'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer-chart/'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee-chart/'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel-chart/'),
+
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitylevel/report/?type=excel'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/federalgov/report/?type=excel'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride/report/?type=excel'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer/report/?type=excel'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee/report/?type=excel'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel/report/?type=excel'),
+
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitylevel/report/?type=pdf'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/federalgov/report/?type=pdf'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/municipalitypride/report/?type=pdf'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/provinciallytransfer/report/?type=pdf'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/thematiccommittee/report/?type=pdf'),
+                axios.get('http://localhost:8000/api/planning/budget-committee/wardlevel/report/?type=pdf'),
+            ]);
+
+            // Set Chart Data
+            setMunicipalityLevelBudgetChart(municipalityLevelBudgetChartRes.data || []);
+            setFederalGovernmentBudgetChart(federalGovernmentBudgetChartRes.data || []);
+            setMunicipalityPrideBudgetChart(municipalityPrideBudgetChartRes.data || []);
+            setProvincialGovernmentBudgetChart(provincialGovernmentBudgetChartRes.data || []);
+            setThematicBudgetChart(thematicBudgetChartRes.data || []);
+            setWardLevelBudgetChart(wardLevelBudgetChartRes.data || []);
+
+            // Set Excel Report Data
+            setMunicipalityLevelBudgetReport(municipalityLevelBudgetReportRes.data || []);
+            setFederalGovernmentBudgetReport(federalGovernmentBudgetReportRes.data || []);
+            setMunicipalityPrideBudgetReport(municipalityPrideBudgetReportRes.data || []);
+            setProvincialGovernmentBudgetReport(provincialGovernmentBudgetReportRes.data || []);
+            setThematicBudgetReport(thematicBudgetReportRes.data || []);
+            setWardLevelBudgetReport(wardLevelBudgetReportRes.data || []);
+
+            // Set PDF Report Data
+            setMunicipalityLevelBudgetReportPDF(municipalityLevelBudgetReportPDFRes.data || []);
+            setFederalGovernmentBudgetReportPDF(federalGovernmentBudgetReportPDFRes.data || []);
+            setMunicipalityPrideBudgetReportPDF(municipalityPrideBudgetReportPDFRes.data || []);
+            setProvincialGovernmentBudgetReportPDF(provincialGovernmentBudgetReportPDFRes.data || []);
+            setThematicBudgetReportPDF(thematicBudgetReportPDFRes.data || []);
+            setWardLevelBudgetReportPDF(wardLevelBudgetReportPDFRes.data || []);
+        } catch (err) {
+            console.error(err);
+            setError('बजेट रिपोर्ट लोड गर्न असफल भयो।');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchBudgetReports();
+    }, []);
+
+    return {
+        loading,
+        error,
+
+        // Charts
+        municipalityLevelBudgetChart,
+        federalGovernmentBudgetChart,
+        municipalityPrideBudgetChart,
+        provincialGovernmentBudgetChart,
+        thematicBudgetChart,
+        wardLevelBudgetChart,
+
+        // Excel Reports
+        municipalityLevelBudgetReport,
+        federalGovernmentBudgetReport,
+        municipalityPrideBudgetReport,
+        provincialGovernmentBudgetReport,
+        thematicBudgetReport,
+        wardLevelBudgetReport,
+
+        // PDF Reports
+        municipalityLevelBudgetReportPDF,
+        federalGovernmentBudgetReportPDF,
+        municipalityPrideBudgetReportPDF,
+        provincialGovernmentBudgetReportPDF,
+        thematicBudgetReportPDF,
+        wardLevelBudgetReportPDF,
+
+        // Fetch function
+        fetchBudgetReports,
+    };
+};

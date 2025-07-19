@@ -217,7 +217,7 @@ const Settings: React.FC = () => {
       case 'विषयगत क्षेत्र':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.committee_name || '-'}</td>
             <td className="py-3 px-4">
@@ -247,7 +247,7 @@ const Settings: React.FC = () => {
       case 'उप-क्षेत्र':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.thematic_area || '-'}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
             <td className="py-3 px-4">
@@ -277,7 +277,7 @@ const Settings: React.FC = () => {
       case 'समुह':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.thematic_area || '-'}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.sub_area || '-'}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
@@ -308,7 +308,7 @@ const Settings: React.FC = () => {
       case 'इकाई':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.short_name || '-'}</td>
             <td className="py-3 px-4">
@@ -339,8 +339,8 @@ const Settings: React.FC = () => {
       case 'आर्थिक वर्ष':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
-            <td className="py-3 px-4 text-gray-900">{item.year}</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.year)}</td>
             <td className="py-3 px-4">
               <ToggleSwitch
                 enabled={item.is_active}
@@ -368,7 +368,7 @@ const Settings: React.FC = () => {
       case 'नमुनाहरु':
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.code || '-'}</td>
             <td className="py-3 px-4 text-gray-900">{typedItem.title || item.name}</td>
             <td className="py-3 px-4">
@@ -392,7 +392,7 @@ const Settings: React.FC = () => {
       default:
         return (
           <>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1) }</td>
+            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
             <td className="py-3 px-4">
               <ToggleSwitch
@@ -444,8 +444,8 @@ const Settings: React.FC = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm cursor-pointer ${activeTab === tab
-                    ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-500'
-                    : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-500'
+                  : 'text-gray-700 hover:bg-gray-50'
                   }`}
               >
                 {tab}

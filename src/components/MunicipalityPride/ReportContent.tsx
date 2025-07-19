@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react';
-import { useReports } from '../../hooks/useReports';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useMunicipalityPrideReports } from '../../hooks/useMunicipalityPrideTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -19,7 +19,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 
         municipalityPrideReportPDF,
         municipalityPrideSubmitBudgetReportPDF,
-    } = useReports();
+    } = useMunicipalityPrideReports();
 
     let chartData = {};
     let reportTitle = '';
@@ -153,19 +153,27 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
     const handleDownload = async (url: string, filename: string) => {
         console.log('Download requested:', { url, filename });
 
+        if (!url || url.trim() === '') {
+            alert('डाउनलोड लिंक उपलब्ध छैन।');
+            return;
+        }
+
+        // Clean the URL - remove any extra whitespace and ensure proper format
+        const cleanUrl = url.trim();
+
         // Check if URL is from same origin or if it's a relative path
         const currentOrigin = window.location.origin;
-        const isRelativeUrl = !url.startsWith('http');
-        const isSameOrigin = isRelativeUrl || url.startsWith(currentOrigin);
+        const isRelativeUrl = !cleanUrl.startsWith('http');
+        const isSameOrigin = isRelativeUrl || cleanUrl.startsWith(currentOrigin);
 
         if (isSameOrigin) {
             // For same-origin URLs, try direct download first
             console.log('Same origin detected, trying direct download');
-            handleDirectDownload(url, filename);
+            handleDirectDownload(cleanUrl, filename);
         } else {
             // For cross-origin URLs, try fetch first, then fallback to direct
             console.log('Cross-origin detected, trying fetch download');
-            await handleFetchDownload(url, filename);
+            await handleFetchDownload(cleanUrl, filename);
         }
     };
 

@@ -183,7 +183,7 @@ const Authentication: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">स्थिति:</p>
-                  <p className="text-gray-900 font-medium">{selectedDocument.status}</p>
+                  <p className="text-gray-900 font-medium">{selectedDocument.status_nepali}</p>
                 </div>
                 {selectedDocument.file_path && (
                   <div>
@@ -255,11 +255,11 @@ const Authentication: React.FC = () => {
                   <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
                   <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-sm ${item.status.includes('स्वीकृत') ? 'bg-green-100 text-green-800' :
-                      item.status.includes('जाँच') ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'
+                    <span className={`px-2 py-1 rounded text-sm ${item.status_nepali.includes('स्वीकृत') ? 'bg-green-100 text-green-800' :
+                      item.status_nepali.includes('जाँच गरिएको') ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
                       }`}>
-                      {item.status}
+                      {item.status_nepali}
                     </span>
                   </td>
                   <td className="py-3 px-4">

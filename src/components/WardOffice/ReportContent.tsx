@@ -1,8 +1,8 @@
 import { Download } from 'lucide-react';
-import { useReports } from '../../hooks/useReports';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useWardReports } from '../../hooks/useWardTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -30,7 +30,13 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
     municipalityLevelReportPDF,
     prioritizedWardReportPDF,
     prioritizedWardThematicReportPDF,
-  } = useReports();
+
+    downloadWardLevelExcel,
+    downloadWardLevelPDF
+
+  } = useWardReports();
+
+  console.log(wardLevelChart)
 
   let chartData = {};
   let reportTitle = '';
@@ -180,21 +186,35 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 
   // Main download handler that tries different approaches
   const handleDownload = async (url: string, filename: string) => {
-    console.log('Download requested:', { url, filename });
+    if (!url) {
+      alert('डाउनलोड लिंक उपलब्ध छैन।');
+      return;
+    }
 
-    // Check if URL is from same origin or if it's a relative path
-    const currentOrigin = window.location.origin;
-    const isRelativeUrl = !url.startsWith('http');
-    const isSameOrigin = isRelativeUrl || url.startsWith(currentOrigin);
+    try {
+      // Create a temporary anchor tag
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank'; // Open in new tab
+      link.rel = 'noopener noreferrer';
+      link.download = filename || 'download';
 
-    if (isSameOrigin) {
-      // For same-origin URLs, try direct download first
-      console.log('Same origin detected, trying direct download');
-      handleDirectDownload(url, filename);
-    } else {
-      // For cross-origin URLs, try fetch first, then fallback to direct
-      console.log('Cross-origin detected, trying fetch download');
-      await handleFetchDownload(url, filename);
+      // Append to body (required for Firefox)
+      document.body.appendChild(link);
+
+      // Trigger click
+      link.click();
+
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('डाउनलोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।');
+
+      // Fallback - open in new tab
+      window.open(url, '_blank');
     }
   };
 
@@ -224,7 +244,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
             </div>
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => handleDownload(excelLink, `${reportTitle}.xlsx`)}
+                onClick={() => downloadWardLevelExcel(reportTitle)}
                 disabled={!excelLink}
                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
                   ? 'hover:bg-gray-50 cursor-pointer'
@@ -236,7 +256,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
               </button>
 
               <button
-                onClick={() => handleDownload(pdfLink, `${reportTitle}.pdf`)}
+                onClick={() => downloadWardLevelPDF(reportTitle)}
                 disabled={!pdfLink}
                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
                   ? 'hover:bg-gray-50 cursor-pointer'
@@ -348,18 +368,17 @@ const ChartCard = React.memo(function ChartCard({
     '#ec4899', '#14b8a6', '#6366f1', '#facc15', '#fb923c', '#4ade80'
   ];
 
-  const pieData = {
+  // Memoize chart data
+  const pieData = useMemo(() => ({
     labels,
-    datasets: [
-      {
-        data: percentages,
-        backgroundColor: colors.slice(0, labels.length),
-        borderWidth: 1,
-      },
-    ],
-  };
+    datasets: [{
+      data: percentages,
+      backgroundColor: colors.slice(0, labels.length),
+      borderWidth: 1,
+    }],
+  }), [labels, percentages]);
 
-  const options = {
+  const options = useMemo(() => ({
     animation: false,
     plugins: {
       legend: {
@@ -368,7 +387,7 @@ const ChartCard = React.memo(function ChartCard({
       },
     },
     cutout: '70%',
-  };
+  }), []);
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">

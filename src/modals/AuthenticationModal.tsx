@@ -9,6 +9,7 @@ interface User {
     first_name: string;
     last_name: string;
     role?: string;
+    full_name?: string;
 }
 
 interface AuthenticationModalProps {
@@ -26,7 +27,7 @@ export default function AuthenticationModal({
     editMapCostId,
     onAuthenticationSent 
 }: AuthenticationModalProps) {
-      const { user } = useAuth();
+    const { user } = useAuth();
     
     const [currentModal, setCurrentModal] = useState('form');
     const [users, setUsers] = useState<User[]>([]);
@@ -36,11 +37,9 @@ export default function AuthenticationModal({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Fetch users on component mount
     useEffect(() => {
         fetchUsers();
     }, []);
-    console.log("document data", documentData)
 
     const fetchUsers = async () => {
         const token = localStorage.getItem('access_token')
@@ -77,6 +76,7 @@ export default function AuthenticationModal({
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                     },
                     body: JSON.stringify({
                         checker: selectedChecker,
@@ -94,10 +94,8 @@ export default function AuthenticationModal({
             const result = await response.json();
             console.log('Authentication sent successfully:', result);
             
-            // Move to details modal to show success
             setCurrentModal('details');
             
-            // Call callback if provided
             if (onAuthenticationSent) {
                 onAuthenticationSent();
             }
@@ -110,13 +108,13 @@ export default function AuthenticationModal({
     };
 
     const getUserDisplayName = (user: User) => {
-        const fullName = `${user.full_name}`.trim();
+        const fullName = `${user.first_name} ${user.last_name}`.trim();
         return fullName || user.username;
     };
 
     const FormModal = () => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col" style={{ maxHeight: '90vh' }}>
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-800">प्रमाणीकरण प्रक्रिया</h2>
@@ -128,8 +126,8 @@ export default function AuthenticationModal({
                     </button>
                 </div>
 
-                {/* Content */}
-                <div className="p-6">
+                {/* Scrollable Content */}
+                <div className="p-6 overflow-y-auto flex-grow">
                     {error && (
                         <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
                             {error}
@@ -186,7 +184,7 @@ export default function AuthenticationModal({
                                         <option value="">चेक जाँच गर्ने व्यक्ति छान्नुहोस्</option>
                                         {users.map((user) => (
                                             <option key={user.id} value={user.id}>
-                                                {getUserDisplayName(user)} {user.role && `(${user.role})`}
+                                                {user.full_name} {user.role && `(${user.role})`}
                                             </option>
                                         ))}
                                     </select>
@@ -207,22 +205,12 @@ export default function AuthenticationModal({
                                         <option value="">स्वीकृत गर्ने व्यक्ति छान्नुहोस्</option>
                                         {users.map((user) => (
                                             <option key={user.id} value={user.id}>
-                                                {getUserDisplayName(user)} {user.role && `(${user.role})`}
+                                                {user.full_name} {user.role && `(${user.role})`}
                                             </option>
                                         ))}
                                     </select>
                                     <ChevronDown size={20} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                                 </div>
-                            </div>
-
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={handleSendAuthentication}
-                                    disabled={loading || !selectedChecker || !selectedApprover}
-                                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                >
-                                    {loading ? 'पठाउँदै...' : 'चेक जाँच गर्न पठाउनुहोस'}
-                                </button>
                             </div>
                         </div>
 
@@ -240,17 +228,31 @@ export default function AuthenticationModal({
                         </div>
                     </div>
                 </div>
+
+                {/* Fixed Footer with Button */}
+                <div className="p-4 border-t bg-gray-50 sticky bottom-0">
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleSendAuthentication}
+                            disabled={loading || !selectedChecker || !selectedApprover}
+                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            {loading ? 'पठाउँदै...' : 'चेक जाँच गर्न पठाउनुहोस'}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
 
     const DetailsModal = () => {
         const checkerUser = users.find(u => u.id === selectedChecker);
+        console.log(checkerUser)
         const approverUser = users.find(u => u.id === selectedApprover);
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col" style={{ maxHeight: '90vh' }}>
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800">प्रमाणीकरण प्रक्रिया</h2>
@@ -262,8 +264,8 @@ export default function AuthenticationModal({
                         </button>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6">
+                    {/* Scrollable Content */}
+                    <div className="p-6 overflow-y-auto flex-grow">
                         <div className="flex gap-8">
                             {/* Left Section */}
                             <div className="flex-1">
@@ -354,10 +356,22 @@ export default function AuthenticationModal({
                             </div>
                         </div>
                     </div>
+
+                    {/* Fixed Footer with Button */}
+                    <div className="p-4 border-t bg-gray-50 sticky bottom-0">
+                        <div className="flex justify-center">
+                            <button
+                                onClick={onClose}
+                                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                            >
+                                बन्द गर्नुहोस्
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     };
 
     return currentModal === 'form' ? <FormModal /> : <DetailsModal />;
-}               
+}

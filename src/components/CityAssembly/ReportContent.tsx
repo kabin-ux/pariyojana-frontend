@@ -1,8 +1,8 @@
 import { Download } from 'lucide-react';
-import { useReports } from '../../hooks/useReports';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import React from 'react';
+import { useCityCouncilReports } from '../../hooks/useCityCouncilTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,7 +20,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         approvedReport,
         submittedReportPDF,
         approvedReportPDF,
-    } = useReports();
+    } = useCityCouncilReports();
 
     let chartData = {};
     let reportTitle = '';

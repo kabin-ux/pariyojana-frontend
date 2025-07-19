@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react';
-import { useReports } from '../../hooks/useReports';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useBudgetReports } from '../../hooks/useBudgetTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -31,7 +31,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         provincialGovernmentBudgetReportPDF,
         thematicBudgetReportPDF,
         wardLevelBudgetReportPDF,
-    } = useReports();
+    } = useBudgetReports();
 
     let chartData = {};
     let reportTitle = '';

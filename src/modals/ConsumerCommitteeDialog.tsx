@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
+import 'nepali-datepicker-reactjs/dist/index.css';
 
 interface ConsumerCommitteeData {
     id?: number;
@@ -105,12 +107,12 @@ const ConsumerCommitteeDialog: React.FC<Props> = ({
 
                     <div>
                         <label className="block text-sm font-medium">गठन मिति</label>
-                        <input
-                            type="date"
+                        <NepaliDatePicker
                             value={formData.formation_date}
-                            onChange={e => handleChange('formation_date', e.target.value)}
-                            className="w-full mt-1 px-3 py-2 border rounded-md"
-                            required
+                            onChange={(value) => handleChange('formation_date', value)}
+                            options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                            inputClassName="w-full mt-1 px-3 py-2 border rounded-md"
+                            className="border border-gray-300 rounded-md"
                         />
                     </div>
 

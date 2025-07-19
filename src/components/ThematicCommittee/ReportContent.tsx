@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react';
-import { useReports } from '../../hooks/useReports';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useThematicReports } from '../../hooks/useThematicTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -21,7 +21,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         wardRecommendedReportPDF,
         thematicReportPDF,
         thematicRecommendedReportPDF,
-    } = useReports();
+    } = useThematicReports();
 
     let chartData = {};
     let reportTitle = '';

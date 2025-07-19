@@ -144,7 +144,7 @@ const Inventory: React.FC = () => {
           </div>
         </div>
         <div className="text-sm text-gray-600">
-          <span className="text-gray-900 font-medium">आर्थिक वर्ष : २०८१/८२</span>
+          <span className="text-gray-900 font-medium">आर्थिक वर्ष : २०८२/८३</span>
         </div>
       </div>
 
@@ -197,7 +197,7 @@ const Inventory: React.FC = () => {
                   <td className="py-3 px-4">{renderDocumentCell(item.tax_clearence, item.id)}</td>
                   <td className="py-3 px-4">{renderDocumentCell(item.license_copy, item.id)}</td>
                   <td className="py-3 px-4">{renderDocumentCell(!!item.inventory_document, item.id)}</td>
-                  <td className="py-3 px-4">{renderActionCell(item.actions || ['edit', 'copy', 'file'], item.id)}</td>
+                  <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
                 </tr>
               ))}
             </tbody>

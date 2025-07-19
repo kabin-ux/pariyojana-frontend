@@ -174,7 +174,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                                     <td className="py-3 px-4 text-center">{item.has_consumer_committee ? '✓' : '✗'}</td>
                                     <td className="py-3 px-4 text-center">{item.has_agreement ? '✓' : '✗'}</td>
                                     <td className="py-3 px-4 text-center">{item.has_payment_installment ? '✓' : '✗'}</td>
-                                    <td className="py-3 px-4">
+                                    {/* <td className="py-3 px-4">
                                         <div className="flex items-center space-x-2">
                                             <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
                                                 <Edit className="w-4 h-4" />
@@ -187,7 +187,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                                             </button>
                                             <DropdownMenu id={item.id} onDelete={handleDelete} />
                                         </div>
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))}
                         </tbody>
