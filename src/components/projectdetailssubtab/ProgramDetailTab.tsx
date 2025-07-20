@@ -277,31 +277,19 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-200">
-            <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
-                  क्र.स.
-                </th>
-                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
-                  किसिम
-                </th>
-                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
-                  महिला
-                </th>
-                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
-                  पुरुष
-                </th>
-                <th className="text-center py-3 px-4 font-medium text-gray-900 border-r border-gray-200">
-                  अन्य
-                </th>
-                <th className="text-center py-3 px-4 font-medium text-gray-900">
-                  जम्मा
-                </th>
+        <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700 border-r">क्र.स.</th>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700 border-r">किसिम</th>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700 border-r">महिला</th>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700 border-r">पुरुष</th>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700 border-r">अन्य</th>
+                <th className="px-4 py-3 text-sm font-semibold text-center text-gray-700">जम्मा</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-100">
               {beneficiaryLoading ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">लोड हुँदै...</td>
@@ -312,19 +300,20 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
                 </tr>
               ) : (
                 beneficiaryData.map((item, index) => (
-                  <tr key={item.id || index} className="border-b border-gray-200">
-                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(index + 1)}</td>
-                    <td className="text-left py-3 px-4 border-r border-gray-200">{nepaliLabels[item.title]}</td>
-                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.female) ?? ''}</td>
-                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.male) ?? ''}</td>
-                    <td className="text-center py-3 px-4 border-r border-gray-200">{toNepaliNumber(item.other) ?? ''}</td>
-                    <td className="text-center py-3 px-4">{toNepaliNumber(item.total)}</td>
+                  <tr key={item.id || index} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm text-center text-gray-700 border-r">{toNepaliNumber(index + 1)}</td>
+                    <td className="px-4 py-3 text-sm text-left text-gray-700 border-r">{nepaliLabels[item.title]}</td>
+                    <td className="px-4 py-3 text-sm text-center text-gray-700 border-r">{toNepaliNumber(item.female) ?? ''}</td>
+                    <td className="px-4 py-3 text-sm text-center text-gray-700 border-r">{toNepaliNumber(item.male) ?? ''}</td>
+                    <td className="px-4 py-3 text-sm text-center text-gray-700 border-r">{toNepaliNumber(item.other) ?? ''}</td>
+                    <td className="px-4 py-3 text-sm text-center text-gray-700">{toNepaliNumber(item.total)}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
       </div>
 
       {isDialogOpen && (

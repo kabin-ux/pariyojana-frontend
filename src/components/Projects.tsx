@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Plus, MoreHorizontal, ChevronRight, ChevronLeft, Home, Edit, Trash2, X, Eye } from 'lucide-react';
+import { Search, Filter, Plus, MoreHorizontal, ChevronRight, ChevronLeft, Home, Edit, Trash2, X, Eye, Upload, Download } from 'lucide-react';
 import ProjectDetail from './ProjectDetail';
 import { useSettings } from '../hooks/useSetting';
 import { useProjects } from '../hooks/useProject';
 import { projectApi } from '../services/projectsApi';
 import { formatBudget, formatWardNumber, formatStatus, getStatusColor, getNameById, toNepaliNumber } from '../utils/formatters';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 interface ProjectsProps {
   onProjectSelect?: (projectId: string) => void;
@@ -37,6 +38,10 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const [formData, setFormData] = useState<NewProjectForm>({
     project_name: '',
@@ -55,7 +60,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     description: '',
     fiscal_year: ''
   });
-
 
   // Fetch dynamic dropdown data
   const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
@@ -107,7 +111,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-
   const handleEdit = async (id: number) => {
     try {
       // Find the project to edit
@@ -140,9 +143,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       setIsDialogOpen(true);
       setDropdownOpen(null);
       setEditingProjectId(projectToEdit.serial_number);
-
-      // If you need to track the project being edited
-      // setSelectedProject(projectToEdit);
 
     } catch (error) {
       console.error('Error preparing edit:', error);
@@ -211,10 +211,8 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       if (editingProjectId) {
         // Update existing project
         await projectApi.update(editingProjectId, submitData);
-
         toast.success('Project updated successfully');
-      }
-      else {
+      } else {
         // Create new project
         await projectApi.create(submitData);
         console.log('Project added successfully');
@@ -243,7 +241,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       setEditingProjectId(null);
     } catch (error) {
       console.error('Error saving project:', error);
-      toast.error(selectedProject ? 'परियोजना अपडेट गर्न सकिएन' : 'परियोजना थप्न सकिएन');
       toast.error(editingProjectId ? 'परियोजना अपडेट गर्न सकिएन' : 'परियोजना थप्न सकिएन');
     } finally {
       setIsSubmitting(false);
@@ -269,13 +266,121 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       description: '',
       fiscal_year: ''
     });
-    setEditingProjectId(null)
+    setEditingProjectId(null);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  // Handle file selection for import
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check if it's an Excel file
+      const allowedTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel', // .xls
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('कृपया Excel फाइल मात्र छान्नुहोस् (.xlsx वा .xls)');
+        return;
+      }
+      
+      setSelectedFile(file);
+    }
+  };
+
+  // Handle Excel import
+  const handleImport = async () => {
+    if (!selectedFile) {
+      toast.error('कृपया पहिले फाइल छान्नुहोस्');
+      return;
+    }
+
+    setIsImporting(true);
+    const token = localStorage.getItem('access_token')
+    try {
+      
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/projects/projects/import_excel/',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+          },
+        }
+      );
+
+      toast.success('Excel फाइल सफलतापूर्वक आयात भयो');
+      setIsImportDialogOpen(false);
+      setSelectedFile(null);
+      refetchProjects(); // Refresh the projects list
+      
+    } catch (error: any) {
+      console.error('Import error:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Excel फाइल आयात गर्न सकिएन';
+      toast.error(errorMessage);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  // Handle Excel export
+  const handleExport = async () => {
+    setIsExporting(true);
+    const token = localStorage.getItem('access_token')
+    try {
+      const response = await axios.get(
+        'http://127.0.0.1:8000/api/projects/projects/export/',
+        {
+          responseType: 'blob',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Create blob with correct MIME type
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split('T')[0];
+      link.download = `परियोजनाहरू_${currentDate}.xlsx`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Excel फाइल सफलतापूर्वक डाउनलोड भयो');
+      
+    } catch (error: any) {
+      console.error('Export error:', error);
+      const errorMessage = error.response?.data?.message || 'Excel फाइल निर्यात गर्न सकिएन';
+      toast.error(errorMessage);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Cancel import dialog
+  const handleImportCancel = () => {
+    setIsImportDialogOpen(false);
+    setSelectedFile(null);
+  };
 
   if (selectedProject) {
     return (
@@ -308,27 +413,30 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">परियोजनाहरू</h1>
-            <button
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ परियोजना थप्नुहोस्</span>
-            </button>
-            <button
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ import थप्नुहोस्</span>
-            </button>
-            <button
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>नयाँ export थप्नुहोस्</span>
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setIsDialogOpen(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>नयाँ परियोजना थप्नुहोस्</span>
+              </button>
+              <button
+                onClick={() => setIsImportDialogOpen(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                <span>नयाँ import थप्नुहोस्</span>
+              </button>
+              <button
+                onClick={handleExport}
+                disabled={isExporting}
+                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                <span>{isExporting ? 'निर्यात गर्दै...' : 'नयाँ export थप्नुहोस्'}</span>
+              </button>
+            </div>
           </div>
 
           {/* Search and Filter */}
@@ -362,7 +470,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
           )}
 
           {/* Table */}
-          <div className="bg-white rounded-xl  overflow-hidden">
+          <div className="bg-white rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 sticky top-0 z-10">
@@ -474,8 +582,6 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
             </div>
           </div>
 
-
-          {/* Pagination */}
           {/* Pagination */}
           <div className="flex items-center justify-between mt-6">
             <div className="text-sm text-gray-600">
@@ -515,7 +621,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         </div>
       </main>
 
-      {/* Dialog */}
+      {/* Add/Edit Project Dialog */}
       {isDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
@@ -793,10 +899,97 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (editingProjectId ? 'अपडेट गर्दै...' : 'थप्दै...') : (editingProjectId ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्')}
-
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Import Dialog */}
+      {isImportDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md m-4">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Excel फाइल आयात गर्नुहोस्</h2>
+              <button
+                onClick={handleImportCancel}
+                className="text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Excel फाइल छान्नुहोस् <span className="text-red-500">*</span>
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="excel-file-input"
+                  />
+                  <label
+                    htmlFor="excel-file-input"
+                    className="cursor-pointer flex flex-col items-center space-y-2"
+                  >
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="text-sm text-gray-600">
+                      {selectedFile ? selectedFile.name : 'Excel फाइल छान्नको लागि क्लिक गर्नुहोस्'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      (.xlsx वा .xls फाइल मात्र)
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {selectedFile && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                      <Upload className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-900">{selectedFile.name}</p>
+                      <p className="text-xs text-blue-600">
+                        साइज: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>सूचना:</strong> Excel फाइलमा सही ढाँचामा डाटा भएको सुनिश्चित गर्नुहोस्।
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={handleImportCancel}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 cursor-pointer"
+              >
+                रद्द गर्नुहोस्
+              </button>
+              <button
+                onClick={handleImport}
+                disabled={!selectedFile || isImporting}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
+              >
+                {isImporting && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                )}
+                <span>{isImporting ? 'आयात गर्दै...' : 'आयात गर्नुहोस्'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -173,25 +173,25 @@ const Inventory: React.FC = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">कम्पनीको नाम</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">कम्पनी दर्ता</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">प्यान दर्ता</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">कर चुक्ता प्रमाणपत्र</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">इन्जाजत पत्र</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">मौजुदा सूची पत्र</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स.</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनीको नाम</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनी दर्ता</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">प्यान दर्ता</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कर चुक्ता प्रमाणपत्र</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">इन्जाजत पत्र</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">मौजुदा सूची पत्र</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">अन्य</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 bg-white">
               {filteredData.map((item, index) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.company_name}</td>
+                <tr key={item.id} className="hover:bg-gray-50 transition">
+                  <td className="py-3 px-4 text-sm text-gray-800">{toNepaliNumber(index + 1)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.company_name}</td>
                   <td className="py-3 px-4">{renderDocumentCell(!!item.company_registration_number, item.id)}</td>
                   <td className="py-3 px-4">{renderDocumentCell(!!item.pan_number, item.id)}</td>
                   <td className="py-3 px-4">{renderDocumentCell(item.tax_clearence, item.id)}</td>
@@ -203,6 +203,7 @@ const Inventory: React.FC = () => {
             </tbody>
           </table>
         </div>
+
 
         <div className="flex items-center justify-center mt-6">
           <div className="flex items-center space-x-2">

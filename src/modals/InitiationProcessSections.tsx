@@ -150,49 +150,47 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                     </div>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">प्रारम्भ विधि</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">प्रारम्भ मिति</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">पुष्टि</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">उपभोक्ता समिति</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">सम्झौता</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">किस्ता भुक्तानी</th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-700">क्र.स.</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-700">प्रारम्भ विधि</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-700">प्रारम्भ मिति</th>
+                                <th className="px-4 py-3 text-center font-semibold text-gray-700">पुष्टि</th>
+                                <th className="px-4 py-3 text-center font-semibold text-gray-700">उपभोक्ता समिति</th>
+                                <th className="px-4 py-3 text-center font-semibold text-gray-700">सम्झौता</th>
+                                <th className="px-4 py-3 text-center font-semibold text-gray-700">किस्ता भुक्तानी</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-100">
                             {initiationProcess.map((item, index) => (
-                                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-3 px-4 text-gray-900">{index + 1}</td>
-                                    <td className="py-3 px-4 text-gray-900">{item.initiation_method}</td>
-                                    <td className="py-3 px-4 text-gray-900">{item.started_at ? toNepaliNumber(new Date(item.started_at).toLocaleDateString()) : '-'}</td>
-                                    <td className="py-3 px-4 text-gray-900">{item.is_confirmed ? '✓' : '✗'}</td>
-                                    <td className="py-3 px-4 text-center">{item.has_consumer_committee ? '✓' : '✗'}</td>
-                                    <td className="py-3 px-4 text-center">{item.has_agreement ? '✓' : '✗'}</td>
-                                    <td className="py-3 px-4 text-center">{item.has_payment_installment ? '✓' : '✗'}</td>
-                                    {/* <td className="py-3 px-4">
-                                        <div className="flex items-center space-x-2">
-                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                                                <Download className="w-4 h-4" />
-                                            </button>
-                                            <button className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                                                <Copy className="w-4 h-4" />
-                                            </button>
-                                            <DropdownMenu id={item.id} onDelete={handleDelete} />
-                                        </div>
-                                    </td> */}
+                                <tr key={item.id} className="hover:bg-gray-50 even:bg-gray-50">
+                                    <td className="px-4 py-3 text-gray-800">{index + 1}</td>
+                                    <td className="px-4 py-3 text-gray-800">{item.initiation_method}</td>
+                                    <td className="px-4 py-3 text-gray-800">
+                                        {item.started_at
+                                            ? toNepaliNumber(new Date(item.started_at).toLocaleDateString())
+                                            : '-'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-800">
+                                        {item.is_confirmed ? '✓' : '✗'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-800">
+                                        {item.has_consumer_committee ? '✓' : '✗'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-800">
+                                        {item.has_agreement ? '✓' : '✗'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-800">
+                                        {item.has_payment_installment ? '✓' : '✗'}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+
             )}
         </div>
     );

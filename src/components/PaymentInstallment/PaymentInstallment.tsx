@@ -518,6 +518,30 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         </button>
     );
 
+    const handlePayment = async (projectId) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/projects/installment/payment/project/${projectId}/pdf/`, {
+                responseType: 'blob', // important for binary data like PDF
+            });
+
+            // Create a URL from the blob and open/download
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL); // opens in new tab
+            // OR use below line to download
+            // const link = document.createElement('a');
+            // link.href = fileURL;
+            // link.setAttribute('download', 'payment-receipt.pdf');
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+
+        } catch (error) {
+            console.error('Failed to fetch payment PDF:', error);
+        }
+    };
+
+
     const renderBankDetails = () => (
         <div className="space-y-8">
             {/* Bank Information Card */}
@@ -994,61 +1018,74 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                     <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">भुक्तानी सम्बन्धी विवरण</h3>
                         <div className="overflow-x-auto">
-                            <button
-                                type="button"
-                                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                                onClick={() => setPaymentDetailModalOpen(true)}>
-                                नयाँ प्रविष्टी गर्नुहोस
-                            </button>
-                            <table className="min-w-full">
-                                <thead>
-                                    <tr className="border-b border-gray-200">
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">जारी मिति</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">भुक्तानी गरिएको रकम</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">भुक्तनी प्रतिशत (%)</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">भौतिक प्रगती (%)</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                                <button
+                                    type="button"
+                                    className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition cursor-pointer"
+                                    onClick={() => setPaymentDetailModalOpen(true)}
+                                >
+                                    नयाँ प्रविष्टी गर्नुहोस
+                                </button>
+                                <button
+                                    type="button"
+                                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                                    onClick={() => handlePayment(project.serial_number)}
+                                >
+                                    भुक्तानी विवरण
+                                </button>
+                            </div>
+
+                            <table className="min-w-full rounded-lg shadow-sm">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-sm font-semibold text-gray-700">
+                                        <th className="text-left py-3 px-4">क्र.स.</th>
+                                        <th className="text-left py-3 px-4">शीर्षक</th>
+                                        <th className="text-left py-3 px-4">जारी मिति</th>
+                                        <th className="text-left py-3 px-4">भुक्तानी गरिएको रकम</th>
+                                        <th className="text-left py-3 px-4">भुक्तनी प्रतिशत (%)</th>
+                                        <th className="text-left py-3 px-4">भौतिक प्रगती (%)</th>
+                                        <th className="text-left py-3 px-4">अन्य</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {paymentDetails.map((item, index) => (
-                                        <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.id)}</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">
-                                                <div>{item.title}</div>
-                                            </td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.amount_paid)}</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.payment_percent)}%</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(item.physical_progress)}%</td>
-                                            <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                                                <button
-                                                    type="button"
-                                                    className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                    onClick={() => {
-                                                        console.log("Upload clicked");
-                                                    }}
-                                                >
-                                                    <Upload className="w-4 h-4" />
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                    onClick={() => {
-                                                        console.log("Download PDF clicked");
-                                                    }}
-                                                >
-                                                    <FileCheck className="w-4 h-4" />
-                                                </button>
+                                        <tr
+                                            key={item.serial_no}
+                                            className={`text-sm text-gray-800 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                                } hover:bg-blue-50`}
+                                        >
+                                            <td className="py-3 px-4">{toNepaliNumber(item.id)}</td>
+                                            <td className="py-3 px-4">{item.title}</td>
+                                            <td className="py-3 px-4">{toNepaliNumber(bsDate)}</td>
+                                            <td className="py-3 px-4">{toNepaliNumber(item.amount_paid)}</td>
+                                            <td className="py-3 px-4">{toNepaliNumber(item.payment_percent)}%</td>
+                                            <td className="py-3 px-4">{toNepaliNumber(item.physical_progress)}%</td>
+                                            <td className="py-3 px-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <button
+                                                        type="button"
+                                                        title="Upload File"
+                                                        className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                                                        onClick={() => console.log("Upload clicked")}
+                                                    >
+                                                        <Upload className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        title="Download PDF"
+                                                        className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                                                        onClick={() => console.log("Download PDF clicked")}
+                                                    >
+                                                        <FileCheck className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
+
 
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

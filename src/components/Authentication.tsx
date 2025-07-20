@@ -238,37 +238,41 @@ const Authentication: React.FC = () => {
         )}
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">फाइल शीर्षक</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">भूमिका</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+          <table className="min-w-full bg-white divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">फाइल शीर्षक</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">भूमिका</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">स्थिति</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">कार्य</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {filteredData.map((item, index) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{index+1}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
+                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-sm text-gray-900">{index + 1}</td>
+                  <td className="py-3 px-4 text-sm text-gray-900">{item.file_title}</td>
+                  <td className="py-3 px-4 text-sm text-gray-900">{item.uploader_role}</td>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-sm ${item.status_nepali.includes('स्वीकृत') ? 'bg-green-100 text-green-800' :
-                      item.status_nepali.includes('जाँच गरिएको') ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
+                    <span
+                      className={`inline-block px-2 py-1 text-xs font-medium rounded-full
+                ${item.status_nepali.includes('स्वीकृत')
+                          ? 'bg-green-100 text-green-800'
+                          : item.status_nepali.includes('जाँच गरिएको')
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-blue-100 text-blue-800'}`}
+                    >
                       {item.status_nepali}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 text-center">
                     <button
                       onClick={() => handleDocumentClick(item)}
-                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      className="text-blue-600 hover:text-blue-800 transition-colors"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 inline-block" />
                     </button>
                   </td>
                 </tr>
@@ -276,6 +280,7 @@ const Authentication: React.FC = () => {
             </tbody>
           </table>
         </div>
+
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Home, ChevronRight, Edit, Download, Copy, MoreHorizontal, Plus, Trash2, Upload, DownloadCloud, View, Notebook, ImageDown, Dock, File, FileMinus2, FileMinusIcon, FileCheck2, FileCheck, FileSearch } from 'lucide-react';
+import { ChevronLeft, Home, ChevronRight, Edit, Download, Copy, MoreHorizontal, Plus, Trash2, Upload, DownloadCloud, View, Notebook, ImageDown, Dock, File, FileMinus2, FileMinusIcon, FileCheck2, FileCheck, FileSearch, FileText } from 'lucide-react';
 import { useProjectDetail } from '../hooks/useProjectDetail';
 import { formatBudget, formatWardNumber, toNepaliNumber } from '../utils/formatters';
 import ProgramDetailsTab from '../components/projectdetailssubtab/ProgramDetailTab';
@@ -59,6 +59,8 @@ const PROJECT_AGREEMENT_TITLES = [
     { "serial_no": 3, "title": "योजना संचालन स्थलको फोटो - ४ प्रति", "description": "(कामगर्नु पुर्वको फोटो)" },
     { "serial_no": 4, "title": "नयाँ बैंक खाता सञ्चालन सिफारिस का लागि उपभोक्ता समितिले पेस गर्ने निवेदन" },
     { "serial_no": 5, "title": "वडा कार्यलयले महानगरपालिकालाई सम्झौताका लागी दिने सिफारिस", "description": "(नोट: वडाबाट सम्झौता हुने योजनालाई आवश्यक नभएको )" },
+    { "serial_no": 6, "title": "उपभोक्ता सम्झौता सम्बन्धी टिप्पणी (उपभोक्ता समितिसँग सम्झौता गर्न सिफारिस सम्बन्धी टिप्पणी)" },
+    { "serial_no": 7, "title": "उपभोक्ता समितिलाई कार्यादेश दिने सम्बन्धी टिप्पणी वा निर्णय" }
 ]
 
 const PROJECT_AGREEMENT_WORK_TITLES = [
@@ -285,54 +287,54 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
     const token = localStorage.getItem('access_token');
 
-   const handleSavePosition = async (rows: FormRow[]) => {
-  try {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      throw new Error('Authentication token not found');
-    }
+    const handleSavePosition = async (rows: FormRow[]) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                throw new Error('Authentication token not found');
+            }
 
-    const savePromises = rows.map(async (row) => {
-      const formData = new FormData();
-      formData.append("project", project.serial_number);
-      formData.append("post", row.post);
-      formData.append("full_name", row.full_name);
-      formData.append("address", row.address);
-      formData.append("gender", row.gender);
-      formData.append("citizenship_no", row.citizenship_no);
-      formData.append("contact_no", row.contact_no);
-      
-      // More reliable file checking
-      if (row.citizenship_front && typeof row.citizenship_front === 'object') {
-        formData.append("citizenship_front", row.citizenship_front);
-      }
-      if (row.citizenship_back && typeof row.citizenship_back === 'object') {
-        formData.append("citizenship_back", row.citizenship_back);
-      }
+            const savePromises = rows.map(async (row) => {
+                const formData = new FormData();
+                formData.append("project", project.serial_number);
+                formData.append("post", row.post);
+                formData.append("full_name", row.full_name);
+                formData.append("address", row.address);
+                formData.append("gender", row.gender);
+                formData.append("citizenship_no", row.citizenship_no);
+                formData.append("contact_no", row.contact_no);
 
-      const url = row.id 
-        ? `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`
-        : `http://localhost:8000/api/projects/${project.serial_number}/official-details/`;
+                // More reliable file checking
+                if (row.citizenship_front && typeof row.citizenship_front === 'object') {
+                    formData.append("citizenship_front", row.citizenship_front);
+                }
+                if (row.citizenship_back && typeof row.citizenship_back === 'object') {
+                    formData.append("citizenship_back", row.citizenship_back);
+                }
 
-      return axios({
-        method: row.id ? 'patch' : 'post',
-        url,
-        data: formData,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    });
+                const url = row.id
+                    ? `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`
+                    : `http://localhost:8000/api/projects/${project.serial_number}/official-details/`;
 
-    await Promise.all(savePromises);
-    loadConsumerCommitteeDetails();
-    toast.success("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
-  } catch (error) {
-    console.error("Error saving official details:", error);
-    toast.error("पदाधिकारी विवरण सेभ गर्न सकिएन।");
-  }
-};
+                return axios({
+                    method: row.id ? 'patch' : 'post',
+                    url,
+                    data: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            });
+
+            await Promise.all(savePromises);
+            loadConsumerCommitteeDetails();
+            toast.success("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
+        } catch (error) {
+            console.error("Error saving official details:", error);
+            toast.error("पदाधिकारी विवरण सेभ गर्न सकिएन।");
+        }
+    };
 
     const handleSaveResearch = async (rows: FormRow[]) => {
         try {
@@ -674,6 +676,35 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         </div>
     );
 
+    const handleGenerateBill = async (projectId: number) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/projects/bill/project/${projectId}/pdf/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate bill PDF');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bill_project_${projectId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error generating bill PDF:', error);
+            alert('बिल डाउनलोड गर्न असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।');
+        }
+    };
+
+
     const renderTabContent = () => {
         if (error) {
             return (
@@ -709,53 +740,52 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">उपभोक्ता समिति गठन सम्बन्धमा</h3>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शिर्षक</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिती</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-200">
+                                <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="py-3 px-5 font-semibold text-gray-800">क्र.स</th>
+                                            <th className="py-3 px-5 font-semibold text-gray-800">शिर्षक</th>
+                                            <th className="py-3 px-5 font-semibold text-gray-800">मिति</th>
+                                            <th className="py-3 px-5 font-semibold text-gray-800">स्थिती</th>
+                                            <th className="py-3 px-5 font-semibold text-gray-800">अन्य</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-gray-100 bg-white">
                                         {CONSUMER_COMMITTEE_TITLES.map((item, index) => (
-                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{item.title}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm" >{ }</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            // Your upload logic here
-                                                            console.log("Upload clicked");
-                                                        }}
-                                                    >
-                                                        <Upload className="w-4 h-4" />
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            handleDownload(item.serial_no, project.serial_number)
-                                                        }}
-                                                    >
-                                                        <DownloadCloud className="w-4 h-4" />
-                                                    </button>
+                                            <tr key={item.serial_no} className="hover:bg-gray-50">
+                                                <td className="py-3 px-5 text-gray-700">{toNepaliNumber(item.serial_no)}</td>
+                                                <td className="py-3 px-5 text-gray-700">{item.title}</td>
+                                                <td className="py-3 px-5 text-gray-700">{toNepaliNumber(bsDate)}</td>
+                                                <td className="py-3 px-5 text-gray-700">–</td>
+                                                <td className="py-3 px-5">
+                                                    <div className="flex items-center space-x-3">
+                                                        <button
+                                                            type="button"
+                                                            className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                            onClick={() => {
+                                                                console.log("Upload clicked");
+                                                            }}
+                                                        >
+                                                            <Upload className="w-5 h-5" />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="text-green-600 hover:text-green-800 cursor-pointer"
+                                                            onClick={() => {
+                                                                handleDownload(item.serial_no, project.serial_number);
+                                                            }}
+                                                        >
+                                                            <DownloadCloud className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
                                                 </td>
-
                                             </tr>
                                         ))}
                                     </tbody>
-
                                 </table>
                             </div>
+
                         </div>
 
                         {/* Consumer Committee Details */}
@@ -836,41 +866,41 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     )}
                             </div>
 
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">पद</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">नाम थर</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">ठेगाना</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">सम्पर्क नं.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">लिंग</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">नागरिकता प्र. नं.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
+                                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">क्र.स</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">पद</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">नाम थर</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">ठेगाना</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">सम्पर्क नं.</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">लिंग</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">नागरिकता प्र. नं.</th>
+                                            <th className="px-5 py-3 text-left font-semibold text-gray-700">अन्य</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-gray-100">
                                         {officialDetails.length === 0 ? (
                                             <tr>
-                                                <td colSpan={8} className="py-12 text-center">
+                                                <td colSpan={8} className="py-10 text-center text-gray-500">
                                                     <EmptyState message="अहिले कुनै डाटा उपलब्ध छैन।" />
                                                 </td>
                                             </tr>
                                         ) : (
                                             officialDetails.map((member, index) => (
-                                                <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.post}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.full_name}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.address}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(member.contact_no)}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.gender}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{member.citizenship_no}</td>
-                                                    <td className="py-3 px-4">
-                                                        <div className="flex items-center space-x-2">
+                                                <tr key={member.id} className="hover:bg-gray-50">
+                                                    <td className="px-5 py-3 text-gray-800">{toNepaliNumber(index + 1)}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{member.post}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{member.full_name}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{member.address}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{toNepaliNumber(member.contact_no)}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{member.gender}</td>
+                                                    <td className="px-5 py-3 text-gray-800">{member.citizenship_no}</td>
+                                                    <td className="px-5 py-3">
+                                                        <div className="flex items-center gap-2">
                                                             <button
-                                                                className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                                className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
                                                                 onClick={() => {/* Edit functionality */ }}
                                                             >
                                                                 <FileMinusIcon className="w-5 h-5" />
@@ -883,6 +913,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
                         {/* monitoring details */}
                         <div>
@@ -896,30 +927,30 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 </button>
                             </div>
 
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">पद</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">नाम थर</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">ठेगाना</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">सम्पर्क नं.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">लिंग</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">नागरिकता प्र. नं.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">क्र.स</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">पद</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">नाम थर</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">ठेगाना</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">सम्पर्क नं.</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">लिंग</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">नागरिकता प्र. नं.</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">कार्यहरू</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="bg-white divide-y divide-gray-100">
                                         {monitoringCommittee.length === 0 ? (
                                             <tr>
-                                                <td colSpan={8} className="py-12 text-center">
+                                                <td colSpan={8} className="py-12 text-center text-gray-500">
                                                     <EmptyState message="अहिले कुनै डाटा उपलब्ध छैन।" />
                                                 </td>
                                             </tr>
                                         ) : (
                                             monitoringCommittee.map((member, index) => (
-                                                <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                                <tr key={member.id} className="hover:bg-gray-50">
                                                     <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
                                                     <td className="py-3 px-4 text-gray-900">{member.post}</td>
                                                     <td className="py-3 px-4 text-gray-900">{member.full_name}</td>
@@ -928,15 +959,17 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                                     <td className="py-3 px-4 text-gray-900">{member.gender}</td>
                                                     <td className="py-3 px-4 text-gray-900">{member.citizenship_no}</td>
                                                     <td className="py-3 px-4">
-                                                        <div className="flex items-center space-x-2">
+                                                        <div className="flex items-center justify-center space-x-2">
                                                             <button
-                                                                className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                                onClick={() => {/* Edit functionality */ }}
+                                                                className="text-blue-600 hover:text-blue-800 transition-colors duration-150 cursor-pointer"
+                                                                onClick={() => {
+                                                                    // Edit functionality
+                                                                }}
                                                             >
                                                                 <Edit className="w-4 h-4" />
                                                             </button>
                                                             <button
-                                                                className="text-red-600 hover:text-red-800 cursor-pointer"
+                                                                className="text-red-600 hover:text-red-800 transition-colors duration-150 cursor-pointer"
                                                                 onClick={() => handleDelete(member.id, 'official')}
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
@@ -949,6 +982,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     </tbody>
                                 </table>
                             </div>
+
 
                             <Modal
                                 isOpen={isPositionModalOpen}
@@ -982,65 +1016,75 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                         {/* Cost Estimate Documents */}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">नक्सा तथा लागत अनुमान</h3>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {BUDGET_ESTIMATE_TITLES.map((item, index) => {
-                                            // Find matching item from mapCostEstimate
-                                            const mapCostItem = mapCostEstimate.find(mapItem => mapItem.serial_no === item.serial_no);
+                            <div className="space-y-4">
+                                <div className="flex justify-end">
+                                    <button
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                        onClick={() => handleGenerateBill(project.serial_number)}
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        <span>Generate Bill</span>
+                                    </button>
+                                </div>
 
-                                            return (
-                                                <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                                                    <td className="py-3 px-4 text-gray-900 text-sm">{item.title}</td>
-                                                    <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                                    <td className="py-3 px-4 text-gray-900 text-sm">
-                                                        {mapCostItem?.status === 'pending' ? 'अपलोड गरिएको' : mapCostItem?.status}
-                                                    </td>
-                                                    <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                                                        <button
-                                                            type="button"
-                                                            className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                            onClick={() => {
-                                                                setSelectedMapCostItem(item);
-                                                                setEditMapCostId(mapCostItem?.id || null);
-                                                                setAuthenticationFileModalOpen(true);
-                                                            }}
-                                                        >
-                                                            <Upload className="w-5 h-5" />
-                                                        </button>
-                                                        <div className="relative group">
+                                <div className="overflow-x-auto rounded-lg border border-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-100 sticky top-0 z-10">
+                                            <tr>
+                                                <th className="text-left py-3 px-4 font-semibold text-gray-700">क्र.स.</th>
+                                                <th className="text-left py-3 px-4 font-semibold text-gray-700">शीर्षक</th>
+                                                <th className="text-left py-3 px-4 font-semibold text-gray-700">मिति</th>
+                                                <th className="text-left py-3 px-4 font-semibold text-gray-700">स्थिति</th>
+                                                <th className="text-left py-3 px-4 font-semibold text-gray-700">कार्यहरू</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-100">
+                                            {BUDGET_ESTIMATE_TITLES.map((item, index) => {
+                                                const mapCostItem = mapCostEstimate.find(mapItem => mapItem.serial_no === item.serial_no);
+                                                return (
+                                                    <tr key={item.serial_no} className="hover:bg-gray-50">
+                                                        <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                                                        <td className="py-3 px-4 text-gray-900 text-sm">{item.title}</td>
+                                                        <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
+                                                        <td className="py-3 px-4 text-gray-900 text-sm">
+                                                            {mapCostItem?.status === 'pending' ? 'अपलोड गरिएको' : mapCostItem?.status}
+                                                        </td>
+                                                        <td className="py-3 px-4 text-sm flex items-center space-x-4">
                                                             <button
                                                                 type="button"
-                                                                className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer hover:"
+                                                                className="text-blue-600 hover:text-blue-800"
                                                                 onClick={() => {
-                                                                    setSelectedMapCostItem(mapCostItem);
+                                                                    setSelectedMapCostItem(item);
                                                                     setEditMapCostId(mapCostItem?.id || null);
-                                                                    setAuthenticationModalOpen(true)
+                                                                    setAuthenticationFileModalOpen(true);
                                                                 }}
                                                             >
-                                                                <FileSearch className="w-5 h-5" />
+                                                                <Upload className="w-5 h-5" />
                                                             </button>
 
-                                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                                प्रमाणिकरण
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
+                                                            <div className="relative group">
+                                                                <button
+                                                                    type="button"
+                                                                    className="text-blue-600 hover:text-blue-800"
+                                                                    onClick={() => {
+                                                                        setSelectedMapCostItem(mapCostItem);
+                                                                        setEditMapCostId(mapCostItem?.id || null);
+                                                                        setAuthenticationModalOpen(true);
+                                                                    }}
+                                                                >
+                                                                    <FileSearch className="w-5 h-5" />
+                                                                </button>
+                                                                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200">
+                                                                    प्रमाणिकरण
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             {
                                 isAuthenticationFileModalOpen && (
@@ -1119,57 +1163,61 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                         {/*  Project Agreement Recommendation and Others */}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">योजना सम्झौता सिफारिस तथा अन्य</h3>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+                                <table className="min-w-full text-sm text-left text-gray-800">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="py-3 px-4 font-semibold text-gray-900">क्र.स.</th>
+                                            <th className="py-3 px-4 font-semibold text-gray-900">शीर्षक</th>
+                                            <th className="py-3 px-4 font-semibold text-gray-900">मिति</th>
+                                            <th className="py-3 px-4 font-semibold text-gray-900">स्थिति</th>
+                                            <th className="py-3 px-4 font-semibold text-gray-900">कार्य</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-gray-100">
                                         {PROJECT_AGREEMENT_TITLES.map((item, index) => (
-                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">
-                                                    <div>{item.title}</div>
-                                                    <div className="text-gray-600 text-xs mt-1">{item.description}</div>
+                                            <tr
+                                                key={item.serial_no}
+                                                className="hover:bg-gray-50 transition duration-150 ease-in-out"
+                                            >
+                                                <td className="py-3 px-4">{toNepaliNumber(item.serial_no)}</td>
+                                                <td className="py-3 px-4">
+                                                    <div className="font-medium text-gray-900">{item.title}</div>
+                                                    <div className="text-xs text-gray-500">{item.description}</div>
                                                 </td>
-
-                                                <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm" >{ }</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            // Your upload logic here
-                                                            console.log("Upload clicked");
-                                                        }}
-                                                    >
-                                                        <Upload className="w-4 h-4" />
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                        onClick={() => {
-                                                            // Your download PDF logic here
-                                                            handleDownloadProjectAgreement(item.serial_no, project.serial_number)
-                                                        }}
-                                                    >
-                                                        <FileCheck className="w-4 h-4" />
-                                                    </button>
+                                                <td className="py-3 px-4">{toNepaliNumber(bsDate)}</td>
+                                                <td className="py-3 px-4">
+                                                    <span className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-medium">
+                                                        {/* Replace with actual status */}
+                                                        उपलब्ध छैन
+                                                    </span>
                                                 </td>
-
+                                                <td className="py-3 px-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        <button
+                                                            onClick={() => console.log("Upload clicked")}
+                                                            className="p-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                                                            title="Upload"
+                                                        >
+                                                            <Upload className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDownloadProjectAgreement(item.serial_no, project.serial_number)
+                                                            }
+                                                            className="p-1 text-green-600 hover:text-green-800 transition cursor-pointer"
+                                                            title="Download PDF"
+                                                        >
+                                                            <FileCheck className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
 
                         {/* Project Agreement Details */}
@@ -1316,44 +1364,42 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                         {/*  Project Operation Location */}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">योजना संचालन स्थलको फोटो</h3>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">फोटोहरु</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                            <div className="overflow-x-auto bg-white shadow rounded-lg border border-gray-200">
+                                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">क्र.स.</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">शीर्षक</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">फोटोहरु</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">अन्य</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-gray-100">
                                         {operationLocation.map((item, index) => (
-                                            <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm">
-                                                    <div>{item.title}</div>
-                                                    <div className="text-gray-600 text-xs mt-1">{item.description}</div>
+                                            <tr key={item.serial_no} className="hover:bg-gray-50">
+                                                <td className="py-3 px-4 text-gray-800">{toNepaliNumber(index + 1)}</td>
+                                                <td className="py-3 px-4 text-gray-800">
+                                                    <div className="font-medium">{item.title}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">{item.description}</div>
                                                 </td>
-
-                                                <td className="py-3 px-4 text-gray-900 text-sm">
+                                                <td className="py-3 px-4 text-gray-800">
                                                     {item.photo ? (
                                                         <img
                                                             src={item.photo}
                                                             alt={item.title || 'uploaded photo'}
-                                                            className="h-16 w-24 object-cover rounded shadow"
+                                                            className="h-16 w-24 object-cover rounded-md border border-gray-300"
                                                         />
                                                     ) : (
-                                                        'फोटो उपलब्ध छैन'
+                                                        <span className="text-gray-500 italic">फोटो उपलब्ध छैन</span>
                                                     )}
                                                 </td>
-                                                <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
+                                                <td className="py-3 px-4 text-gray-800 flex space-x-2">
                                                     <button
                                                         type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded transition cursor-pointer"
                                                         onClick={() => {
                                                             setSelectedSerialNo(item.serial_no);
-
-                                                            setShowLocationModal(true)
+                                                            setShowLocationModal(true);
                                                         }}
                                                     >
                                                         <Upload className="w-4 h-4" />
@@ -1361,21 +1407,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
                                                     <button
                                                         type="button"
-                                                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                                                        className="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded transition cursor-pointer"
                                                         onClick={() => {
-                                                            // Your download PDF logic here
                                                             console.log("Download PDF clicked");
                                                         }}
                                                     >
                                                         <FileCheck className="w-4 h-4" />
                                                     </button>
                                                 </td>
-
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
+
 
                             {showLocationModal && selectedSerialNo && (
                                 <OperationSiteUploadModal
@@ -1410,29 +1455,36 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                             {documents.length === 0 ? (
                                 <EmptyState message="अन्य डकुमेन्ट उपलब्ध छैन।" />
                             ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full">
-                                        <thead>
-                                            <tr className="border-b border-gray-200">
-                                                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                                                <th className="text-left py-3 px-4 font-medium text-gray-900">शीर्षक</th>
-                                                <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
-                                                <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिती</th>
-                                                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+                                <div className="overflow-x-auto mt-4 rounded-lg shadow-sm">
+                                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                        <thead className="bg-gray-100 text-gray-700 text-left">
+                                            <tr>
+                                                <th className="py-3 px-5 font-semibold">क्र.स.</th>
+                                                <th className="py-3 px-5 font-semibold">शीर्षक</th>
+                                                <th className="py-3 px-5 font-semibold">मिति</th>
+                                                <th className="py-3 px-5 font-semibold">स्थिती</th>
+                                                <th className="py-3 px-5 font-semibold text-center">कार्यहरू</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="divide-y divide-gray-100 bg-white">
                                             {documents.map((item, index) => (
-                                                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{item.title}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.date)}</td>
-                                                    <td className="py-3 px-4 text-gray-900">{ }</td>
-                                                    <td className="py-3 px-4">
-                                                        <div className="flex items-center space-x-2">
+                                                <tr key={item.id} className="hover:bg-gray-50">
+                                                    <td className="py-3 px-5 text-gray-800">{toNepaliNumber(index + 1)}</td>
+                                                    <td className="py-3 px-5 text-gray-800">{item.title}</td>
+                                                    <td className="py-3 px-5 text-gray-800">{toNepaliNumber(item.date)}</td>
+                                                    <td className="py-3 px-5 text-gray-800">
+                                                        {/* Placeholder for status if needed */}
+                                                        <span className="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                                                            सक्रिय
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-3 px-5">
+                                                        <div className="flex items-center justify-center space-x-2">
                                                             <button
                                                                 className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                                onClick={() => handleDownloadOtherDocument(item.serial_no, project.serial_number)}
+                                                                onClick={() =>
+                                                                    handleDownloadOtherDocument(item.serial_no, project.serial_number)
+                                                                }
                                                             >
                                                                 <FileCheck className="w-5 h-5" />
                                                             </button>
@@ -1443,6 +1495,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                         </tbody>
                                     </table>
                                 </div>
+
                             )}
                         </div>
 
