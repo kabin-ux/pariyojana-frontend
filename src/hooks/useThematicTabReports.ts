@@ -73,9 +73,48 @@ export const useThematicReports = () => {
         }
     };
 
+    const downloadBlob = (blob: Blob, filename: string) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Excel Downloads
+    const downloadWardRecommendedExcel = async () => downloadFile('wardlevel-chart', 'excel', 'ward-level-report.xlsx');
+    const downloadThematicExcel = async () => downloadFile('wardlevelthemtic-chart', 'excel', 'wardlevelthematic-report.xlsx');
+    const downloadThematicRecommendedExcel = async () => downloadFile('Wardrecommended-chart', 'excel', 'Wardrecommended-report.xlsx');
+
+    // PDF Downloads
+    const downloadWardRecommendedPDF = async () => downloadFile('wardlevel-chart', 'pdf', 'ward-level-report.pdf');
+    const downloadThematicPDF = async () => downloadFile('wardlevelthemtic-chart', 'pdf', 'ward-thematic-report.pdf');
+    const downloadThematicRecommendedPDF = async () => downloadFile('Wardrecommended-chart', 'pdf', 'Wardrecommended.pdf');
+
+    // Common File Download Function
+    const downloadFile = async (endpoint: string, type: 'pdf' | 'excel', filename: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/planning/thematic/${endpoint}/report/?type=${type}`,
+                { responseType: 'blob', timeout: 30000 }
+            );
+            downloadBlob(response.data, filename);
+        } catch (err) {
+            console.error(err);
+            setError(`डाउनलोड गर्न असफल भयो (${filename})`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
-    fetchThematicReports();
-  }, []);
+        fetchThematicReports();
+    }, []);
 
     return {
         loading,
@@ -96,7 +135,17 @@ export const useThematicReports = () => {
         thematicReportPDF,
         thematicRecommendedReportPDF,
 
+        downloadWardRecommendedExcel,
+        downloadThematicExcel,
+        downloadThematicRecommendedExcel,
+
+
+        downloadWardRecommendedPDF,
+        downloadThematicPDF,
+        downloadThematicRecommendedPDF,
+
         // Fetch function
         fetchThematicReports,
     };
 };
+

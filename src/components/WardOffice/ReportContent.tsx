@@ -32,7 +32,16 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
     prioritizedWardThematicReportPDF,
 
     downloadWardLevelExcel,
-    downloadWardLevelPDF
+    downloadWardLevelThematicExcel,
+    downloadMunicipalityLevelExcel,
+    downloadPrioritizedWardExcel,
+    downloadPrioritizedWardThematicExcel,
+
+    downloadWardLevelPDF,
+    downloadWardLevelThematicPDF,
+    downloadMunicipalityLevelPDF,
+    downloadPrioritizedWardPDF,
+    downloadPrioritizedWardThematicPDF
 
   } = useWardReports();
 
@@ -81,142 +90,6 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 
   const { budget_distribution = [], project_count_distribution = [] } = chartData;
 
-  // Validate URL function
-  const isValidUrl = (url: string): boolean => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  // Direct download approach (for same-origin URLs)
-  const handleDirectDownload = (url: string, filename: string) => {
-    if (!url || url.trim() === '') {
-      alert('डाउनलोड लिंक उपलब्ध छैन।');
-      return;
-    }
-
-    const safeUrl = encodeURI(url); // <-- fix here
-    console.log('Attempting direct download:', safeUrl);
-
-    const link = document.createElement('a');
-    link.href = safeUrl;
-    link.setAttribute('download', filename);
-    link.setAttribute('target', '_blank');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-
-  // Fetch-based download with improved error handling
-  const handleFetchDownload = async (url: string, filename: string) => {
-    if (!url || url.trim() === '') {
-      alert('डाउनलोड लिंक उपलब्ध छैन।');
-      return;
-    }
-
-    // Validate URL format
-    if (!isValidUrl(url)) {
-      console.error('Invalid URL:', url);
-      alert('अमान्य URL। कृपया फेरि प्रयास गर्नुहोस्।');
-      return;
-    }
-
-    try {
-      console.log('Fetching:', url);
-      const safeUrl = encodeURI(url)
-
-      const response = await fetch(safeUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': '*/*',
-          // Add any required authentication headers here
-          // 'Authorization': 'Bearer ' + token,
-        },
-        mode: 'cors', // explicitly set CORS mode
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-
-      // Check if blob is valid
-      if (blob.size === 0) {
-        throw new Error('Empty file received');
-      }
-
-      console.log('Blob size:', blob.size);
-      console.log('Blob type:', blob.type);
-
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-
-      console.log('Download completed successfully');
-    } catch (error) {
-      console.error('Download failed:', error);
-
-      // Provide more specific error messages
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        alert('नेटवर्क त्रुटि। कृपया इन्टरनेट जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।');
-      } else if (error instanceof Error && error.message.includes('HTTP error')) {
-        alert(`सर्भर त्रुटि: ${error.message}। कृपया फेरि प्रयास गर्नुहोस्।`);
-      } else {
-        alert('डाउनलोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।');
-      }
-
-      // Fallback to direct download
-      console.log('Attempting fallback to direct download');
-      handleDirectDownload(url, filename);
-    }
-  };
-
-  // Main download handler that tries different approaches
-  const handleDownload = async (url: string, filename: string) => {
-    if (!url) {
-      alert('डाउनलोड लिंक उपलब्ध छैन।');
-      return;
-    }
-
-    try {
-      // Create a temporary anchor tag
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank'; // Open in new tab
-      link.rel = 'noopener noreferrer';
-      link.download = filename || 'download';
-
-      // Append to body (required for Firefox)
-      document.body.appendChild(link);
-
-      // Trigger click
-      link.click();
-
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(link);
-      }, 100);
-    } catch (error) {
-      console.error('Download failed:', error);
-      alert('डाउनलोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।');
-
-      // Fallback - open in new tab
-      window.open(url, '_blank');
-    }
-  };
 
   if (activeTab && chartData) {
     const topBudget = budget_distribution[0];
@@ -243,8 +116,29 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
+              {/* Excel Download Button */}
               <button
-                onClick={() => downloadWardLevelExcel(reportTitle)}
+                onClick={() => {
+                  switch (activeTab) {
+                    case 'वडा परियोजना प्रविष्टी':
+                      downloadWardLevelExcel(reportTitle);
+                      break;
+                    case 'नगर परियोजना प्रविष्टी':
+                      downloadMunicipalityLevelExcel(reportTitle);
+                      break;
+                    case 'विषयगत समितिका परियोजना':
+                      downloadWardLevelThematicExcel(reportTitle);
+                      break;
+                    case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
+                      downloadPrioritizedWardExcel(reportTitle);
+                      break;
+                    case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
+                      downloadPrioritizedWardThematicExcel(reportTitle);
+                      break;
+                    default:
+                      break;
+                  }
+                }}
                 disabled={!excelLink}
                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
                   ? 'hover:bg-gray-50 cursor-pointer'
@@ -255,8 +149,29 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                 <span>Excel</span>
               </button>
 
+              {/* PDF Download Button */}
               <button
-                onClick={() => downloadWardLevelPDF(reportTitle)}
+                onClick={() => {
+                  switch (activeTab) {
+                    case 'वडा परियोजना प्रविष्टी':
+                      downloadWardLevelPDF(reportTitle);
+                      break;
+                    case 'नगर परियोजना प्रविष्टी':
+                      downloadMunicipalityLevelPDF(reportTitle);
+                      break;
+                    case 'विषयगत समितिका परियोजना':
+                      downloadWardLevelThematicPDF(reportTitle);
+                      break;
+                    case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
+                      downloadPrioritizedWardPDF(reportTitle);
+                      break;
+                    case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
+                      downloadPrioritizedWardThematicPDF(reportTitle);
+                      break;
+                    default:
+                      break;
+                  }
+                }}
                 disabled={!pdfLink}
                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
                   ? 'hover:bg-gray-50 cursor-pointer'

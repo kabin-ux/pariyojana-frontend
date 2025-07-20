@@ -19,6 +19,12 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 
         municipalityPrideReportPDF,
         municipalityPrideSubmitBudgetReportPDF,
+
+        downloadMunicipalityPrideExcel,
+        downloadMunicipalityPrideSubmitBudgetExcel,
+
+        downloadMunicipalityPridePDF,
+        downloadMunicipalityPrideSubmitBudgetPDF,
     } = useMunicipalityPrideReports();
 
     let chartData = {};
@@ -149,33 +155,7 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         }
     };
 
-    // Main download handler that tries different approaches
-    const handleDownload = async (url: string, filename: string) => {
-        console.log('Download requested:', { url, filename });
 
-        if (!url || url.trim() === '') {
-            alert('डाउनलोड लिंक उपलब्ध छैन।');
-            return;
-        }
-
-        // Clean the URL - remove any extra whitespace and ensure proper format
-        const cleanUrl = url.trim();
-
-        // Check if URL is from same origin or if it's a relative path
-        const currentOrigin = window.location.origin;
-        const isRelativeUrl = !cleanUrl.startsWith('http');
-        const isSameOrigin = isRelativeUrl || cleanUrl.startsWith(currentOrigin);
-
-        if (isSameOrigin) {
-            // For same-origin URLs, try direct download first
-            console.log('Same origin detected, trying direct download');
-            handleDirectDownload(cleanUrl, filename);
-        } else {
-            // For cross-origin URLs, try fetch first, then fallback to direct
-            console.log('Cross-origin detected, trying fetch download');
-            await handleFetchDownload(cleanUrl, filename);
-        }
-    };
 
     if (activeTab && chartData) {
         const topBudget = budget_distribution[0];
@@ -203,7 +183,18 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                         </div>
                         <div className="flex items-center space-x-2">
                             <button
-                                onClick={() => handleDownload(excelLink, `${reportTitle}.xlsx`)}
+                                onClick={() => {
+                                    switch (activeTab) {
+                                        case 'प्रविष्टी भएका नगर गौरव आयोजना':
+                                            downloadMunicipalityPrideExcel(reportTitle);
+                                            break;
+                                        case 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना':
+                                            downloadMunicipalityPrideSubmitBudgetExcel(reportTitle);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }}
                                 disabled={!excelLink}
                                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
@@ -214,8 +205,20 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 <span>Excel</span>
                             </button>
 
+                            {/* PDF Download Button */}
                             <button
-                                onClick={() => handleDownload(pdfLink, `${reportTitle}.pdf`)}
+                                onClick={() => {
+                                    switch (activeTab) {
+                                        case 'प्रविष्टी भएका नगर गौरव आयोजना':
+                                            downloadMunicipalityPridePDF(reportTitle);
+                                            break;
+                                        case 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना':
+                                            downloadMunicipalityPrideSubmitBudgetPDF(reportTitle);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }}
                                 disabled={!pdfLink}
                                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
                                     ? 'hover:bg-gray-50 cursor-pointer'

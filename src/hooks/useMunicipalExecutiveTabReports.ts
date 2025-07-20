@@ -66,6 +66,43 @@ export const useMunicipalExecutiveReports = () => {
         fetchMunicipalExecutiveReports();
     }, []);
 
+    const downloadBlob = (blob: Blob, filename: string) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Excel Downloads
+    const downloadPreAssemblyExcel = async () => downloadFile('preassembly', 'excel', 'नगर सभामा पेश गर्नु अघिको परियोजना.xlsx');
+    const downloadCouncilExcel = async () => downloadFile('councilsubmitted', 'excel', 'नगर सभा पेश भएका परियोजना.xlsx');
+
+    // PDF Downloads
+    const downloadPreAssemblyPDF = async () => downloadFile('preassembly', 'pdf', 'नगर सभामा पेश गर्नु अघिको परियोजना.pdf');
+    const downloadCouncilPDF = async () => downloadFile('councilsubmitted', 'pdf', 'नगर सभा पेश भएका परियोजना.pdf');
+
+    // Common File Download Function
+    const downloadFile = async (endpoint: string, type: 'pdf' | 'excel', filename: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/planning/municipality-executive/${endpoint}/report/?type=${type}`,
+                { responseType: 'blob', timeout: 30000 }
+            );
+            downloadBlob(response.data, filename);
+        } catch (err) {
+            console.error(err);
+            setError(`डाउनलोड गर्न असफल भयो (${filename})`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return {
         loading,
         error,
@@ -81,6 +118,12 @@ export const useMunicipalExecutiveReports = () => {
         // PDF Reports
         preAssemblyReportPDF,
         councilReportPDF,
+
+        downloadPreAssemblyExcel,
+        downloadCouncilExcel,
+
+        downloadPreAssemblyPDF,
+        downloadCouncilPDF,
 
         // Fetch function
         fetchMunicipalExecutiveReports,

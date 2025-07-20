@@ -20,6 +20,12 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         approvedReport,
         submittedReportPDF,
         approvedReportPDF,
+
+        downloadSubmittedExcel,
+        downloadApprovedExcel,
+
+        downloadSubmittedPDF,
+        downloadApprovedPDF,
     } = useCityCouncilReports();
 
     let chartData = {};
@@ -45,113 +51,6 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
     }
 
     const { budget_distribution = [], project_count_distribution = [] } = chartData;
-
-    // Validate URL function
-    const isValidUrl = (url: string): boolean => {
-        try {
-            new URL(url);
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    // Direct download approach (for same-origin URLs)
-    const handleDirectDownload = (url: string, filename: string) => {
-        if (!url || url.trim() === '') {
-            alert('डाउनलोड लिंक उपलब्ध छैन।');
-            return;
-        }
-
-        const safeUrl = encodeURI(url);
-        console.log('Attempting direct download:', safeUrl);
-
-        const link = document.createElement('a');
-        link.href = safeUrl;
-        link.setAttribute('download', filename);
-        link.setAttribute('target', '_blank');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // Fetch-based download with improved error handling
-    const handleFetchDownload = async (url: string, filename: string) => {
-        if (!url || url.trim() === '') {
-            alert('डाउनलोड लिंक उपलब्ध छैन।');
-            return;
-        }
-
-        if (!isValidUrl(url)) {
-            console.error('Invalid URL:', url);
-            alert('अमान्य URL। कृपया फेरि प्रयास गर्नुहोस्।');
-            return;
-        }
-
-        try {
-            console.log('Fetching:', url);
-            const safeUrl = encodeURI(url);
-
-            const response = await fetch(safeUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': '*/*',
-                },
-                mode: 'cors',
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const blob = await response.blob();
-
-            if (blob.size === 0) {
-                throw new Error('Empty file received');
-            }
-
-            const blobUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
-
-            console.log('Download completed successfully');
-        } catch (error) {
-            console.error('Download failed:', error);
-
-            if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-                alert('नेटवर्क त्रुटि। कृपया इन्टरनेट जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।');
-            } else if (error instanceof Error && error.message.includes('HTTP error')) {
-                alert(`सर्भर त्रुटि: ${error.message}। कृपया फेरि प्रयास गर्नुहोस्।`);
-            } else {
-                alert('डाउनलोड गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।');
-            }
-
-            console.log('Attempting fallback to direct download');
-            handleDirectDownload(url, filename);
-        }
-    };
-
-    // Main download handler
-    const handleDownload = async (url: string, filename: string) => {
-        console.log('Download requested:', { url, filename });
-
-        const currentOrigin = window.location.origin;
-        const isRelativeUrl = !url.startsWith('http');
-        const isSameOrigin = isRelativeUrl || url.startsWith(currentOrigin);
-
-        if (isSameOrigin) {
-            console.log('Same origin detected, trying direct download');
-            handleDirectDownload(url, filename);
-        } else {
-            console.log('Cross-origin detected, trying fetch download');
-            await handleFetchDownload(url, filename);
-        }
-    };
 
     // Show loading state
     if (loading) {
@@ -218,7 +117,18 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                         </div>
                         <div className="flex items-center space-x-2">
                             <button
-                                onClick={() => handleDownload(excelLink, `${reportTitle}.xlsx`)}
+                                onClick={() => {
+                                    switch (activeTab) {
+                                        case 'सभामा पेश भएका परियोजना':
+                                            downloadSubmittedExcel(reportTitle);
+                                            break;
+                                        case 'नगर सभाले स्वीकृत गरिएको परियोजना':
+                                            downloadApprovedExcel(reportTitle);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }}
                                 disabled={!excelLink}
                                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
@@ -229,8 +139,20 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 <span>Excel</span>
                             </button>
 
+                            {/* PDF Download Button */}
                             <button
-                                onClick={() => handleDownload(pdfLink, `${reportTitle}.pdf`)}
+                                onClick={() => {
+                                    switch (activeTab) {
+                                        case 'सभामा पेश भएका परियोजना':
+                                            downloadSubmittedPDF(reportTitle);
+                                            break;
+                                        case 'नगर सभाले स्वीकृत गरिएको परियोजना':
+                                            downloadApprovedPDF(reportTitle);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }}
                                 disabled={!pdfLink}
                                 className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
                                     ? 'hover:bg-gray-50 cursor-pointer'

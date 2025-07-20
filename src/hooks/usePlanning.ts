@@ -55,7 +55,7 @@ export const usePlanning = () => {
         axios.get('http://localhost:8000/api/planning/municipality-executive/pre-assembly-projects/'),
         axios.get('http://localhost:8000/api/planning/municipality-executive/council-submitted-projects/'),
         axios.get('http://localhost:8000/api/planning/municipal-assembly/submitted-projects/'),
-        axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/approved-projects/')
+        axios.get('http://localhost:8000/api/planning/municipal-assembly/approved-projects/')
       ]);
 
       setWardProjects(wardRes.data || []);

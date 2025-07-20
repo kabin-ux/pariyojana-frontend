@@ -31,19 +31,19 @@ export const useCityCouncilReports = () => {
                 approvedReportPDFRes,
             ] = await Promise.all([
                 axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedproject-chart/'),
-                axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove-chart/'),
+                axios.get('http://localhost:8000/api/planning/municipal-assembly/projectapprove-chart/'),
 
-                axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedprojectt/report/?type=excel', {
+                axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedproject/report/?type=excel', {
                     responseType: 'blob'
                 }),
-                axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove/report/?type=excel', {
+                axios.get('http://localhost:8000/api/planning/municipal-assembly/projectapprove/report/?type=excel', {
                     responseType: 'blob'
                 }),
 
-                axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedprojectt/report/?type=pdf', {
+                axios.get('http://localhost:8000/api/planning/municipal-assembly/submittedproject/report/?type=pdf', {
                     responseType: 'blob'
                 }),
-                axios.get('http://localhost:8000/api/planning/municipal-assembly-edit/projectapprove/report/?type=pdf', {
+                axios.get('http://localhost:8000/api/planning/municipal-assembly/projectapprove/report/?type=pdf', {
                     responseType: 'blob'
                 })
             ]);
@@ -68,6 +68,43 @@ export const useCityCouncilReports = () => {
         }
     };
 
+     const downloadBlob = (blob: Blob, filename: string) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Excel Downloads
+    const downloadSubmittedExcel = async () => downloadFile('submittedproject', 'excel', 'सभामा पेश भएका परियोजना.xlsx');
+    const downloadApprovedExcel = async () => downloadFile('projectapprove', 'excel', 'नगर सभाले स्वीकृत गरिएको परियोजना.xlsx');
+
+    // PDF Downloads
+    const downloadSubmittedPDF = async () => downloadFile('submittedproject', 'pdf', 'सभामा पेश भएका परियोजना.pdf');
+    const downloadApprovedPDF = async () => downloadFile('projectapprove', 'pdf', 'नगर सभाले स्वीकृत गरिएको परियोजना.pdf');
+
+    // Common File Download Function
+    const downloadFile = async (endpoint: string, type: 'pdf' | 'excel', filename: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/planning/municipal-assembly/${endpoint}/report/?type=${type}`,
+                { responseType: 'blob', timeout: 30000 }
+            );
+            downloadBlob(response.data, filename);
+        } catch (err) {
+            console.error(err);
+            setError(`डाउनलोड गर्न असफल भयो (${filename})`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchCityCouncilReports();
     }, []);
@@ -87,6 +124,12 @@ export const useCityCouncilReports = () => {
         // PDF Reports
         submittedReportPDF,
         approvedReportPDF,
+
+        downloadSubmittedExcel,
+        downloadApprovedExcel,
+
+        downloadSubmittedPDF,
+        downloadApprovedPDF,
 
         // Fetch function
         fetchCityCouncilReports,

@@ -61,9 +61,46 @@ export const useMunicipalityPrideReports = () => {
         }
     };
 
+    const downloadBlob = (blob: Blob, filename: string) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Excel Downloads
+    const downloadMunicipalityPrideExcel = async () => downloadFile('entered-municipality', 'excel', 'प्रविष्टी भएका नगर गौरव आयोजना.xlsx');
+    const downloadMunicipalityPrideSubmitBudgetExcel = async () => downloadFile('submitted-budget', 'excel', 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना.xlsx');
+
+    // PDF Downloads
+    const downloadMunicipalityPridePDF = async () => downloadFile('entered-municipality', 'pdf', 'प्रविष्टी भएका नगर गौरव आयोजना.pdf');
+    const downloadMunicipalityPrideSubmitBudgetPDF = async () => downloadFile('submitted-budget', 'pdf', 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना.pdf');
+
+    // Common File Download Function
+    const downloadFile = async (endpoint: string, type: 'pdf' | 'excel', filename: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/planning/municipality-pride-project/${endpoint}/report/?type=${type}`,
+                { responseType: 'blob', timeout: 30000 }
+            );
+            downloadBlob(response.data, filename);
+        } catch (err) {
+            console.error(err);
+            setError(`डाउनलोड गर्न असफल भयो (${filename})`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
-    fetchMunicipalityPrideReports();
-  }, []);
+        fetchMunicipalityPrideReports();
+    }, []);
 
     return {
         loading,
@@ -80,6 +117,12 @@ export const useMunicipalityPrideReports = () => {
         // PDF Reports
         municipalityPrideReportPDF,
         municipalityPrideSubmitBudgetReportPDF,
+
+        downloadMunicipalityPrideExcel,
+        downloadMunicipalityPrideSubmitBudgetExcel,
+
+        downloadMunicipalityPridePDF,
+        downloadMunicipalityPrideSubmitBudgetPDF,
 
         // Fetch function
         fetchMunicipalityPrideReports,

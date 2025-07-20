@@ -108,6 +108,51 @@ export const useBudgetReports = () => {
         }
     };
 
+    const downloadBlob = (blob: Blob, filename: string) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Excel Downloads
+    const downloadMunicipalityLevelBudgetExcel = async () => downloadFile('municipality-level', 'excel', 'नगर स्तरीय कार्यक्रम.xlsx');
+    const downloadFederalGovernmentBudgetExcel = async () => downloadFile('federalgov', 'excel', 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम.xlsx');
+    const downloadMunicipalityPrideBudgetExcel = async () => downloadFile('municipalitypride', 'excel', 'नगर गौरव आयोजना.xlsx');
+    const downloadProvincialGovernmentBudgetExcel = async () => downloadFile('provinciallytransfer', 'excel', 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम.xlsx');
+    const downloadThematicBudgetExcel = async () => downloadFile('thematiccommittee', 'excel', 'विषयगत समितिको कार्यक्रम.xlsx');
+    const downloadWardLevelBudgetExcel = async () => downloadFile('wardlevel', 'excel', 'वडा स्तरीय कार्यक्रम.xlsx');
+
+    // PDF Downloads
+    const downloadMunicipalityLevelBudgetPDF = async () => downloadFile('municipality-level', 'pdf', 'ward-level-report.pdf');
+    const downloadFederalGovernmentBudgetPDF = async () => downloadFile('federalgov', 'pdf', 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम.pdf');
+    const downloadMunicipalityPrideBudgetPDF = async () => downloadFile('municipalitypride', 'pdf', 'नगर गौरव आयोजना.pdf');
+    const downloadProvincialGovernmentBudgetPDF = async () => downloadFile('provinciallytransfer', 'pdf', 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम.pdf');
+    const downloadThematicBudgetPDF = async () => downloadFile('thematiccommittee', 'pdf', 'विषयगत समितिको कार्यक्रम.pdf');
+    const downloadWardLevelBudgetPDF = async () => downloadFile('wardlevel', 'pdf', 'वडा स्तरीय कार्यक्रम.pdf');
+
+    // Common File Download Function
+    const downloadFile = async (endpoint: string, type: 'pdf' | 'excel', filename: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/planning/budget-committee/${endpoint}/report/?type=${type}`,
+                { responseType: 'blob', timeout: 30000 }
+            );
+            downloadBlob(response.data, filename);
+        } catch (err) {
+            console.error(err);
+            setError(`डाउनलोड गर्न असफल भयो (${filename})`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchBudgetReports();
     }, []);
@@ -139,6 +184,20 @@ export const useBudgetReports = () => {
         provincialGovernmentBudgetReportPDF,
         thematicBudgetReportPDF,
         wardLevelBudgetReportPDF,
+
+        downloadMunicipalityLevelBudgetExcel,
+        downloadFederalGovernmentBudgetExcel,
+        downloadMunicipalityPrideBudgetExcel,
+        downloadProvincialGovernmentBudgetExcel,
+        downloadThematicBudgetExcel,
+        downloadWardLevelBudgetExcel,
+
+        downloadMunicipalityLevelBudgetPDF,
+        downloadFederalGovernmentBudgetPDF,
+        downloadMunicipalityPrideBudgetPDF,
+        downloadProvincialGovernmentBudgetPDF,
+        downloadThematicBudgetPDF,
+        downloadWardLevelBudgetPDF,
 
         // Fetch function
         fetchBudgetReports,

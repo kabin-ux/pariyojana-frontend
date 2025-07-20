@@ -34,7 +34,7 @@ export const projectApi = {
       if (params?.source) queryParams.append('source', params.source);
       if (params?.status) queryParams.append('status', params.status);
 
-      const url = `${API_BASE_URL}/projects/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${API_BASE_URL}/projects/`;
       
       const response = await fetch(url, {
         method: 'GET',

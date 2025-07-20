@@ -22,6 +22,7 @@ const Authentication: React.FC = () => {
   const [selectedDocument, setSelectedDocument] = useState<AuthDocument | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [comment, setComment] = useState('');
+  console.log("user", user)
 
   useEffect(() => {
     fetchAuthenticationDocuments();
@@ -111,7 +112,7 @@ const Authentication: React.FC = () => {
   // Determine if current user is the checker for this document
   console.log(user)
 
-  const isChecker = selectedDocument?.checker === user?.id;
+  const isChecker = selectedDocument?.checker === user?.user_id;
   // Determine if current user is the approver for this document
   console.log(user)
   const isApprover = selectedDocument?.approver === user?.user_id;
@@ -249,9 +250,9 @@ const Authentication: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((item) => (
+              {filteredData.map((item, index) => (
                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{item.id}</td>
+                  <td className="py-3 px-4 text-gray-900">{index+1}</td>
                   <td className="py-3 px-4 text-gray-900">{item.file_title}</td>
                   <td className="py-3 px-4 text-gray-900">{item.uploader_role}</td>
                   <td className="py-3 px-4">

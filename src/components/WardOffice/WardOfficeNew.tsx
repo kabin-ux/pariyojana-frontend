@@ -30,19 +30,7 @@ const WardOfficeNew: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
 
-  // Static data for notices/manuals
-  const staticWardData: WardData[] = [
-    {
-      id: 1,
-      title: 'योजना छनोटका लागि आम भेलाको सूचना',
-      date: '२०८२-०३-११'
-    },
-    {
-      id: 2,
-      title: 'योजना छनोट भेलाको मान्यूअल',
-      date: '२०८२-०३-११'
-    }
-  ];
+ 
 
 
 
@@ -111,60 +99,7 @@ const WardOfficeNew: React.FC = () => {
     );
   }
 
-  const renderWardLevelContent = () => (
-    <div className="mt-6">
-      {/* Static Notices/Manuals Section */}
-      <div className="mb-8">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स.</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">विषयक</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">मिति</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staticWardData.map((item) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{item.id}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.title}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.date}</td>
-                  <td className="py-3 px-4">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Download className="w-4 h-4" />
-                    </button>
-                  </td>
-                  <td className="py-3 px-4">
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      {/* Dynamic Projects Section */}
-      <div>
-        {filteredData.length > 0 ? (
-          <ProjectsTable
-            data={filteredData}
-            searchTerm={searchTerm}
-            tabType={activeTab}
-            refetch={refetch} 
-          />
-
-        ) : (
-          <EmptyState />
-        )}
-      </div>
-    </div>
-  );
 
   const renderContent = () => {
     if (activeTab === 'रिपोर्ट') {
@@ -177,18 +112,6 @@ const WardOfficeNew: React.FC = () => {
           />
           <ReportContent activeTab={activeReportTab} />
         </div>
-      );
-    }
-
-    if (activeTab === 'वडा स्तरीय परियोजना') {
-      return (
-        <>
-          <SearchAndFilter
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          />
-          {renderWardLevelContent()}
-        </>
       );
     }
 
