@@ -17,6 +17,7 @@ import AddDocumentModal from '../modals/AddDocumentModal';
 import OperationSiteUploadModal from '../modals/UploadSiteModal';
 import AddAuthenticationFileModal from '../modals/AddAuthenticationFileModal';
 import AuthenticationModal from '../modals/AuthenticationModal';
+import CalculateCostEstimateModal from '../modals/CalculateCostEstimateModal';
 
 interface FormRow {
     id: number;
@@ -82,6 +83,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [costData, setCostData] = useState<CostEstimateDetail[]>([]);
     const [isCostModalOpen, setIsCostModalOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isCostEstimateModalOpen, setIsCostEstimateModalOpen] = useState(false);
     const [committeeDetail, setCommitteeDetail] = useState<any>(null);
     const [agreementDetail, setAgreementDetail] = useState<any>(null);
     const [operationLocationDetails, setOperationLocationDetails] = useState<any>(null);
@@ -124,6 +126,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         monitoringCommittee,
         costEstimateDetails,
         mapCostEstimate,
+        calculateCostEstimateDetails,
         projectAgreementDetails,
         documents,
         otherdocuments,
@@ -142,6 +145,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         deleteMonitoringCommittee,
         deleteDocument,
     } = useProjectDetail(projectIdNum);
+    const [calculatedEstimate, setCalculatedEstimate] = useState(null);
+    const [loadingEstimate, setLoadingEstimate] = useState(false);
+
 
     const transformedOfficialDetails: FormRow[] = officialDetails.map((member, index) => ({
         id: index + 1,
@@ -234,6 +240,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             setMapCostDetails(mapCostEstimate[0]);
         }
     }, [mapCostEstimate]);
+
+    useEffect(() => {
+        if (calculateCostEstimateDetails.length > 0) {
+            setCalculatedEstimate(calculateCostEstimateDetails[0]);
+        }
+    }, [calculateCostEstimateDetails]);
 
     // Assuming you have the BS library properly imported
     const today = new Date(); // current Gregorian date
@@ -655,6 +667,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
         setDropdownOpen(null);
     };
+
+
+
 
     const LoadingSpinner = () => (
         <div className="flex items-center justify-center py-12">
@@ -1119,6 +1134,82 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
                         </div>
 
+                        <div>
+                            <button
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+                                onClick={() => setIsCostEstimateModalOpen(true)}
+                            >
+                                <Edit className="w-4 h-4" />
+                                <span>Cost estimattions calculate गर्नुहोस्</span>
+                            </button>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">प्रदेश सरकारबाट बजेट:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.provincial_budget))}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">स्थानीय तहबाट बजेट:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.local_budget))}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">भ्याट प्रतिशत:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(calculatedEstimate?.vat_percent)}%
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">भ्याट रकम:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.vat_amount))}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी प्रतिशत:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(calculatedEstimate?.contingency_percent)}%
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">कन्टिन्जेन्सी रकम:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.contingency_amount))}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">भ्याट बिना लागत:</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.total_without_vat))}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">कुल लागत (भ्याट + कन्टिन्जेन्सी सहित):</p>
+                                    <p className="text-lg font-semibold">
+                                        {toNepaliNumber(formatBudget(calculatedEstimate?.grand_total))}
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            {isCostEstimateModalOpen && (
+                                <CalculateCostEstimateModal
+                                    isOpen={isCostEstimateModalOpen}
+                                    onClose={() => setIsCostEstimateModalOpen(false)}
+                                    costData={costEstimateDetails}
+                                    onSave={() => {
+                                        loadCostEstimate();
+                                        setIsCostModalOpen(false);
+                                    }}
+                                    projectId={project.serial_number}
+                                />
+                            )
+
+                            }
+                        </div>
                         {/* Cost Summary */}
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">

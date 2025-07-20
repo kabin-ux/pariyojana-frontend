@@ -28,7 +28,7 @@ export const projectDetailApi = {
   // Program Details
   getProgramDetails: async (projectId: number): Promise<ProgramDetail[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/program-details/?project=${projectId}`, {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/program-details/`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -129,6 +129,25 @@ export const projectDetailApi = {
   getCostEstimateDetails: async (projectId: number): Promise<CostEstimateDetail[]> => {
     try {
       const response = await fetch(`${API_BASE_URL}/${projectId}/cost-estimate-details/`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results || data || [];
+    } catch (error) {
+      console.error('Error fetching cost estimate details:', error);
+      throw error;
+    }
+  },
+
+   getCalculateCostEstimateDetails: async (projectId: number): Promise<CostEstimateDetail[]> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/calculate-costestimations/`, {
         method: 'GET',
         headers: getHeaders(),
       });

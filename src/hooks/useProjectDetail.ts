@@ -19,6 +19,7 @@ export const useProjectDetail = (projectId: number) => {
   const [officialDetails, setOfficialDetails] = useState<OfficialDetail[]>([]);
   const [monitoringCommittee, setMonitoringCommittee] = useState<MonitoringCommittee[]>([]);
   const [costEstimateDetails, setCostEstimateDetails] = useState<CostEstimateDetail[]>([]);
+  const [calculateCostEstimateDetails, setCalculateCostEstimateDetails] = useState([])
   const [mapCostEstimate, setMapCostEstimate] = useState<MapCostEstimate[]>([]);
   const [projectAgreementDetails, setProjectAgreementDetails] = useState<ProjectAgreementDetail[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -77,12 +78,14 @@ export const useProjectDetail = (projectId: number) => {
   const loadCostEstimate = async () => {
     setTabLoading('cost', true);
     try {
-      const [costDetails, mapEstimate] = await Promise.all([
+      const [costDetails, mapEstimate, calculateCostEstimate] = await Promise.all([
         projectDetailApi.getCostEstimateDetails(projectId),
-        projectDetailApi.getMapCostEstimate(projectId)
+        projectDetailApi.getMapCostEstimate(projectId),
+        projectDetailApi.getCalculateCostEstimateDetails(projectId)
       ]);
       setCostEstimateDetails(costDetails);
       setMapCostEstimate(mapEstimate);
+      setCalculateCostEstimateDetails(calculateCostEstimate);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -177,6 +180,7 @@ export const useProjectDetail = (projectId: number) => {
     monitoringCommittee,
     costEstimateDetails,
     mapCostEstimate,
+    calculateCostEstimateDetails,
     projectAgreementDetails,
     documents,
     otherdocuments,
