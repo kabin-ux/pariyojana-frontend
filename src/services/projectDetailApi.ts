@@ -164,6 +164,44 @@ export const projectDetailApi = {
     }
   },
 
+     getWorkTypeDetails: async (projectId: number): Promise<CostEstimateDetail[]> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/work-types/`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results || data || [];
+    } catch (error) {
+      console.error('Error fetching cost estimate details:', error);
+      throw error;
+    }
+  },
+
+    getWorkInProgressDetails: async (projectId: number): Promise<CostEstimateDetail[]> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${projectId}/work-progress/`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results || data || [];
+    } catch (error) {
+      console.error('Error fetching cost estimate details:', error);
+      throw error;
+    }
+  },
+
   // Map Cost Estimate
   getMapCostEstimate: async (projectId: number): Promise<MapCostEstimate[]> => {
     try {

@@ -18,6 +18,8 @@ import OperationSiteUploadModal from '../modals/UploadSiteModal';
 import AddAuthenticationFileModal from '../modals/AddAuthenticationFileModal';
 import AuthenticationModal from '../modals/AuthenticationModal';
 import CalculateCostEstimateModal from '../modals/CalculateCostEstimateModal';
+import WorkTypeModal from '../modals/SetWorkTypeModal';
+import WorkInProgressModal from '../modals/WorkInProgressModal';
 
 interface FormRow {
     id: number;
@@ -84,6 +86,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [isCostModalOpen, setIsCostModalOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCostEstimateModalOpen, setIsCostEstimateModalOpen] = useState(false);
+    const [isSetWorkTypeModalOpen, setIsSetWorkTypeModalOpen] = useState(false);
+    const [isSetWorkInProgressOpen, setIsSetWorkInProgressOpen] = useState(false);
     const [committeeDetail, setCommitteeDetail] = useState<any>(null);
     const [agreementDetail, setAgreementDetail] = useState<any>(null);
     const [operationLocationDetails, setOperationLocationDetails] = useState<any>(null);
@@ -127,6 +131,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         costEstimateDetails,
         mapCostEstimate,
         calculateCostEstimateDetails,
+        workType,
+        workInProgress,
         projectAgreementDetails,
         documents,
         otherdocuments,
@@ -146,6 +152,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         deleteDocument,
     } = useProjectDetail(projectIdNum);
     const [calculatedEstimate, setCalculatedEstimate] = useState(null);
+    const [workTypeDets, setWorkTypeDets] = useState(null);
+    const [workInProgressDets, setWorkInProgressDets] = useState(null);
     const [loadingEstimate, setLoadingEstimate] = useState(false);
 
 
@@ -247,6 +255,17 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
     }, [calculateCostEstimateDetails]);
 
+    useEffect(() => {
+        if (workType.length > 0) {
+            setWorkTypeDets(workType[0]);
+        }
+    }, [workType]);
+
+    useEffect(() => {
+        if (workInProgress.length > 0) {
+            setWorkInProgressDets(workInProgress[0]);
+        }
+    }, [workInProgress]);
     // Assuming you have the BS library properly imported
     const today = new Date(); // current Gregorian date
 
@@ -1134,6 +1153,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
                         </div>
 
+                        {/* new cost calculation */}
                         <div>
                             <button
                                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
@@ -1199,7 +1219,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 <CalculateCostEstimateModal
                                     isOpen={isCostEstimateModalOpen}
                                     onClose={() => setIsCostEstimateModalOpen(false)}
-                                    costData={costEstimateDetails}
+                                    costData={calculateCostEstimateDetails}
                                     onSave={() => {
                                         loadCostEstimate();
                                         setIsCostModalOpen(false);
@@ -1207,9 +1227,115 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                     projectId={project.serial_number}
                                 />
                             )
-
                             }
                         </div>
+
+                        {/* work type set */}
+
+                        <div>
+                            <button
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+                                onClick={() => setIsSetWorkTypeModalOpen(true)}
+                            >
+                                <Edit className="w-4 h-4" />
+                                <span>Set Work type</span>
+                            </button>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">परियोजनाको नाम</p>
+                                    <p className="text-lg font-semibold">
+                                        {workTypeDets?.project}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">कामको प्रकार</p>
+                                    <p className="text-lg font-semibold">
+                                        {workTypeDets?.name}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">एकाइ</p>
+                                    <p className="text-lg font-semibold">
+                                        {workTypeDets?.unit_name}
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            {isSetWorkTypeModalOpen && (
+                                <WorkTypeModal
+                                    isOpen={isSetWorkTypeModalOpen}
+                                    onClose={() => setIsSetWorkTypeModalOpen(false)}
+                                    workTypeData={workTypeDets}
+                                    onSave={() => {
+                                        loadCostEstimate();
+                                        setIsSetWorkTypeModalOpen(false);
+                                    }}
+                                    projectId={project.serial_number}
+                                />
+                            )}
+                        </div>
+
+                        {/* work in progress */}
+                        <div>
+                            <button
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+                                onClick={() => setIsSetWorkInProgressOpen(true)}
+                            >
+                                <Edit className="w-4 h-4" />
+                                <span>प्रगतिमा काम</span>
+                            </button>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">परियोजनाको नाम</p>
+                                    <p className="text-lg font-semibold">
+                                        {workInProgressDets?.project_name}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">आर्थिक वर्ष</p>
+                                    <p className="text-lg font-semibold">
+                                        {workInProgressDets?.fiscal_year_display}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">कामको प्रकार</p>
+                                    <p className="text-lg font-semibold">
+                                        {workInProgressDets?.work_type?.name}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">मात्रा</p>
+                                    <p className="text-lg font-semibold">
+                                        {workInProgressDets?.quantity}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">टिप्पणीहरू
+                                    </p>
+                                    <p className="text-lg font-semibold">
+                                        {workInProgressDets?.remarks}
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            {isSetWorkInProgressOpen && (
+                                <WorkInProgressModal
+                                    isOpen={isSetWorkInProgressOpen}
+                                    onClose={() => setIsSetWorkInProgressOpen(false)}
+                                    workInProgressData={workInProgressDets}
+                                    onSave={() => {
+                                        loadCostEstimate();
+                                        setIsSetWorkInProgressOpen(false);
+                                    }}
+                                    projectId={project.serial_number}
+                                />
+                            )}
+                        </div>
+
                         {/* Cost Summary */}
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">

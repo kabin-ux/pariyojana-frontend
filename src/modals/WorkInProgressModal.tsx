@@ -4,71 +4,70 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../hooks/useSetting';
 
-interface CostEstimateData {
+interface WorkTypeData {
     id?: number;
-    fiscal_year: string;
-    provincial_budget: number;
-    local_budget: number;
-    total_without_vat: number;
-    ps_amount: number;
+    project: number;
+    name: string;
+    unit: number;
+    unit_name: string;
 }
 
 interface CostEstimateModalProps {
     isOpen: boolean;
     onClose: () => void;
-    costData: CostEstimateData | null;
-    onSave: (data: CostEstimateData) => void;
+    workTypeData: WorkTypeData | null;
+    onSave: (data: WorkTypeData) => void;
     projectId: number;
 }
 
-const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
+const WorkInProgressModal: React.FC<CostEstimateModalProps> = ({
     isOpen,
     onClose,
-    costData,
+    workInProgressData,
     onSave,
     projectId
 }) => {
-    const [formData, setFormData] = useState<CostEstimateData>({
-        fiscal_year: '',
-        provincial_budget: 0,
-        local_budget: 0,
-        total_without_vat: 0,
-        ps_amount: 0
-    });
     const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
+
+    const [formData, setFormData] = useState<WorkTypeData>({
+        fiscal_year: '',
+        quantity: 0,
+        remarks: ''
+    });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (costData) {
-            const costDetail = Array.isArray(costData) ? costData[0] : costData;
+        if (workInProgressData) {
+            const costDetail = Array.isArray(workInProgressData) ? workInProgressData[0] : workInProgressData;
 
             setFormData({
-                id: costDetail.id || undefined,
-                fiscal_year: costDetail.fiscal_year?.toString() || '',
-                provincial_budget: Number(costDetail.provincial_budget) || 0,
-                local_budget: Number(costDetail.local_budget) || 0,
-                total_without_vat: Number(costDetail.total_without_vat) || 0,
-                ps_amount: Number(costDetail.ps_amount) || 0,
+                id: workInProgressData.id || undefined,
+                fiscal_year: workInProgressData.name || '',
+                quantity: workInProgressData.unit || '',
+                remarks: workInProgressData.remarks
             });
             console.log("formadatata", formData)
         } else {
             setFormData({
+                id: undefined,
                 fiscal_year: '',
-                provincial_budget: 0,
-                local_budget: 0,
-                total_without_vat: 0,
-                ps_amount: 0,
-                id: undefined
+                quantity: '',
+                remarks: ''
             });
         }
-    }, [costData, isOpen]);
+    }, [workInProgressData, isOpen]);
 
-    const handleInputChange = (field: keyof CostEstimateData, value: string) => {
+    const handleInputChange = (field: keyof WorkTypeData, value: string) => {
         setFormData(prev => ({
             ...prev,
             [field]: field === 'fiscal_year' ? value : Number(value)
         }));
     };
+
+    const handleTextInputChange = (field, value) => {
+        setFormData({ ...formData, [field]: value });
+    };
+
 
     const handleSave = async () => {
         const token = localStorage.getItem('access_token');
@@ -81,8 +80,8 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
         try {
             const hasId = formData.id !== undefined;
             const url = hasId
-                ? `http://127.0.0.1:8000/api/projects/${projectId}/calculate-costestimations/${formData.id}/`
-                : `http://127.0.0.1:8000/api/projects/${projectId}/calculate-costestimations/`;
+                ? `http://127.0.0.1:8000/api/projects/${projectId}/work-progress/${formData.id}/`
+                : ` http://127.0.0.1:8000/api/projects/${projectId}/work-progress/work-type/1/`;
 
             const method = hasId ? 'patch' : 'post';
 
@@ -139,56 +138,30 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                             ))}
                         </select>
                     </div>
-
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Provincial Budget (प्रदेशको बजेट):
+                        <label className=" text-sm font-medium text-gray-700 mb-2">
+                            मात्रा:
                         </label>
                         <input
                             type="number"
-                            step="0.01"
-                            value={formData.provincial_budget}
-                            onChange={(e) => handleInputChange('provincial_budget', e.target.value)}
+                            value={formData.quantity}
+                            onChange={(e) => handleInputChange('quantity', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                     <div>
+                        <label className=" text-sm font-medium text-gray-700 mb-2">
+                            टिप्पणीहरू:
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.remarks}
+                            onChange={(e) => handleTextInputChange('remarks', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Local Budget (स्थानीय बजेट) :
-                        </label>
-                        <input
-                            type="number"
-                            value={formData.local_budget}
-                            onChange={(e) => handleInputChange('local_budget', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Total Without VAT :
-                        </label>
-                        <input
-                            type="number"
-                            value={formData.total_without_vat}
-                            onChange={(e) => handleInputChange('total_without_vat', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            PS Amount:
-                        </label>
-                        <input
-                            type="number"
-                            value={formData.ps_amount}
-                            onChange={(e) => handleInputChange('ps_amount', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
                 </div>
-
                 <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
                     <button
                         onClick={handleCancel}
@@ -210,4 +183,4 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
     );
 };
 
-export default CalculateCostEstimateModal;
+export default WorkInProgressModal;

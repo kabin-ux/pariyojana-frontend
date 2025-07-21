@@ -19,7 +19,9 @@ export const useProjectDetail = (projectId: number) => {
   const [officialDetails, setOfficialDetails] = useState<OfficialDetail[]>([]);
   const [monitoringCommittee, setMonitoringCommittee] = useState<MonitoringCommittee[]>([]);
   const [costEstimateDetails, setCostEstimateDetails] = useState<CostEstimateDetail[]>([]);
-  const [calculateCostEstimateDetails, setCalculateCostEstimateDetails] = useState([])
+  const [calculateCostEstimateDetails, setCalculateCostEstimateDetails] = useState([]);
+  const [workType, setWorkType] = useState([]);
+  const [workInProgress, setWorkInProgress] = useState([]);
   const [mapCostEstimate, setMapCostEstimate] = useState<MapCostEstimate[]>([]);
   const [projectAgreementDetails, setProjectAgreementDetails] = useState<ProjectAgreementDetail[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -78,14 +80,18 @@ export const useProjectDetail = (projectId: number) => {
   const loadCostEstimate = async () => {
     setTabLoading('cost', true);
     try {
-      const [costDetails, mapEstimate, calculateCostEstimate] = await Promise.all([
+      const [costDetails, mapEstimate, calculateCostEstimate, workTypeDetails, workInProgressDetails] = await Promise.all([
         projectDetailApi.getCostEstimateDetails(projectId),
         projectDetailApi.getMapCostEstimate(projectId),
-        projectDetailApi.getCalculateCostEstimateDetails(projectId)
+        projectDetailApi.getCalculateCostEstimateDetails(projectId),
+        projectDetailApi.getWorkTypeDetails(projectId),
+        projectDetailApi.getWorkInProgressDetails(projectId)
       ]);
       setCostEstimateDetails(costDetails);
       setMapCostEstimate(mapEstimate);
       setCalculateCostEstimateDetails(calculateCostEstimate);
+      setWorkType(workTypeDetails);
+      setWorkInProgress(workInProgressDetails);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -181,6 +187,8 @@ export const useProjectDetail = (projectId: number) => {
     costEstimateDetails,
     mapCostEstimate,
     calculateCostEstimateDetails,
+    workType,
+    workInProgress,
     projectAgreementDetails,
     documents,
     otherdocuments,
