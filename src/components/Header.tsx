@@ -17,17 +17,10 @@ const Header: FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-4 h-4 flex items-center justify-center">
-            11
-          </span>
-        </div>
+      <div className="flex items-center space-x-4 mr-4">
         <div className="flex items-center space-x-2">
           <User className="w-6 h-6" />
           <span className="text-sm">{user?.full_name}</span>
-          <ChevronDown className="w-4 h-4" />
         </div>
       </div>
     </header>

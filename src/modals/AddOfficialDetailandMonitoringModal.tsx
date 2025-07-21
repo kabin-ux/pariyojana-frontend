@@ -224,17 +224,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                 ))}
                             </tbody>
                         </table>
-                    </div>
-
-                    <div className="mt-4 flex justify-end">
-                        <button
-                            onClick={handleAddMember}
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors flex items-center gap-2 cursor-pointer"
-                        >
-                            <span>+</span>
-                            थप सदस्य
-                        </button>
-                    </div>
+                    </div>                    
                 </div>
 
                 <CitizenshipFileUploadModal
