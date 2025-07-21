@@ -243,7 +243,6 @@ const Dashboard: React.FC = () => {
 
         {/* Right Sidebar - Recent Projects */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">भर्खरै काम गरिएका परियोजनाहरू</h3>
           <Notifications limit={6} showHeader={true} />
 
         </div>
