@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Doughnut, Pie } from 'react-chartjs-2';
+import Notifications from './Notification/Notifications';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -243,38 +244,8 @@ const Dashboard: React.FC = () => {
         {/* Right Sidebar - Recent Projects */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">भर्खरै काम गरिएका परियोजनाहरू</h3>
-          <div className="space-y-1">
-            <ProjectItem
-              title="सुनाकोठी साक्षरता केन्द्र संचालन आधारभूत सुनाकोठी साक्षरता केन्द्र संचालन आधारभूत"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-            <ProjectItem
-              title="New Project Addition"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-            <ProjectItem
-              title="Test project1"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-            <ProjectItem
-              title="सम्पर्क मार्गमा फलामा निर्माण"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-            <ProjectItem
-              title="Editor test project"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-            <ProjectItem
-              title="test member"
-              subtitle="तुरुन्त प्रविष्टि पुष्टिकरण गर्नुहोस्"
-              icon={<FileText className="w-4 h-4 text-blue-600" />}
-            />
-          </div>
+          <Notifications limit={6} showHeader={true} />
+
         </div>
       </div>
     </div>

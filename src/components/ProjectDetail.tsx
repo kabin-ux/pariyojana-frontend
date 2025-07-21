@@ -111,13 +111,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     ];
 
     const positionDistributionRows: FormRow[] = [
-        { id: 1, post: 'अध्यक्ष', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 2, post: 'सचिव', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 3, post: 'कोषाध्यक्ष', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 4, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 5, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 6, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
-        { id: 7, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 31, post: 'अध्यक्ष', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 32, post: 'सचिव', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 33, post: 'कोषाध्यक्ष', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 34, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 35, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 36, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
+        { id: 37, post: 'सदस्य', full_name: '', gender: '', address: '', citizenship_no: '', contact_no: '', citizenshipCopy: '' },
     ];
 
 
@@ -314,8 +314,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
     };
 
-
-
     const token = localStorage.getItem('access_token');
 
     const handleSavePosition = async (rows: FormRow[]) => {
@@ -325,7 +323,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 throw new Error('Authentication token not found');
             }
 
-            const savePromises = rows.map(async (row) => {
+            const officialDetailsArray = Array.isArray(officialDetails) ? officialDetails : [officialDetails];
+
+            // ✅ Filter only rows with matching IDs (i.e., update only existing ones)
+            const rowsToUpdate = rows.filter(row =>
+                officialDetailsArray.some(detail => detail.id === row.id)
+            );
+
+            const updatePromises = rowsToUpdate.map(async (row) => {
                 const formData = new FormData();
                 formData.append("project", project.serial_number);
                 formData.append("post", row.post);
@@ -335,7 +340,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 formData.append("citizenship_no", row.citizenship_no);
                 formData.append("contact_no", row.contact_no);
 
-                // More reliable file checking
                 if (row.citizenship_front && typeof row.citizenship_front === 'object') {
                     formData.append("citizenship_front", row.citizenship_front);
                 }
@@ -343,14 +347,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                     formData.append("citizenship_back", row.citizenship_back);
                 }
 
-                const url = row.id
-                    ? `http://localhost:8000/api/projects/${project.serial_number}/official-details/${row.id}/`
-                    : `http://localhost:8000/api/projects/${project.serial_number}/official-details/`;
+                const matchedDetail = officialDetailsArray.find(detail => detail.id === row.id);
+                const url = `http://localhost:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
 
-                return axios({
-                    method: row.id ? 'patch' : 'post',
-                    url,
-                    data: formData,
+                return axios.patch(url, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',
@@ -358,14 +358,15 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                 });
             });
 
-            await Promise.all(savePromises);
-            loadConsumerCommitteeDetails();
-            toast.success("पदाधिकारी विवरण सफलतापूर्वक सेभ गरियो।");
+            await Promise.all(updatePromises);
+            await loadConsumerCommitteeDetails();
+            toast.success("पदाधिकारी विवरण सफलतापूर्वक अपडेट गरियो।");
         } catch (error) {
             console.error("Error saving official details:", error);
-            toast.error("पदाधिकारी विवरण सेभ गर्न सकिएन।");
+            toast.error("पदाधिकारी विवरण अपडेट गर्न सकिएन।");
         }
     };
+
 
     const handleSaveResearch = async (rows: FormRow[]) => {
         try {
@@ -1025,7 +1026,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 rows={officialDetails.length > 0 ? transformedOfficialDetails : positionDistributionRows}
                                 onSave={handleSavePosition}
                             />
-
                             <Modal
                                 isOpen={isResearchModalOpen}
                                 onClose={() => setIsResearchModalOpen(false)}
@@ -1033,10 +1033,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                                 rows={monitoringCommittee.length > 0 ? transformedMonitoringDetails : researchCommitteeRows}
                                 onSave={handleSaveResearch}
                             />
-
-
                         </div>
-
                     </div>
                 );
 

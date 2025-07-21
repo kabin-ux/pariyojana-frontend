@@ -43,12 +43,12 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
             const costDetail = Array.isArray(costData) ? costData[0] : costData;
 
             setFormData({
-                id: costDetail.id || undefined,
-                fiscal_year: costDetail.fiscal_year?.toString() || '',
-                provincial_budget: Number(costDetail.provincial_budget) || 0,
-                local_budget: Number(costDetail.local_budget) || 0,
-                total_without_vat: Number(costDetail.total_without_vat) || 0,
-                ps_amount: Number(costDetail.ps_amount) || 0,
+                id: costDetail?.id || undefined,
+                fiscal_year: costDetail?.fiscal_year?.toString() || '',
+                provincial_budget: Number(costDetail?.provincial_budget) || 0,
+                local_budget: Number(costDetail?.local_budget) || 0,
+                total_without_vat: Number(costDetail?.total_without_vat) || 0,
+                ps_amount: Number(costDetail?.ps_amount) || 0,
             });
             console.log("formadatata", formData)
         } else {
