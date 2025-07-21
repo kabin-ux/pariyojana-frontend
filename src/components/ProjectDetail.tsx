@@ -382,39 +382,110 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     };
 
 
-    const handleSaveResearch = async (rows: FormRow[]) => {
-        try {
-            for (const row of rows) {
-                const formData = new FormData();
-                formData.append("serial_no", row.id.toString());
-                formData.append("project", project.serial_number);
-                formData.append("post", row.post);
-                formData.append("full_name", row.full_name);
-                formData.append("address", row.address);
-                formData.append("gender", row.gender);
-                formData.append("citizenship_no", row.citizenship_no);
-                formData.append("contact_no", row.contact_no);
-                if (row.citizenship_front) formData.append("citizenship_front", row.citizenship_front);
-                if (row.citizenship_back) formData.append("citizenship_back", row.citizenship_back);
+    // const handleSaveResearch = async (rows: FormRow[]) => {
+    //     try {
+    //         for (const row of rows) {
+    //             const formData = new FormData();
+    //             formData.append("serial_no", row.id.toString());
+    //             formData.append("project", project.serial_number);
+    //             formData.append("post", row.post);
+    //             formData.append("full_name", row.full_name);
+    //             formData.append("address", row.address);
+    //             formData.append("gender", row.gender);
+    //             formData.append("citizenship_no", row.citizenship_no);
+    //             formData.append("contact_no", row.contact_no);
+    //             if (row.citizenship_front) formData.append("citizenship_front", row.citizenship_front);
+    //             if (row.citizenship_back) formData.append("citizenship_back", row.citizenship_back);
 
-                await axios.post(
-                    `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+    //             // await axios.post(
+    //             //     `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/`,
+    //             //     formData,
+    //             //     {
+    //             //         headers: {
+    //             //             Authorization: `Bearer ${token}`,
+    //             //             'Content-Type': 'multipart/form-data',
+    //             //         },
+    //             //     }
+    //             // );
+
+    //             await axios.patch(
+    //                 `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${row.id}/`,
+    //                 formData,
+    //                 {
+    //                     headers: {
+    //                         Authorization: `Bearer ${token}`,
+    //                         'Content-Type': 'multipart/form-data',
+    //                     },
+    //                 }
+    //             );
+
+    //         }
+
+    //         alert("अनुगमन तथा सहजिकरण समिति सफलतापूर्वक सेभ गरियो।");
+    //     } catch (error) {
+    //         console.error("Error saving monitoring committee:", error);
+    //         alert("अनुगमन समिति सेभ गर्न सकिएन।");
+    //     }
+    // };
+const handleSaveResearch = async (rows: FormRow[]) => {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            throw new Error('Authentication token not found');
+        }
+
+        const monitoringDetailsArray = Array.isArray(monitoringCommittee) ? monitoringCommittee : [monitoringCommittee];
+
+        console.log("monitoringCommittee raw from backend:", monitoringCommittee);
+        console.log("transformed rows from UI:", rows);
+
+        // Match existing rows by ID
+        const rowsToUpdate = rows.filter(row =>
+            monitoringDetailsArray.some(detail => detail.id === row.id)
+        );
+
+        console.log("rowsToUpdate:", rowsToUpdate);
+
+        const updatePromises = rowsToUpdate.map(async (row) => {
+            const formData = new FormData();
+            const matchedDetail = monitoringDetailsArray.find(detail => detail.id === row.id);
+            
+            // Use the existing serial_no from the matched detail
+            formData.append("project", project.serial_number);
+            formData.append("serial_no", matchedDetail.serial_no.toString()); // Use matchedDetail.serial_no instead of row.id
+            formData.append("post", row.post);
+            formData.append("full_name", row.full_name || '');
+            formData.append("address", row.address || '');
+            formData.append("gender", row.gender || '');
+            formData.append("citizenship_no", row.citizenship_no || '');
+            formData.append("contact_no", row.contact_no || '');
+
+            if (row.citizenship_front && typeof row.citizenship_front === 'object') {
+                formData.append("citizenship_front", row.citizenship_front);
             }
 
-            alert("अनुगमन तथा सहजिकरण समिति सफलतापूर्वक सेभ गरियो।");
-        } catch (error) {
-            console.error("Error saving monitoring committee:", error);
-            alert("अनुगमन समिति सेभ गर्न सकिएन।");
-        }
-    };
+            if (row.citizenship_back && typeof row.citizenship_back === 'object') {
+                formData.append("citizenship_back", row.citizenship_back);
+            }
+
+            const url = `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
+
+            return axios.patch(url, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+        });
+
+        await Promise.all(updatePromises);
+        await loadConsumerCommitteeDetails(); 
+        toast.success("अनुगमन तथा सहजिकरण समिति सफलतापूर्वक अपडेट गरियो।");
+    } catch (error) {
+        console.error("Error saving monitoring committee:", error);
+        toast.error("अनुगमन समिति सेभ गर्न सकिएन।");
+    }
+};
 
     const handleFileUpload = async (data: any) => {
         try {
