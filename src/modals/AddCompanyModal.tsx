@@ -21,7 +21,7 @@ interface FormData {
   company_name: string;
   address: string;
   correspondenceAddress: string;
-  mainPersonName: string;
+  contact_person: string;
   email: string;
   mobile_number: string;
   telephone: string;
@@ -43,11 +43,11 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
   const [formData, setFormData] = useState<FormData>({
     company_name: '',
     address: '',
-    correspondenceAddress: '',
-    mainPersonName: '',
+    correspondence_address: '',
+    contact_person: '',
     email: '',
     mobile_number: '',
-    telephone: '',
+    telephone_number: '',
     company_registration_number: '',
     pan_number: '',
     has_registration_certificate: false,
@@ -229,8 +229,8 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
                   </label>
                   <input
                     type="text"
-                    name="correspondenceAddress"
-                    value={formData.correspondenceAddress}
+                    name="correspondence_address"
+                    value={formData.correspondence_address}
                     onChange={handleInputChange}
                     placeholder="पत्राचार गर्ने ठेगाना"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -243,8 +243,8 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
                   </label>
                   <input
                     type="text"
-                    name="mainPersonName"
-                    value={formData.mainPersonName}
+                    name="contact_person"
+                    value={formData.contact_person}
                     onChange={handleInputChange}
                     placeholder="मुख्य व्यक्तिको नाम"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -287,8 +287,8 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
                   </label>
                   <input
                     type="tel"
-                    name="telephone"
-                    value={formData.telephone}
+                    name="telephone_number"
+                    value={formData.telephone_number}
                     onChange={handleInputChange}
                     placeholder="टेलिफोन नं."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

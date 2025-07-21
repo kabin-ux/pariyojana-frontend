@@ -106,20 +106,6 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                 <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">रिपोर्ट डाउनलोड ({reportTitle})</h3>
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                                <label className="text-sm font-medium text-gray-700">क्षेत्र:</label>
-                                <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option>क्षेत्र</option>
-                                </select>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <label className="text-sm font-medium text-gray-700">उप-क्षेत्र:</label>
-                                <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option>उप-क्षेत्र</option>
-                                </select>
-                            </div>
-                        </div>
                         <div className="flex items-center space-x-2">
                             <button
                                 onClick={() => {
@@ -192,14 +178,6 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 <span>PDF</span>
                             </button>
                         </div>
-                    </div>
-                    <div className="flex items-center space-x-2 mt-4">
-                        <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                            रिपोर्ट यूनिफाइड
-                        </button>
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-                            रिपोर्ट बनाउनुहोस्
-                        </button>
                     </div>
                 </div>
 
