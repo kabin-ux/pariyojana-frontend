@@ -157,8 +157,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     const [loadingEstimate, setLoadingEstimate] = useState(false);
 
 
-    const transformedOfficialDetails: FormRow[] = officialDetails.map((member, index) => ({
-        id: index + 1,
+    const transformedOfficialDetails: FormRow[] = officialDetails.map((member) => ({
+        // id: index + 1,
+        id: member.id,
         post: member.post,
         full_name: member.full_name,
         gender: member.gender,
@@ -170,8 +171,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         citizenship_back: member.citizenship_back,
     }));
 
-    const transformedMonitoringDetails: FormRow[] = monitoringCommittee.map((member, index) => ({
-        id: index + 1,
+    const transformedMonitoringDetails: FormRow[] = monitoringCommittee.map((member) => ({
+        // id: index + 1,
+        id: member.id,
         post: member.post,
         full_name: member.full_name,
         gender: member.gender,
@@ -324,11 +326,23 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             }
 
             const officialDetailsArray = Array.isArray(officialDetails) ? officialDetails : [officialDetails];
+            console.log("officialDetails raw from backend:", officialDetails);
+            console.log("transformed rows:", rows);
 
             // Filter only rows with matching IDs (i.e., update only existing ones)
             const rowsToUpdate = rows.filter(row =>
                 officialDetailsArray.some(detail => detail.id === row.id)
             );
+            console.log("rows:", rows); // from UI
+            console.log("officialDetailsArray:", officialDetailsArray);
+            console.log("rowsToUpdate:", rowsToUpdate);
+
+            rows.forEach(row => {
+                officialDetailsArray.forEach(detail => {
+                    console.log(`Comparing row.id ${row.id} with detail.id ${detail.id}`);
+                });
+            });
+
 
             const updatePromises = rowsToUpdate.map(async (row) => {
                 const formData = new FormData();
