@@ -282,12 +282,12 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
         'application/vnd.ms-excel', // .xls
       ];
-      
+
       if (!allowedTypes.includes(file.type)) {
         toast.error('कृपया Excel फाइल मात्र छान्नुहोस् (.xlsx वा .xls)');
         return;
       }
-      
+
       setSelectedFile(file);
     }
   };
@@ -302,7 +302,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     setIsImporting(true);
     const token = localStorage.getItem('access_token')
     try {
-      
+
       const formData = new FormData();
       formData.append('file', selectedFile);
 
@@ -321,7 +321,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       setIsImportDialogOpen(false);
       setSelectedFile(null);
       refetchProjects(); // Refresh the projects list
-      
+
     } catch (error: any) {
       console.error('Import error:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Excel फाइल आयात गर्न सकिएन';
@@ -355,18 +355,18 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       // Generate filename with current date
       const currentDate = new Date().toISOString().split('T')[0];
       link.download = `परियोजनाहरू_${currentDate}.xlsx`;
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
       toast.success('Excel फाइल सफलतापूर्वक डाउनलोड भयो');
-      
+
     } catch (error: any) {
       console.error('Export error:', error);
       const errorMessage = error.response?.data?.message || 'Excel फाइल निर्यात गर्न सकिएन';
@@ -426,7 +426,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
-                <span>नयाँ import थप्नुहोस्</span>
+                <span>Excel बाट डेटा आयात गर्नुहोस्</span>
               </button>
               <button
                 onClick={handleExport}
@@ -434,7 +434,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                 className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2 cursor-pointer disabled:opacity-50"
               >
                 <Download className="w-4 h-4" />
-                <span>{isExporting ? 'निर्यात गर्दै...' : 'नयाँ export थप्नुहोस्'}</span>
+                <span>{isExporting ? 'निर्यात गर्दै...' : 'नयाँ फाइल Excel मा निर्यात गर्नुहोस्'}</span>
               </button>
             </div>
           </div>
