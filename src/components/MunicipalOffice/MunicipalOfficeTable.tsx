@@ -22,21 +22,30 @@ interface MunicipalOfficeTableProps {
 const MunicipalOfficeTable: React.FC<MunicipalOfficeTableProps> = ({ activeTab, data, onRecommend }) => {
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">क्षेत्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">उप-क्षेत्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">स्रोत</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">खर्च केन्द्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">बजेट</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">वडा नं.</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">प्राथमिकता नम्बर</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50 sticky top-0 z-10">
+            <tr>
+              {[
+                'क्र.स',
+                'योजना तथा कार्यक्रम',
+                'क्षेत्र',
+                'उप-क्षेत्र',
+                'स्रोत',
+                'खर्च केन्द्र',
+                'बजेट',
+                'वडा नं.',
+                'स्थिति',
+                'प्राथमिकता नम्बर',
+                'अन्य',
+              ].map((header, idx) => (
+                <th
+                  key={idx}
+                  className="text-left px-4 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap"
+                >
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>

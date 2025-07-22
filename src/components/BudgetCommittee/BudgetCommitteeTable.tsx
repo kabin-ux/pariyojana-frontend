@@ -5,51 +5,62 @@ interface BudgetCommitteeProps {
 }
 
 export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: BudgetCommitteeProps) => (
-    <div className="overflow-x-auto">
-        <table className="min-w-full">
-            <thead>
-                <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">क्षेत्र</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">उप-क्षेत्र</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">स्रोत</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">खर्च केन्द्र</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">बजेट</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">वडा नं.</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">प्राथमिकता नम्बर</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+    <div className="overflow-x-auto shadow-sm rounded-lg border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                    {[
+                        'क्र.स',
+                        'योजना तथा कार्यक्रम',
+                        'क्षेत्र',
+                        'उप-क्षेत्र',
+                        'स्रोत',
+                        'खर्च केन्द्र',
+                        'बजेट',
+                        'वडा नं.',
+                        'स्थिति',
+                        'प्राथमिकता नम्बर',
+                        'अन्य',
+                    ].map((header, index) => (
+                        <th
+                            key={index}
+                            className="text-left text-sm font-semibold text-gray-700 py-3 px-4 whitespace-nowrap"
+                        >
+                            {header}
+                        </th>
+                    ))}
                 </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 bg-white">
                 {projects?.length > 0 ? (
                     projects.map((project, index) => (
-                        <tr key={project.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="py-3 px-4 text-gray-900">{index + 1}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.plan_name}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.thematic_area || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.sub_area || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.source || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.expenditure_center || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.budget || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.ward_no || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.status || '-'}</td>
-                            <td className="py-3 px-4 text-gray-900">{project.priority_no || '-'}</td>
+                        <tr key={project.id} className="hover:bg-gray-50 transition">
+                            <td className="py-3 px-4 text-sm text-gray-800">{index + 1}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800 truncate max-w-[200px]" title={project.plan_name}>
+                                {project.plan_name}
+                            </td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.thematic_area || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.sub_area || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.source || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.expenditure_center || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.budget || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.ward_no || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.status || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.priority_no || '-'}</td>
                             <td className="py-3 px-4">
                                 <button
                                     onClick={() => onRecommend(project.id)}
-                                    className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
+                                    className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
                                 >
-                                    नगरकार्यपालिकाको कार्यलयमा पेश गर्नुहोस्
+                                    पेश गर्नुहोस्
                                 </button>
                             </td>
                         </tr>
                     ))
                 ) : (
                     <tr>
-                        <td colSpan={11} className="py-12 text-center">
-                            <div className="flex flex-col items-center justify-center text-gray-500">
+                        <td colSpan={11} className="py-12 text-center text-gray-500">
+                            <div className="flex flex-col items-center justify-center">
                                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                     <svg
                                         className="w-8 h-8 text-gray-400"
@@ -65,7 +76,7 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: Budge
                                         />
                                     </svg>
                                 </div>
-                                <p className="text-lg font-medium">No data</p>
+                                <p className="text-lg font-medium">डेटा फेला परेन</p>
                             </div>
                         </td>
                     </tr>
@@ -73,4 +84,5 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: Budge
             </tbody>
         </table>
     </div>
+
 );

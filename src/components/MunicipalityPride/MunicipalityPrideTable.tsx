@@ -7,46 +7,61 @@ interface MunicipalityPrideTableProps {
     onRecommend: (id: number) => void;
 }
 
-export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommend}: MunicipalityPrideTableProps) => {
+export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommend }: MunicipalityPrideTableProps) => {
     const isEntryTab = activeTab === 'प्रविष्टी भएका नगर गौरव आयोजना';
     const isBudgetTab = activeTab === 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना';
 
     const dataToRender = isEntryTab ? projects : isBudgetTab ? budget : [];
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full">
-                <thead>
-                    <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">क्षेत्र</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">उप-क्षेत्र</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">स्रोत</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">खर्च केन्द्र</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">बजेट</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">वडा नं.</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">प्राथमिकता नम्बर</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
+        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200 text-sm text-gray-800">
+                <thead className="bg-gray-100">
+                    <tr>
+                        {[
+                            'क्र.स',
+                            'योजना तथा कार्यक्रम',
+                            'क्षेत्र',
+                            'उप-क्षेत्र',
+                            'स्रोत',
+                            'खर्च केन्द्र',
+                            'बजेट',
+                            'वडा नं.',
+                            'स्थिति',
+                            'प्राथमिकता नम्बर',
+                            'अन्य',
+                        ].map((heading, i) => (
+                            <th
+                                key={i}
+                                className="text-left py-3 px-4 font-semibold text-gray-800 whitespace-nowrap"
+                            >
+                                {heading}
+                            </th>
+                        ))}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                     {dataToRender && dataToRender.length > 0 ? (
                         dataToRender.map((project, index) => (
                             <MunicipalityPrideTableRow
-                                activeTab={activeTab}
                                 key={project.id}
                                 project={project}
+                                index={index}
+                                activeTab={activeTab}
                                 onRecommend={onRecommend}
-                                index={index} />
+                            />
                         ))
                     ) : (
                         <tr>
                             <td colSpan={11} className="py-12 text-center">
                                 <div className="flex flex-col items-center justify-center text-gray-500">
                                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg
+                                            className="w-8 h-8 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
                                             <path
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
@@ -55,7 +70,7 @@ export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommen
                                             />
                                         </svg>
                                     </div>
-                                    <p className="text-lg font-medium">No data</p>
+                                    <p className="text-lg font-medium text-gray-500">हाल उपलब्ध डाटा छैन</p>
                                 </div>
                             </td>
                         </tr>

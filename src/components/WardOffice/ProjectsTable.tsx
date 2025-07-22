@@ -98,82 +98,95 @@ export const ProjectsTable = ({
   const renderDynamicProjectsTable = () => (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">परियोजनाहरू</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 font-medium text-gray-900">क्र.स</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">योजना तथा कार्यक्रम</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">क्षेत्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">उप-क्षेत्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">स्रोत</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">खर्च केन्द्र</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">बजेट</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">वडा नं.</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">स्थिति</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">प्राथमिकता नम्बर</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-900">अन्य</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{item.id}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.plan_name}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.thematic_area || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.sub_area || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.source || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.expenditure_center || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.budget || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.ward_no || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.status || '-'}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.priority_no || '-'}</td>
-                  <td className="py-3 px-4">
-                    {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
-                      <button
-                        onClick={() => handlePrioritize(item.id)}
-                        className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 cursor-pointer"
-                      >
-                        प्राथमिकरण गर्नुहोस्
-                      </button>
-                    ) : tabType === 'प्राथमिकरण भएका वडा स्तरीय परियोजना' ? (
-                      <button
-                        onClick={() => handleRecommendtoBudget(item.id)}
-                        className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
-                      >
-                        बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गर्नुहोस्
-                      </button>
-                    ) : tabType === 'नगर स्तरीय परियोजना' ? (
-                      <button
-                        onClick={() => handleRecommendMunicipalProgramToBudget(item.id)}
-                        className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
-                      >
-                        बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गर्नुहोस्
-                      </button>
-                    ) : tabType === 'प्राथमिकरण भएका विषयगत समितिका परियोजना' ? (
-                      <button
-                        onClick={() => handleRecommendtoThematic(item.id)}
-                        className="text-sm bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 cursor-pointer"
-                      >
-                        विषयगत समितिमा सिफारिस गर्नुहोस्
-                      </button>
-                    ) : (
-                      <MoreHorizontal className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={11} className="py-12 text-center">
-                  <EmptyState />
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200 bg-white">
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-gray-100 sticky top-0 z-10">
+      <tr>
+        {[
+          'क्र.स',
+          'योजना तथा कार्यक्रम',
+          'क्षेत्र',
+          'उप-क्षेत्र',
+          'स्रोत',
+          'खर्च केन्द्र',
+          'बजेट',
+          'वडा नं.',
+          'स्थिति',
+          'प्राथमिकता नम्बर',
+          'अन्य',
+        ].map((header, index) => (
+          <th
+            key={index}
+            className="text-left py-3 px-4 text-sm font-semibold text-gray-700 tracking-wide whitespace-nowrap"
+          >
+            {header}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100">
+      {filteredData.length > 0 ? (
+        filteredData.map((item, index) => (
+          <tr
+            key={item.id}
+            className="hover:bg-blue-50 transition-colors duration-150"
+          >
+            <td className="py-3 px-4 text-sm text-gray-800">{index + 1}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.plan_name}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.thematic_area || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.sub_area || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.source || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.expenditure_center || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.budget || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.ward_no || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.status || '-'}</td>
+            <td className="py-3 px-4 text-sm text-gray-800">{item.priority_no || '-'}</td>
+            <td className="py-3 px-4">
+              {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
+                <button
+                  onClick={() => handlePrioritize(item.id)}
+                  className="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                >
+                  प्राथमिकरण गर्नुहोस्
+                </button>
+              ) : tabType === 'प्राथमिकरण भएका वडा स्तरीय परियोजना' ? (
+                <button
+                  onClick={() => handleRecommendtoBudget(item.id)}
+                  className="text-sm bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 cursor-pointer"
+                >
+                  बजेटमा पेश गर्नुहोस्
+                </button>
+              ) : tabType === 'नगर स्तरीय परियोजना' ? (
+                <button
+                  onClick={() => handleRecommendMunicipalProgramToBudget(item.id)}
+                  className="text-sm bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 cursor-pointer"
+                >
+                  बजेटमा पेश गर्नुहोस्
+                </button>
+              ) : tabType === 'प्राथमिकरण भएका विषयगत समितिका परियोजना' ? (
+                <button
+                  onClick={() => handleRecommendtoThematic(item.id)}
+                  className="text-sm bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 cursor-pointer"
+                >
+                  विषयगत समितिमा सिफारिस
+                </button>
+              ) : (
+                <MoreHorizontal className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+              )}
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={11} className="py-12 text-center text-sm text-gray-500">
+            <EmptyState />
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 
