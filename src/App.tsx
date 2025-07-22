@@ -6,7 +6,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import WardOffice from './components/WardOffice';
-import Projects from './components/Projects';
+// import Projects from './components/Projects';
 import Authentication from './components/Authentication';
 import Inventory from './components/Inventory';
 import ProjectMethods from './components/ProjectMethods';
@@ -21,7 +21,8 @@ import Settings from './components/Settings';
 import LoginPage from './pages/Login';
 import UsersPage from './pages/UsersPage';
 import { Toaster } from 'react-hot-toast';
-import ProjectDetail from './components/ProjectDetail';
+// import ProjectDetail from './components/ProjectDetail';
+import Projects from './components/Projects/Projects';
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen bg-gray-50">
