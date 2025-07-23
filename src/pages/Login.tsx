@@ -1,6 +1,6 @@
 import React, { useState, type FC, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/bg2.png';
+import logo from '../assets/bg2.jpg';
 import toplogo from '../assets/toplogo.png'
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/hooks';
@@ -56,7 +56,7 @@ const LoginPage: FC = () => {
             {/* Right Side - Login Form with Blurred Background */}
             <div className="w-165 flex items-center justify-center relative backdrop-blur-sm bg-slate-600/90 rounded-lg">
                 {/* Blurred background overlay */}
-                <div className="absolute inset-0 blur-lg"></div>
+                <div className="absolute inset-0"></div>
 
 
                 {/* Dark overlay for better text readability */}

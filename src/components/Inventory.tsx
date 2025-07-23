@@ -25,6 +25,7 @@ const Inventory: React.FC = () => {
   const [initialFormData, setInitialFormData] = useState<any>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
+  const [fieldKey, setSelectedFieldKey] = useState(''); // default
 
   const fetchInventory = async () => {
     try {
@@ -81,11 +82,12 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const renderDocumentCell = (hasDocument: boolean, companyId: number) => (
+  const renderDocumentCell = (hasDocument: boolean, companyId: number, fieldKey: string) => (
     <div className="flex items-center space-x-2">
       <button
         onClick={() => {
           setSelectedCompanyId(companyId);
+          setSelectedFieldKey(fieldKey); // <-- set the fieldKey here
           setUploadDialogOpen(true);
         }}
         className={`p-1 rounded cursor-pointer ${hasDocument ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'}`}
@@ -97,6 +99,7 @@ const Inventory: React.FC = () => {
       </button>
     </div>
   );
+
 
 
   const renderActionCell = (actions: string[], id: number) => (
@@ -192,11 +195,11 @@ const Inventory: React.FC = () => {
                 <tr key={item.id} className="hover:bg-gray-50 transition">
                   <td className="py-3 px-4 text-sm text-gray-800">{toNepaliNumber(index + 1)}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.company_name}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.company_registration_number, item.id)}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.pan_number, item.id)}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(item.tax_clearence, item.id)}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(item.license_copy, item.id)}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.inventory_document, item.id)}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.registration_certificate_file, item.id, 'registration_certificate_file')}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.pan_file, item.id, 'pan_file')}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.tax_clearance_file, item.id, 'tax_clearance_file')}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.license_file, item.id, 'license_file')}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.inventory_document, item.id, 'inventory_document')}</td>
                   <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
                 </tr>
               ))}
@@ -235,11 +238,14 @@ const Inventory: React.FC = () => {
           onClose={() => {
             setUploadDialogOpen(false);
             setSelectedCompanyId(null);
-            fetchInventory(); // refresh data
+            setSelectedFieldKey('');
+            fetchInventory();
           }}
           companyId={selectedCompanyId}
+          fieldKey={fieldKey} // <-- pass it here
         />
       )}
+
 
 
     </main>

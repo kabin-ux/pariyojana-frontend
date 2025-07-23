@@ -1,0 +1,570 @@
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+import { useSettings } from '../hooks/useSetting';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+interface EditProjectModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: () => void;
+    projectData: any;
+    projectType: 'ward' | 'municipality' | 'thematic' | 'ward_thematic';
+}
+
+const EditProjectModal: React.FC<EditProjectModalProps> = ({
+    isOpen,
+    onClose,
+    onSave,
+    projectData,
+    projectType
+}) => {
+    console.log("project datas", projectData)
+    const [formData, setFormData] = useState({
+        plan_name: '',
+        thematic_area: '',
+        sub_area: '',
+        plan_level: '',
+        expenditure_title: '',
+        expenditure_center: '',
+        proposed_amount: '',
+        source: '',
+        ward_no: '',
+        location: '',
+        gps_coordinate: '',
+        expected_output: '',
+        unit: '',
+        fiscal_year: '',
+        feasibility_study: '',
+        detailed_study: '',
+        environmental_study: '',
+        description: ''
+    });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Fetch dynamic dropdown data
+    const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
+    const { data: sub_areas } = useSettings('उप-क्षेत्र', true);
+    const { data: projectLevels } = useSettings('योजनाको स्तर', true);
+    const { data: expenditureTitles } = useSettings('खर्च शिर्षक', true);
+    const { data: expenditureCenters } = useSettings('खर्च केन्द्र', true);
+    const { data: sources } = useSettings('स्रोत', true);
+    const { data: units } = useSettings('इकाई', true);
+    const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
+
+    // Ward options
+    const wardOptions = [
+        { value: 1, label: 'वडा नं. - १' },
+        { value: 2, label: 'वडा नं. - २' },
+        { value: 3, label: 'वडा नं. - ३' },
+        { value: 4, label: 'वडा नं. - ४' },
+        { value: 5, label: 'वडा नं. - ५' },
+        { value: 6, label: 'वडा नं. - ६' },
+    ];
+
+    // Filter sub-areas based on selected thematic area
+    const filteredSubAreas = sub_areas?.filter((sub_area: any) => {
+        if (!formData.thematic_area) return true;
+        const selectedThematicArea = thematicAreas?.find(
+            (area: any) => area.id.toString() === formData.thematic_area
+        );
+        return sub_area.thematic_area === selectedThematicArea?.id;
+    }) || [];
+
+    // Load project data when modal opens
+    useEffect(() => {
+  if (isOpen && projectData) {
+    // Helper function to find ID by name
+    const findIdByName = (items: any[], name: string) => {
+      const found = items?.find(item => item.name === name);
+      return found ? found.id.toString() : '';
+    };
+
+    setFormData({
+      plan_name: projectData.plan_name || '',
+      thematic_area: findIdByName(thematicAreas, projectData.thematic_area),
+      sub_area: findIdByName(sub_areas, projectData.sub_area),
+      plan_level: findIdByName(projectLevels, projectData.plan_level),
+      expenditure_title: findIdByName(expenditureTitles, projectData.expenditure_title),
+      expenditure_center: findIdByName(expenditureCenters, projectData.expenditure_center),
+      proposed_amount: projectData.budget?.toString() || '', // Note: using budget instead of proposed_amount
+      source: findIdByName(sources, projectData.source),
+      ward_no: projectData.ward_no?.toString() || '',
+      location: projectData.location || '',
+      gps_coordinate: projectData.gps_coordinate || '',
+      expected_output: projectData.expected_output || '',
+      unit: findIdByName(units, projectData.unit),
+      fiscal_year: findIdByName(fiscalYears, projectData.fiscal_year),
+      feasibility_study: projectData.feasibility_study || '',
+      detailed_study: projectData.detailed_study || '',
+      environmental_study: projectData.environmental_study || '',
+      description: projectData.description || ''
+    });
+  }
+}, [isOpen, projectData, thematicAreas, sub_areas, projectLevels, expenditureTitles, 
+    expenditureCenters, sources, units, fiscalYears]);
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => {
+            const newData = { ...prev, [field]: value };
+            if (field === 'thematic_area') {
+                newData.sub_area = '';
+            }
+            return newData;
+        });
+    };
+
+    const getApiEndpoint = () => {
+        const baseUrl = 'http://localhost:8000/api/planning';
+        switch (projectType) {
+            case 'ward':
+                return `${baseUrl}/ward-office/ward-projects/${projectData.id}/`;
+            case 'municipality':
+                return `${baseUrl}/ward-office/municipality-projects/${projectData.id}/`;
+            case 'thematic':
+                return `${baseUrl}/thematic/thematic-plans/${projectData.id}/`;
+            case 'ward_thematic':
+                return `${baseUrl}/ward-office/ward-thematic-projects/${projectData.id}/`;
+            default:
+                return '';
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            const token = localStorage.getItem('access_token');
+            const endpoint = getApiEndpoint();
+
+            const submitData = {
+                plan_name: formData.plan_name,
+                thematic_area: formData.thematic_area ? parseInt(formData.thematic_area) : null,
+                sub_area: formData.sub_area ? parseInt(formData.sub_area) : null,
+                plan_level: formData.plan_level ? parseInt(formData.plan_level) : null,
+                expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : null,
+                expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : null,
+                proposed_amount: formData.proposed_amount ? parseFloat(formData.proposed_amount) : null,
+                source: formData.source ? parseInt(formData.source) : null,
+                ward_no: formData.ward_no ? parseInt(formData.ward_no) : null,
+                location: formData.location,
+                gps_coordinate: formData.gps_coordinate,
+                expected_output: formData.expected_output,
+                unit: formData.unit ? parseInt(formData.unit) : null,
+                fiscal_year: formData.fiscal_year ? parseInt(formData.fiscal_year) : null,
+                feasibility_study: formData.feasibility_study,
+                detailed_study: formData.detailed_study,
+                environmental_study: formData.environmental_study,
+                description: formData.description
+            };
+
+            await axios.patch(endpoint, submitData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            toast.success('परियोजना सफलतापूर्वक अपडेट भयो!');
+            onSave();
+            onClose();
+        } catch (error: any) {
+            console.error('Error updating project:', error);
+            const errorMessage = error.response?.data?.message || 'परियोजना अपडेट गर्न असफल भयो।';
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-800">योजना सम्पादन गर्नुहोस्</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1 cursor-pointer">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Project Name */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            योजना तथा कार्यक्रमको नाम <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.plan_name}
+                            onChange={(e) => handleInputChange('plan_name', e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
+
+                    {/* Row 1: Thematic Area, Sub-area, Level */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                विषयगत क्षेत्र <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.thematic_area}
+                                onChange={(e) => handleInputChange('thematic_area', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">विषयगत क्षेत्र</option>
+                                {thematicAreas?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                उप-क्षेत्र <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.sub_area}
+                                onChange={(e) => handleInputChange('sub_area', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                disabled={!formData.thematic_area}
+                            >
+                                <option value="">उप-क्षेत्र</option>
+                                {filteredSubAreas?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                योजनाको स्तर <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.plan_level}
+                                onChange={(e) => handleInputChange('plan_level', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">योजनाको स्तर</option>
+                                {projectLevels?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Row 2: Expenditure Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                खर्च शीर्षक <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.expenditure_title}
+                                onChange={(e) => handleInputChange('expenditure_title', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">खर्च शीर्षक</option>
+                                {expenditureTitles?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                खर्च केन्द्र <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.expenditure_center}
+                                onChange={(e) => handleInputChange('expenditure_center', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">खर्च केन्द्र</option>
+                                {expenditureCenters?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                प्रस्तावित रकम रु. <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                required
+                                value={formData.proposed_amount}
+                                onChange={(e) => handleInputChange('proposed_amount', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Row 3: Source, Location, Ward */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                स्रोत <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.source}
+                                onChange={(e) => handleInputChange('source', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">स्रोत</option>
+                                {sources?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                योजना सञ्चालन स्थान
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.location}
+                                onChange={(e) => handleInputChange('location', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                वडा नं. <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.ward_no}
+                                onChange={(e) => handleInputChange('ward_no', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">वडा</option>
+                                {wardOptions?.map((item: any) => (
+                                    <option key={item.value} value={item.value}>
+                                        {item.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Row 4: GPS, Output, Unit, Fiscal Year */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                GPS CO-ORDINATE
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.gps_coordinate}
+                                onChange={(e) => handleInputChange('gps_coordinate', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                सम्पन्न गर्ने परिणाम
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.expected_output}
+                                onChange={(e) => handleInputChange('expected_output', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                ईकाइ
+                            </label>
+                            <select
+                                value={formData.unit}
+                                onChange={(e) => handleInputChange('unit', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">ईकाइ</option>
+                                {units?.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                आर्थिक वर्ष <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.fiscal_year}
+                                onChange={(e) => handleInputChange('fiscal_year', e.target.value)}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">आर्थिक वर्ष</option>
+                                {fiscalYears?.map((year: any) => (
+                                    <option key={year.id} value={year.id}>
+                                        {year.year}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Study Reports */}
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                                (क) सम्भाव्यता अध्ययन प्रतिवेदन <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex gap-6">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="feasibility_study"
+                                        value="भएको"
+                                        checked={formData.feasibility_study === 'भएको'}
+                                        onChange={(e) => handleInputChange('feasibility_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    भएको
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="feasibility_study"
+                                        value="नभएको"
+                                        checked={formData.feasibility_study === 'नभएको'}
+                                        onChange={(e) => handleInputChange('feasibility_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    नभएको
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                                (ख) विस्तृत अध्ययन प्रतिवेदन <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex gap-6">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="detailed_study"
+                                        value="भएको"
+                                        checked={formData.detailed_study === 'भएको'}
+                                        onChange={(e) => handleInputChange('detailed_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    भएको
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="detailed_study"
+                                        value="नभएको"
+                                        checked={formData.detailed_study === 'नभएको'}
+                                        onChange={(e) => handleInputChange('detailed_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    नभएको
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                                (ग) वातावरणीय अध्ययन प्रतिवेदन <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex gap-6">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="environmental_study"
+                                        value="भएको"
+                                        checked={formData.environmental_study === 'भएको'}
+                                        onChange={(e) => handleInputChange('environmental_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    भएको
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="environmental_study"
+                                        value="नभएको"
+                                        checked={formData.environmental_study === 'नभएको'}
+                                        onChange={(e) => handleInputChange('environmental_study', e.target.value)}
+                                        className="mr-2"
+                                    />
+                                    नभएको
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            कैफियत
+                        </label>
+                        <textarea
+                            value={formData.description}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            rows={4}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+                        />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                            रद्द गर्नुहोस्
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                            {isSubmitting ? 'अपडेट गर्दै...' : 'अपडेट गर्नुहोस्'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default EditProjectModal;

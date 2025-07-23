@@ -9,6 +9,7 @@ import { SubjectCommitteeBreadcrumb } from './SubjectCommitteeBreadCrumb';
 import { EmptyState } from '../WardOffice/EmptyState';
 import { ReportContent } from './ReportContent';
 import { ReportTabs } from './ReportTabs';
+import EditProjectModal from '../../modals/EditProjectsModal';
 
 const SubjectCommittee: React.FC = () => {
   const [activeTab, setActiveTab] = useState('वडाबाट सिफारिस भएका परियोजना');
@@ -18,13 +19,14 @@ const SubjectCommittee: React.FC = () => {
     'विषयगत समितिले प्राथमिकरण गरिएको परियोजना',
   ];
   const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
-
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const {
     recommendedThematicWardProjects = [],
     thematicProjects = [],
-    prioritizedThematicProjects = []
+    prioritizedThematicProjects = [],
+    refetch
   } = usePlanning();
 
   // 🔁 Select appropriate data based on active tab
@@ -77,6 +79,23 @@ const SubjectCommittee: React.FC = () => {
     }
   };
 
+  const handleEdit = (item: any) => {
+    setSelectedProject(item);
+    setEditModalOpen(true);
+  };
+
+  const getProjectType = () => {
+    if (activeTab === 'वडाबाट सिफारिस भएका परियोजना') return 'wardrecommend';
+    if (activeTab === 'विषयगत समितिले प्रविष्ट गरेको योजना') return 'thematic';
+    return 'ward';
+  };
+
+  const handleEditSave = () => {
+    setEditModalOpen(false);
+    setSelectedProject(null);
+    refetch?.();
+  };
+
   const renderContent = () => {
     if (activeTab === 'रिपोर्ट') {
       return (
@@ -104,12 +123,22 @@ const SubjectCommittee: React.FC = () => {
             onPrioritizeThematicWard={handlePrioritizeThematicWardProject}
             onPrioritize={handlePrioritize}
             onRecommend={handleRecommendtoBudget}
+            onEdit={handleEdit}
           />
         ) : (
           <div className="mt-8">
             <EmptyState />
           </div>
         )}
+        
+        {/* Edit Modal */}
+        <EditProjectModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSave={handleEditSave}
+          projectData={selectedProject}
+          projectType={getProjectType()}
+        />
       </>
     );
   };

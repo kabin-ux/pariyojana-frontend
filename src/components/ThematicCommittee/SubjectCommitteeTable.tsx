@@ -6,9 +6,10 @@ interface SubjectCommitteeTableProps {
   onPrioritizeThematicWard: (id: number) => void;
   onPrioritize: (id: number) => void;
   onRecommend: (id: number) => void;
+  onEdit: (item: any) => void;
 }
 
-export const SubjectCommitteeTable = ({ activeTab, data, onPrioritizeThematicWard, onPrioritize, onRecommend }: SubjectCommitteeTableProps) => (
+export const SubjectCommitteeTable = ({ activeTab, data, onPrioritizeThematicWard, onPrioritize, onRecommend, onEdit }: SubjectCommitteeTableProps) => (
   <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-100 text-sm text-gray-700">
@@ -37,6 +38,7 @@ export const SubjectCommitteeTable = ({ activeTab, data, onPrioritizeThematicWar
               onPrioritizeThematicWard={onPrioritizeThematicWard}
               onPrioritize={onPrioritize}
               onRecommend={onRecommend}
+              onEdit={onEdit}
             />
           ))
         ) : (

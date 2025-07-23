@@ -8,9 +8,11 @@ interface UploadFileModalProps {
   open: boolean;
   onClose: () => void;
   companyId: number;
+  fieldKey: string; // new
 }
 
-const FileUploadModal: React.FC<UploadFileModalProps> = ({ open, onClose, companyId }) => {
+
+const FileUploadModal: React.FC<UploadFileModalProps> = ({ open, onClose, companyId, fieldKey }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -20,7 +22,7 @@ const FileUploadModal: React.FC<UploadFileModalProps> = ({ open, onClose, compan
     if (!file) return toast.error('कृपया फाइल चयन गर्नुहोस्');
 
     const formData = new FormData();
-    formData.append('inventory_document', file); // adjust key if needed
+    formData.append(fieldKey, file);
 
     try {
       setIsUploading(true);

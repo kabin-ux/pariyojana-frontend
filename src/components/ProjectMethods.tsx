@@ -26,9 +26,9 @@ const ProjectMethods: React.FC = () => {
             <span className="text-gray-900 font-medium">योजना प्रविष्टी</span>
           </div>
         </div>
-        <div className="text-sm text-gray-600">
+        {/* <div className="text-sm text-gray-600">
           <span className="text-gray-900 font-medium">वडा नं.- १</span>
-        </div>
+        </div> */}
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
