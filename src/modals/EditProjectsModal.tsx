@@ -9,7 +9,7 @@ interface EditProjectModalProps {
     onClose: () => void;
     onSave: () => void;
     projectData: any;
-    projectType: 'ward' | 'municipality' | 'thematic' | 'ward_thematic';
+    projectType: 'ward' | 'municipality' | 'thematic' | 'ward_thematic' | 'municipality-pride' | 'provience-transfer-projects' | 'federal-gov-projects';
 }
 
 const EditProjectModal: React.FC<EditProjectModalProps> = ({
@@ -74,36 +74,36 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
     // Load project data when modal opens
     useEffect(() => {
-  if (isOpen && projectData) {
-    // Helper function to find ID by name
-    const findIdByName = (items: any[], name: string) => {
-      const found = items?.find(item => item.name === name);
-      return found ? found.id.toString() : '';
-    };
+        if (isOpen && projectData) {
+            // Helper function to find ID by name
+            const findIdByName = (items: any[], name: string) => {
+                const found = items?.find(item => item.name === name);
+                return found ? found.id.toString() : '';
+            };
 
-    setFormData({
-      plan_name: projectData.plan_name || '',
-      thematic_area: findIdByName(thematicAreas, projectData.thematic_area),
-      sub_area: findIdByName(sub_areas, projectData.sub_area),
-      plan_level: findIdByName(projectLevels, projectData.plan_level),
-      expenditure_title: findIdByName(expenditureTitles, projectData.expenditure_title),
-      expenditure_center: findIdByName(expenditureCenters, projectData.expenditure_center),
-      proposed_amount: projectData.budget?.toString() || '', // Note: using budget instead of proposed_amount
-      source: findIdByName(sources, projectData.source),
-      ward_no: projectData.ward_no?.toString() || '',
-      location: projectData.location || '',
-      gps_coordinate: projectData.gps_coordinate || '',
-      expected_output: projectData.expected_output || '',
-      unit: findIdByName(units, projectData.unit),
-      fiscal_year: findIdByName(fiscalYears, projectData.fiscal_year),
-      feasibility_study: projectData.feasibility_study || '',
-      detailed_study: projectData.detailed_study || '',
-      environmental_study: projectData.environmental_study || '',
-      description: projectData.description || ''
-    });
-  }
-}, [isOpen, projectData, thematicAreas, sub_areas, projectLevels, expenditureTitles, 
-    expenditureCenters, sources, units, fiscalYears]);
+            setFormData({
+                plan_name: projectData.plan_name || '',
+                thematic_area: findIdByName(thematicAreas, projectData.thematic_area),
+                sub_area: findIdByName(sub_areas, projectData.sub_area),
+                plan_level: findIdByName(projectLevels, projectData.plan_level),
+                expenditure_title: findIdByName(expenditureTitles, projectData.expenditure_title),
+                expenditure_center: findIdByName(expenditureCenters, projectData.expenditure_center),
+                proposed_amount: projectData.budget?.toString() || '', // Note: using budget instead of proposed_amount
+                source: findIdByName(sources, projectData.source),
+                ward_no: projectData.ward_no?.toString() || '',
+                location: projectData.location || '',
+                gps_coordinate: projectData.gps_coordinate || '',
+                expected_output: projectData.expected_output || '',
+                unit: findIdByName(units, projectData.unit),
+                fiscal_year: findIdByName(fiscalYears, projectData.fiscal_year),
+                feasibility_study: projectData.feasibility_study || '',
+                detailed_study: projectData.detailed_study || '',
+                environmental_study: projectData.environmental_study || '',
+                description: projectData.description || ''
+            });
+        }
+    }, [isOpen, projectData, thematicAreas, sub_areas, projectLevels, expenditureTitles,
+        expenditureCenters, sources, units, fiscalYears]);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => {
@@ -126,6 +126,12 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 return `${baseUrl}/thematic/thematic-plans/${projectData.id}/`;
             case 'ward_thematic':
                 return `${baseUrl}/ward-office/ward-thematic-projects/${projectData.id}/`;
+            case 'municipality-pride':
+                return `${baseUrl}/municipality-pride-project/municipality-pride-projects/${projectData.id}/`;
+            case 'provience-transfer-projects':
+                return `${baseUrl}/budget-committee/provience-transfer-projects/${projectData.id}/`;
+            case 'federal-gov-projects':
+                return `${baseUrl}/budget-committee/federal-gov-projects/${projectData.id}/`;
             default:
                 return '';
         }

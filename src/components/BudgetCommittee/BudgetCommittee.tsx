@@ -150,9 +150,9 @@ const BudgetCommittee: React.FC = () => {
   };
 
   const getProjectType = () => {
-    if (activeTab === 'वडाबाट सिफारिस भएका परियोजना') return 'wardrecommend';
-    if (activeTab === 'विषयगत समितिले प्रविष्ट गरेको योजना') return 'thematic';
-    return 'ward';
+    if (activeTab === 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम') return 'provience-transfer-projects';
+    if (activeTab === 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम') return 'federal-gov-projects';
+    return 'budget-committee';
   };
 
   const handleEditSave = () => {

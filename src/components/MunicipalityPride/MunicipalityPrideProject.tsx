@@ -50,9 +50,8 @@ const MunicipalityPrideProject: React.FC = () => {
   };
 
   const getProjectType = () => {
-    if (activeTab === 'वडाबाट सिफारिस भएका परियोजना') return 'wardrecommend';
-    if (activeTab === 'विषयगत समितिले प्रविष्ट गरेको योजना') return 'thematic';
-    return 'ward';
+    if (activeTab === 'प्रविष्टी भएका नगर गौरव आयोजना') return 'municipality-pride';
+    return 'municipality-pride';
   };
 
   const handleEditSave = () => {
