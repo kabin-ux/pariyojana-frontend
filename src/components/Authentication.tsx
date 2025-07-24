@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, Home, Check, ThumbsUp } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, Home, Check, ThumbsUp, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/hooks';
 
@@ -172,8 +172,8 @@ const Authentication: React.FC = () => {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900">प्रमाणिकरण विवरण</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                  ✕
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 cursor-pointer">
+                  <X />
                 </button>
               </div>
 
@@ -215,7 +215,7 @@ const Authentication: React.FC = () => {
                   {isChecker && needsChecking && (
                     <button
                       onClick={handleCheckDocument}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
                     >
                       <Check className="w-4 h-4" />
                       <span>जाँच गर्नुहोस्</span>
@@ -225,7 +225,7 @@ const Authentication: React.FC = () => {
                   {isApprover && needsApproval && (
                     <button
                       onClick={handleApproveDocument}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer"
                     >
                       <ThumbsUp className="w-4 h-4" />
                       <span>स्वीकृत गर्नुहोस्</span>
@@ -270,7 +270,7 @@ const Authentication: React.FC = () => {
                   <td className="py-3 px-4 text-center">
                     <button
                       onClick={() => handleDocumentClick(item)}
-                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                      className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
                     >
                       <ChevronRight className="w-4 h-4 inline-block" />
                     </button>

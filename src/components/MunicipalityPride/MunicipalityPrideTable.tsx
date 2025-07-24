@@ -5,9 +5,10 @@ interface MunicipalityPrideTableProps {
     budget: any[];
     projects: any[];
     onRecommend: (id: number) => void;
+    onEdit: (item: any) => void;
 }
 
-export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommend }: MunicipalityPrideTableProps) => {
+export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommend, onEdit }: MunicipalityPrideTableProps) => {
     const isEntryTab = activeTab === 'प्रविष्टी भएका नगर गौरव आयोजना';
     const isBudgetTab = activeTab === 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना';
 
@@ -49,6 +50,7 @@ export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommen
                                 index={index}
                                 activeTab={activeTab}
                                 onRecommend={onRecommend}
+                                onEdit={onEdit}
                             />
                         ))
                     ) : (

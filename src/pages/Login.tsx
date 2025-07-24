@@ -1,6 +1,6 @@
 import React, { useState, type FC, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/bg2.jpg';
+import logo from '../assets/bg4.png';
 import toplogo from '../assets/toplogo.png'
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/hooks';

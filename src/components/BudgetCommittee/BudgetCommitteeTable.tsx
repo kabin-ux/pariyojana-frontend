@@ -1,10 +1,13 @@
+import { Edit } from "lucide-react";
+
 interface BudgetCommitteeProps {
     activeTab: string;
     projects: any[];
     onRecommend: (id: number) => void;
+    onEdit: (project: any) => void;
 }
 
-export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: BudgetCommitteeProps) => (
+export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend, onEdit }: BudgetCommitteeProps) => (
     <div className="overflow-x-auto shadow-sm rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0 z-10">
@@ -47,13 +50,23 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: Budge
                             <td className="py-3 px-4 text-sm text-gray-800">{project.ward_no || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.status || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.priority_no || '-'}</td>
-                            <td className="py-3 px-4">
+                            <td className="py-3 px-4 space-x-2">
                                 <button
                                     onClick={() => onRecommend(project.id)}
                                     className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
                                 >
                                     पेश गर्नुहोस्
                                 </button>
+
+                                {(activeTab === 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम' ||
+                                  activeTab === 'संघीय सरकारबाट हस्तान्तरित कार्यक्रम') && (
+                                    <button
+                                        onClick={() => onEdit(project)}
+                                        className="text-sm text-green-600 px-3 py-1 rounded-md hover:bg-green-50 border border-green-300 hover:border-green-400 transition-colors"
+                                    >
+                                        <Edit />
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))
@@ -84,5 +97,4 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend }: Budge
             </tbody>
         </table>
     </div>
-
 );

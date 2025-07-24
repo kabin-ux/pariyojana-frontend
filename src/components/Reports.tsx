@@ -174,11 +174,11 @@ const Reports: React.FC = () => {
         </div>
 
         <div className="flex items-center justify-center space-x-4">
-          <button onClick={handleReset} className="flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium">
+          <button onClick={handleReset} className="flex items-center space-x-2 px-6 py-3 border border-gray-300 cursor-pointer rounded-lg hover:bg-gray-50 text-gray-700 font-medium">
             <RotateCcw className="w-4 h-4" />
             <span>रिसेट गर्नुहोस्</span>
           </button>
-          <button onClick={handleGenerateReport} className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+          <button onClick={handleGenerateReport} className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-700 font-medium">
             <FileText className="w-4 h-4" />
             <span>रिपोर्ट बनाउनुहोस्</span>
           </button>
@@ -189,12 +189,12 @@ const Reports: React.FC = () => {
             <div className="text-center space-y-4">
               <h2 className="text-xl font-semibold text-green-700">रिपोर्ट सफलतापूर्वक तयार गरियो</h2>
               <p className="text-gray-700">तपाईंले बनाउन खोज्नु भएको रिपोर्ट तयार भइसकेको छ। कृपया डाउनलोड गर्नुहोस्।</p>
-              <a href={reportDownloadUrl} download="Project-Report.xlsx" className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              <a href={reportDownloadUrl} download="Project-Report.xlsx" className="inline-block px-6 py-2 bg-blue-600 text-white cursor-pointer rounded hover:bg-blue-700">
                 डाउनलोड गर्नुहोस्
               </a>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-gray-500">
+            <div className="flex flex-col items-center justify-center cursor-pointer text-gray-500">
               <FileText className="w-12 h-12 mb-4" />
               <p className="text-lg font-medium mb-2">रिपोर्ट प्रिभ्यू</p>
               <p className="text-sm">फिल्टर चयन गरेर "रिपोर्ट बनाउनुहोस्" बटनमा क्लिक गर्नुहोस्</p>
