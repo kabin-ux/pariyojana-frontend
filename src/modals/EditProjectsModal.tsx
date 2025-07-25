@@ -83,7 +83,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
             setFormData({
                 plan_name: projectData.plan_name || '',
-                thematic_area: findIdByName(thematicAreas, projectData.thematic_area),
+                thematic_area: findIdByName(thematicAreas, projectData.id),
                 sub_area: findIdByName(sub_areas, projectData.sub_area),
                 plan_level: findIdByName(projectLevels, projectData.plan_level),
                 expenditure_title: findIdByName(expenditureTitles, projectData.expenditure_title),

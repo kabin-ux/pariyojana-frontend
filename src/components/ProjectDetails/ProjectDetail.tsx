@@ -40,6 +40,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const [committeeDetail, setCommitteeDetail] = useState<any>(null);
   const [agreementDetail, setAgreementDetail] = useState<any>(null);
   const [documentDetail, setDocumentDetail] = useState<any>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
 
   const projectIdNum = parseInt(project?.serial_number);
   const {
@@ -584,6 +585,16 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             onSaveResearch={handleSaveResearch}
             onDelete={handleDelete}
             onDownload={handleDownload}
+            onFileUpload={(serialNo, file) => {
+              // Track uploaded files in parent component
+              const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+              setUploadedFiles(prev => ({
+                ...prev,
+                [serialNo]: { file, type: fileType }
+              }));
+              console.log(`File uploaded for serial ${serialNo}:`, file.name);
+            }}
+            uploadedFiles={uploadedFiles}
           />
         );
 

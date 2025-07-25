@@ -84,6 +84,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
     const [editRecommendationId, setEditRecommendationId] = useState<number | null>(null);
     const [editAccountPhotoId, setEditAccountPhotoId] = useState<number | null>(null);
     const [isPaymentDetailModalOpen, setPaymentDetailModalOpen] = useState(false);
+    const [isDownloading, setIsDownloading] = useState<{ [key: string]: boolean }>({});
 
     const projectIdNum = parseInt(project?.serial_number);
     const {
@@ -411,6 +412,35 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             toast.error('अन्तिम किस्ता अपलोड गर्न समस्या भयो।');
         }
     };
+
+    // Add this function at the component level
+    const handleDownloadPDF = async (installmentType: 'first' | 'second' | 'third', serialNo: number, projectId: string) => {
+        try {
+            setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: true });
+
+            const response = await axios.get(
+                `http://localhost:8000/api/projects/${installmentType}-installment/generate-pdf/${serialNo}/${projectId}/`,
+                { responseType: 'blob' }
+            );
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${installmentType}-installment-${serialNo}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('PDF download failed:', error);
+            toast.error('डाउनलोड गर्न समस्या भयो।');
+        } finally {
+            setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: false });
+        }
+    };
+
+
 
     const addBankDetails = async (projectSerialNumber: number, data: {
         bank_id: number;
@@ -869,8 +899,25 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                 <button
                                                     type="button"
                                                     className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                    onClick={() => {
-                                                        console.log("Download PDF clicked");
+                                                    onClick={async () => {
+                                                        try {
+                                                            const response = await axios.get(
+                                                                `http://localhost:8000/api/projects/first-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                { responseType: 'blob' }
+                                                            );
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const url = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = url;
+                                                            link.setAttribute('download', `first-installment-${item.serial_no}.pdf`);
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            link.remove();
+                                                            window.URL.revokeObjectURL(url);
+                                                        } catch (error) {
+                                                            console.error('PDF download failed:', error);
+                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                        }
                                                     }}
                                                 >
                                                     <FileCheck className="w-4 h-4" />
@@ -934,8 +981,25 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                 <button
                                                     type="button"
                                                     className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                    onClick={() => {
-                                                        console.log("Download PDF clicked");
+                                                    onClick={async () => {
+                                                        try {
+                                                            const response = await axios.get(
+                                                                `http://localhost:8000/api/projects/second-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                { responseType: 'blob' }
+                                                            );
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const url = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = url;
+                                                            link.setAttribute('download', `second-installment-${item.serial_no}.pdf`);
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            link.remove();
+                                                            window.URL.revokeObjectURL(url);
+                                                        } catch (error) {
+                                                            console.error('PDF download failed:', error);
+                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                        }
                                                     }}
                                                 >
                                                     <FileCheck className="w-4 h-4" />
@@ -999,8 +1063,25 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                 <button
                                                     type="button"
                                                     className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                                                    onClick={() => {
-                                                        console.log("Download PDF clicked");
+                                                    onClick={async () => {
+                                                        try {
+                                                            const response = await axios.get(
+                                                                `http://localhost:8000/api/projects/third-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                { responseType: 'blob' }
+                                                            );
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const url = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = url;
+                                                            link.setAttribute('download', `third-installment-${item.serial_no}.pdf`);
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            link.remove();
+                                                            window.URL.revokeObjectURL(url);
+                                                        } catch (error) {
+                                                            console.error('PDF download failed:', error);
+                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                        }
                                                     }}
                                                 >
                                                     <FileCheck className="w-4 h-4" />
