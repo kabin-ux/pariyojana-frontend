@@ -19,7 +19,6 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     projectData,
     projectType
 }) => {
-    console.log("project datas", projectData)
     const [formData, setFormData] = useState({
         plan_name: '',
         thematic_area: '',
@@ -75,35 +74,28 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     // Load project data when modal opens
     useEffect(() => {
         if (isOpen && projectData) {
-            // Helper function to find ID by name
-            const findIdByName = (items: any[], name: string) => {
-                const found = items?.find(item => item.name === name);
-                return found ? found.id.toString() : '';
-            };
-
             setFormData({
                 plan_name: projectData.plan_name || '',
-                thematic_area: findIdByName(thematicAreas, projectData.id),
-                sub_area: findIdByName(sub_areas, projectData.sub_area),
-                plan_level: findIdByName(projectLevels, projectData.plan_level),
-                expenditure_title: findIdByName(expenditureTitles, projectData.expenditure_title),
-                expenditure_center: findIdByName(expenditureCenters, projectData.expenditure_center),
-                proposed_amount: projectData.budget?.toString() || '', // Note: using budget instead of proposed_amount
-                source: findIdByName(sources, projectData.source),
+                thematic_area: projectData.thematic_area?.toString() || '',
+                sub_area: projectData.sub_area?.toString() || '',
+                plan_level: projectData.plan_entry?.plan_type?.toString() || '',
+                expenditure_title: projectData.plan_entry?.expenditure_title?.toString() || '',
+                expenditure_center: projectData.expenditure_center?.toString() || '',
+                proposed_amount: projectData.budget || projectData.plan_entry?.proposed_amount || '',
+                source: projectData.source?.toString() || '',
                 ward_no: projectData.ward_no?.toString() || '',
-                location: projectData.location || '',
-                gps_coordinate: projectData.gps_coordinate || '',
-                expected_output: projectData.expected_output || '',
-                unit: findIdByName(units, projectData.unit),
-                fiscal_year: findIdByName(fiscalYears, projectData.fiscal_year),
-                feasibility_study: projectData.feasibility_study || '',
-                detailed_study: projectData.detailed_study || '',
-                environmental_study: projectData.environmental_study || '',
-                description: projectData.description || ''
+                location: projectData.plan_entry?.location || '',
+                gps_coordinate: projectData.plan_entry?.gps_coordinate || '',
+                expected_output: projectData.plan_entry?.expected_result || '',
+                unit: projectData.plan_entry?.unit?.toString() || '',
+                fiscal_year: projectData.plan_entry?.fiscal_year?.toString() || '',
+                feasibility_study: projectData.plan_entry?.feasibility_study || '',
+                detailed_study: projectData.plan_entry?.detailed_study || '',
+                environmental_study: projectData.plan_entry?.environmental_study || '',
+                description: projectData.plan_entry?.remarks || ''
             });
         }
-    }, [isOpen, projectData, thematicAreas, sub_areas, projectLevels, expenditureTitles,
-        expenditureCenters, sources, units, fiscalYears]);
+    }, [isOpen, projectData]);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => {
@@ -157,13 +149,13 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 ward_no: formData.ward_no ? parseInt(formData.ward_no) : null,
                 location: formData.location,
                 gps_coordinate: formData.gps_coordinate,
-                expected_output: formData.expected_output,
+                expected_result: formData.expected_output,
                 unit: formData.unit ? parseInt(formData.unit) : null,
                 fiscal_year: formData.fiscal_year ? parseInt(formData.fiscal_year) : null,
                 feasibility_study: formData.feasibility_study,
                 detailed_study: formData.detailed_study,
                 environmental_study: formData.environmental_study,
-                description: formData.description
+                remarks: formData.description
             };
 
             await axios.patch(endpoint, submitData, {
@@ -255,10 +247,9 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                योजनाको स्तर <span className="text-red-500">*</span>
+                                योजनाको स्तर
                             </label>
                             <select
-                                required
                                 value={formData.plan_level}
                                 onChange={(e) => handleInputChange('plan_level', e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"

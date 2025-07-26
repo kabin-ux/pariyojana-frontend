@@ -157,10 +157,10 @@ export const ProjectsTable = ({
                 >
                   <td className="py-3 px-4 text-sm text-gray-800">{index + 1}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.plan_name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.thematic_area || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.sub_area || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.source || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.expenditure_center || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.plan_entry?.thematic_area_name || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.plan_entry?.sub_area_name || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.plan_entry?.source || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.plan_entry?.expenditure_center_name || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.budget || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.ward_no || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.status || '-'}</td>

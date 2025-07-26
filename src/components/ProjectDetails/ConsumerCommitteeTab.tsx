@@ -137,7 +137,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
       formData.append('file', file);
 
       const response = await axios.post(
-        'http://localhost:8000/api/projects/consumer-committee/upload/',
+        `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
         formData,
         {
           headers: {
@@ -148,7 +148,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
       );
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      
+
       // Call the parent's onFileUpload if provided
       if (onFileUpload) {
         onFileUpload(serialNo, file);

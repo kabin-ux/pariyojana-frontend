@@ -41,6 +41,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const [agreementDetail, setAgreementDetail] = useState<any>(null);
   const [documentDetail, setDocumentDetail] = useState<any>(null);
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
+  const [uploadedProjectAgreementFiles, setUploadedProjectAgreementFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
+  const [uploadedWorkFiles, setUploadedWorkFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
+  const [uploadedProjectAgreementWorkFiles, setUploadedProjectAgreementWorkFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
 
   const projectIdNum = parseInt(project?.serial_number);
   const {
@@ -223,7 +226,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       const updatePromises = rowsToUpdate.map(async (row) => {
         const formData = new FormData();
         const matchedDetail = monitoringDetailsArray.find(detail => detail.id === row.id);
-        
+
         formData.append("project", project.serial_number);
         formData.append("serial_no", matchedDetail.serial_no.toString());
         formData.append("post", row.post);
@@ -252,7 +255,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       });
 
       await Promise.all(updatePromises);
-      await loadConsumerCommitteeDetails(); 
+      await loadConsumerCommitteeDetails();
       toast.success("अनुगमन तथा सहजिकरण समिति सफलतापूर्वक अपडेट गरियो।");
     } catch (error) {
       console.error("Error saving monitoring committee:", error);
@@ -624,6 +627,28 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             onAddProjectAgreement={handleAddProjectAgreement}
             onDownloadProjectAgreement={handleDownloadProjectAgreement}
             onDownloadProjectAgreementAndWorkLoad={handleDownloadProjectAgreementAndWorkLoad}
+            onFileUpload={(serialNo, file) => {
+              // Track uploaded files in parent component
+              const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+              setUploadedProjectAgreementFiles(prev => ({
+                ...prev,
+                [serialNo]: { file, type: fileType }
+              }));
+              console.log(`File uploaded for serial ${serialNo}:`, file.name);
+            }}
+            uploadedProjectAgreementFiles={uploadedProjectAgreementFiles}
+
+            onWorkFileUpload={(serialNo, file) => {
+              // Track uploaded files in parent component
+              const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+              setUploadedProjectAgreementWorkFiles(prev => ({
+                ...prev,
+                [serialNo]: { file, type: fileType }
+              }));
+              console.log(`File uploaded for serial ${serialNo}:`, file.name);
+            }}
+            uploadedProjectAgreementWorkFiles={uploadedProjectAgreementWorkFiles}
+
           />
         );
 
