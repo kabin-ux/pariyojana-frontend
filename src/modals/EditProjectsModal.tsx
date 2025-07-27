@@ -23,7 +23,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         plan_name: '',
         thematic_area: '',
         sub_area: '',
-        plan_level: '',
+        project_level: '',
         expenditure_title: '',
         expenditure_center: '',
         proposed_amount: '',
@@ -62,40 +62,40 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         { value: 6, label: 'वडा नं. - ६' },
     ];
 
-    // Filter sub-areas based on selected thematic area
-    const filteredSubAreas = sub_areas?.filter((sub_area: any) => {
-        if (!formData.thematic_area) return true;
-        const selectedThematicArea = thematicAreas?.find(
-            (area: any) => area.id.toString() === formData.thematic_area
-        );
-        return sub_area.thematic_area === selectedThematicArea?.id;
-    }) || [];
 
+
+    // Load project data when modal opens
     // Load project data when modal opens
     useEffect(() => {
         if (isOpen && projectData) {
             setFormData({
                 plan_name: projectData.plan_name || '',
-                thematic_area: projectData.thematic_area?.toString() || '',
-                sub_area: projectData.sub_area?.toString() || '',
-                plan_level: projectData.plan_entry?.plan_type?.toString() || '',
-                expenditure_title: projectData.plan_entry?.expenditure_title?.toString() || '',
-                expenditure_center: projectData.expenditure_center?.toString() || '',
-                proposed_amount: projectData.budget || projectData.plan_entry?.proposed_amount || '',
-                source: projectData.source?.toString() || '',
-                ward_no: projectData.ward_no?.toString() || '',
-                location: projectData.plan_entry?.location || '',
-                gps_coordinate: projectData.plan_entry?.gps_coordinate || '',
-                expected_output: projectData.plan_entry?.expected_result || '',
-                unit: projectData.plan_entry?.unit?.toString() || '',
-                fiscal_year: projectData.plan_entry?.fiscal_year?.toString() || '',
-                feasibility_study: projectData.plan_entry?.feasibility_study || '',
-                detailed_study: projectData.plan_entry?.detailed_study || '',
-                environmental_study: projectData.plan_entry?.environmental_study || '',
-                description: projectData.plan_entry?.remarks || ''
+                thematic_area: projectData.thematic_area?.id?.toString() || '',
+                sub_area: projectData.sub_area?.id?.toString() || '',
+                project_level: projectData.project_level?.id?.toString() || '',
+                expenditure_title: projectData.expenditure_title?.id?.toString() || '',
+                expenditure_center: projectData.expenditure_center?.id?.toString() || '',
+                proposed_amount: projectData.budget || '',
+                source: projectData.source?.id?.toString() || '',
+                ward_no: projectData.ward_no || '',
+                location: projectData.location || '',
+                gps_coordinate: projectData.gps_coordinate || '',
+                expected_output: projectData.expected_result || '',
+                unit: projectData.unit?.id?.toString() || '',
+                fiscal_year: projectData.fiscal_year?.id, // Not present in your response; handle accordingly if required
+                feasibility_study: projectData.feasibility_study || '',
+                detailed_study: projectData.detailed_study || '',
+                environmental_study: projectData.environmental_study || '',
+                description: projectData.remarks || ''
             });
         }
     }, [isOpen, projectData]);
+
+    // Filter sub-areas based on selected thematic area
+    const filteredSubAreas = sub_areas?.filter((sub_area: any) => {
+        if (!formData.thematic_area) return true;
+        return sub_area.thematic_area?.toString() === formData.thematic_area;
+    }) || [];
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => {
@@ -141,7 +141,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 plan_name: formData.plan_name,
                 thematic_area: formData.thematic_area ? parseInt(formData.thematic_area) : null,
                 sub_area: formData.sub_area ? parseInt(formData.sub_area) : null,
-                plan_level: formData.plan_level ? parseInt(formData.plan_level) : null,
+                project_level: formData.project_level.id ? parseInt(formData.project_level.id) : null,
                 expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : null,
                 expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : null,
                 proposed_amount: formData.proposed_amount ? parseFloat(formData.proposed_amount) : null,
@@ -250,8 +250,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                 योजनाको स्तर
                             </label>
                             <select
-                                value={formData.plan_level}
-                                onChange={(e) => handleInputChange('plan_level', e.target.value)}
+                                value={formData.project_level}
+                                onChange={(e) => handleInputChange('project_level', e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                                 <option value="">योजनाको स्तर</option>

@@ -13,7 +13,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     plan_name: '',
     thematic_area: '',
     sub_area: '',
-    plan_level: '',
+    // project_level: '',
     expenditure_title: '',
     expenditure_center: '',
     proposed_amount: '',
@@ -21,7 +21,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     ward_no: '',
     location: '',
     gps_coordinate: '',
-    expected_output: '',
+    expected_result: '',
     unit: '',
     fiscal_year: '',
     feasibility_study: '',
@@ -65,7 +65,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
   ];
 
   const requiredFields = [
-    'plan_name', 'thematic_area', 'sub_area', 'plan_level', 'gps_coordinate',
+    'plan_name', 'thematic_area', 'sub_area', 'project_level', 'gps_coordinate',
     'expenditure_title', 'expenditure_center', 'proposed_amount', 'source',
     'ward_no', 'feasibility_study', 'detailed_study', 'environmental_study'
   ];
@@ -231,8 +231,8 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                 योजनाको स्तर <span className="text-red-500">*</span>
               </label>
               <select
-                name="plan_level"
-                value={formData.plan_level}
+                name="project_level"
+                value={formData.project_level}
                 onChange={handleInputChange}
                 className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.plan_level ? 'border-red-500' : 'border-gray-300'}`}
               >
@@ -379,8 +379,8 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
               </label>
               <input
                 type="text"
-                name="expected_output"
-                value={formData.expected_output}
+                name="expected_result"
+                value={formData.expected_result}
                 onChange={handleInputChange}
                 placeholder="सम्पन्न गर्ने परिणाम"
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"

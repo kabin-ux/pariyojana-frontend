@@ -14,7 +14,6 @@ export const useSettings = (tabName: string, activeOnly: boolean = false) => {
       const result = await settingsApi.getAll(tabName);
       const filtered = activeOnly ? result.filter(item => item.is_active) : result;
       setData(filtered);
-      console.log("data", filtered);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setData([]);
