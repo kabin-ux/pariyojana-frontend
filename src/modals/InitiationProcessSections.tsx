@@ -32,7 +32,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
     const fetchInitiationProcess = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:8000/api/projects/${projectId}/initiation-process/`);
+            const res = await axios.get(`http://213.199.53.33:8000/api/projects/${projectId}/initiation-process/`);
             setInitiationProcess(res.data);
         } catch (err) {
             console.error('Error fetching initiation process:', err);
@@ -47,7 +47,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
 
         const bsDate = BS.ADToBS(today); // Convert to BS
         try {
-            await axios.post(`http://localhost:8000/api/projects/${projectId}/initiation-process/`, {
+            await axios.post(`http://213.199.53.33:8000/api/projects/${projectId}/initiation-process/`, {
                 project: projectId,
                 initiation_method: selectedMethod,
                 started_at: bsDate,
@@ -69,7 +69,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
 
     const handleDelete = async (id: number) => {
         try {
-            await axios.delete(`http://localhost:8000/api/projects/initiation/${id}/`);
+            await axios.delete(`http://213.199.53.33:8000/api/projects/initiation/${id}/`);
             fetchInitiationProcess();
         } catch (err) {
             console.error('Error deleting initiation process:', err);

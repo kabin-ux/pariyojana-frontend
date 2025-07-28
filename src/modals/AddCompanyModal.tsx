@@ -68,7 +68,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
     const fetchFiscalYears = async () => {
       const token = localStorage.getItem('access_token');
       try {
-        const res = await axios.get<FiscalYear[]>('http://localhost:8000/api/settings/fiscal-year/',
+        const res = await axios.get<FiscalYear[]>('http://213.199.53.33:8000/api/settings/fiscal-year/',
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -121,7 +121,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
       if (companyId) {
         // Editing mode
         await axios.put(
-          `http://localhost:8000/api/inventory/supplier-registry/${companyId}/`,
+          `http://213.199.53.33:8000/api/inventory/supplier-registry/${companyId}/`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -129,7 +129,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
       } else {
         // Adding new
         await axios.post(
-          'http://localhost:8000/api/inventory/supplier-registry/',
+          'http://213.199.53.33:8000/api/inventory/supplier-registry/',
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );

@@ -31,7 +31,7 @@ const Authentication: React.FC = () => {
   const fetchAuthenticationDocuments = async () => {
     const token = localStorage.getItem('access_token');
     try {
-      const response = await fetch(`http://localhost:8000/api/authentication/verification-logs/?all=true`, {
+      const response = await fetch(`http://213.199.53.33:8000/api/authentication/verification-logs/?all=true`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -57,7 +57,7 @@ const Authentication: React.FC = () => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(
-        `http://localhost:8000/api/authentication/documents/${selectedDocument.source_id}/check/`,
+        `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument.source_id}/check/`,
         {
           method: 'PATCH',
           headers: {
@@ -86,7 +86,7 @@ const Authentication: React.FC = () => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(
-        `http://localhost:8000/api/authentication/documents/${selectedDocument.source_id}/approve/`,
+        `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument.source_id}/approve/`,
         {
           method: 'PATCH',
           headers: {

@@ -88,7 +88,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       await axios.post(
-        `http://localhost:8000/api/projects/project-aggrement/upload/`,
+        `http://213.199.53.33:8000/api/projects/project-aggrement/upload/`,
         formData,
         {
           headers: {
@@ -134,7 +134,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       await axios.post(
-        `http://localhost:8000/api/projects/project-plan-tracker/upload/`,
+        `http://213.199.53.33:8000/api/projects/project-plan-tracker/upload/`,
         formData,
         {
           headers: {

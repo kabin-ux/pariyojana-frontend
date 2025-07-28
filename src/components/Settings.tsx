@@ -278,8 +278,8 @@ const Settings: React.FC = () => {
         return (
           <>
             <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-            <td className="py-3 px-4 text-gray-900">{typedItem.thematic_area_details.name || '-'}</td>
-            <td className="py-3 px-4 text-gray-900">{typedItem.sub_area_details.name || '-'}</td>
+            <td className="py-3 px-4 text-gray-900">{typedItem.thematic_area_details?.name || '-'}</td>
+            <td className="py-3 px-4 text-gray-900">{typedItem.sub_area_details?.name || '-'}</td>
             <td className="py-3 px-4 text-gray-900">{item.name}</td>
             <td className="py-3 px-4">
               <ToggleSwitch

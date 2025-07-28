@@ -101,7 +101,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         try {
             const token = localStorage.getItem('access_token')
 
-            const response = await axios.get(`http://localhost:8000/api/projects/${projectId}/bank-details/`, {
+            const response = await axios.get(`http://213.199.53.33:8000/api/projects/${projectId}/bank-details/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -117,7 +117,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         try {
             const token = localStorage.getItem('access_token')
 
-            const response = await axios.get(`http://localhost:8000/api/projects/${projectId}/bank-account-recommendation/`, {
+            const response = await axios.get(`http://213.199.53.33:8000/api/projects/${projectId}/bank-account-recommendation/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -133,7 +133,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         try {
             const token = localStorage.getItem('access_token')
 
-            const response = await axios.get(`http://localhost:8000/api/projects/${projectId}/account-photos/`, {
+            const response = await axios.get(`http://213.199.53.33:8000/api/projects/${projectId}/account-photos/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -158,11 +158,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                 formData.append('file', data.file);
             }
 
-            let url = `http://localhost:8000/api/projects/${projectIdNum}/bank-account-recommendation/`;
+            let url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/bank-account-recommendation/`;
             let method = 'post';
 
             if (editRecommendationId) {
-                url = `http://localhost:8000/api/projects/${projectIdNum}/bank-account-recommendation/${editRecommendationId}/`;
+                url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/bank-account-recommendation/${editRecommendationId}/`;
                 method = 'patch';
             }
 
@@ -203,11 +203,11 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                 formData.append('check_photo', data.check_photo);
             }
 
-            let url = `http://localhost:8000/api/projects/${projectIdNum}/account-photos/`;
+            let url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/account-photos/`;
             let method = 'post';
 
             if (editAccountPhotoId) {
-                url = `http://localhost:8000/api/projects/${projectIdNum}/account-photos/${editAccountPhotoId}/`;
+                url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/account-photos/${editAccountPhotoId}/`;
                 method = 'patch';
             }
 
@@ -301,7 +301,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
     const savePaymentDetails = async (data: BudgetFormData) => {
         try {
             const token = localStorage.getItem('access_token');
-            const url = `http://localhost:8000/api/projects/${projectIdNum}/payment-details/`;
+            const url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/payment-details/`;
 
             const response = await axios.post(url, {
                 title: data.title,
@@ -335,7 +335,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             formData.append('project_id', projectId.toString());
 
             const response = await axios.post(
-                `http://localhost:8000/api/projects/first-installment/${projectId}/upload/`,
+                `http://213.199.53.33:8000/api/projects/first-installment/${projectId}/upload/`,
                 formData,
                 {
                     headers: {
@@ -365,7 +365,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             formData.append('project_id', projectId.toString());
 
             const response = await axios.post(
-                `http://localhost:8000/api/projects/second-installment/${projectId}/upload/`,
+                `http://213.199.53.33:8000/api/projects/second-installment/${projectId}/upload/`,
                 formData,
                 {
                     headers: {
@@ -394,7 +394,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             formData.append('project_id', projectId.toString());
 
             const response = await axios.post(
-                `http://localhost:8000/api/projects/third-installment/${projectId}/upload/`,
+                `http://213.199.53.33:8000/api/projects/third-installment/${projectId}/upload/`,
                 formData,
                 {
                     headers: {
@@ -419,7 +419,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
             setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: true });
 
             const response = await axios.get(
-                `http://localhost:8000/api/projects/${installmentType}-installment/generate-pdf/${serialNo}/${projectId}/`,
+                `http://213.199.53.33:8000/api/projects/${installmentType}-installment/generate-pdf/${serialNo}/${projectId}/`,
                 { responseType: 'blob' }
             );
 
@@ -449,10 +449,10 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
     }) => {
         try {
             const token = localStorage.getItem('access_token');
-            let url = `http://localhost:8000/api/projects/${projectSerialNumber}/bank-details/`;
+            let url = `http://213.199.53.33:8000/api/projects/${projectSerialNumber}/bank-details/`;
             let method = 'post';
             if (editBankId) {
-                url = `http://localhost:8000/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
+                url = `http://213.199.53.33:8000/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
                 method = 'patch';
             }
             const response = await axios({
@@ -550,7 +550,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
 
     const handlePayment = async (projectId) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/projects/installment/payment/project/${projectId}/pdf/`, {
+            const response = await axios.get(`http://213.199.53.33:8000/api/projects/installment/payment/project/${projectId}/pdf/`, {
                 responseType: 'blob', // important for binary data like PDF
             });
 
@@ -902,7 +902,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onClick={async () => {
                                                         try {
                                                             const response = await axios.get(
-                                                                `http://localhost:8000/api/projects/first-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                `http://213.199.53.33:8000/api/projects/first-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
                                                                 { responseType: 'blob' }
                                                             );
                                                             const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -984,7 +984,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onClick={async () => {
                                                         try {
                                                             const response = await axios.get(
-                                                                `http://localhost:8000/api/projects/second-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                `http://213.199.53.33:8000/api/projects/second-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
                                                                 { responseType: 'blob' }
                                                             );
                                                             const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -1066,7 +1066,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onClick={async () => {
                                                         try {
                                                             const response = await axios.get(
-                                                                `http://localhost:8000/api/projects/third-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
+                                                                `http://213.199.53.33:8000/api/projects/third-installment/generate-pdf/${item.serial_no}/${project.serial_number}/`,
                                                                 { responseType: 'blob' }
                                                             );
                                                             const blob = new Blob([response.data], { type: 'application/pdf' });

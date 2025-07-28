@@ -147,11 +147,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       };
 
       if (committeeDetail) {
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/${committeeDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee-details/${committeeDetail.id}/`;
         await axios.patch(url, data, config);
         toast.success("समिति विवरण सफलतापूर्वक अपडेट गरियो");
       } else {
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee-details/`;
         await axios.post(url, { ...data, project: project.serial_number }, config);
         toast.success("समिति विवरण सफलतापूर्वक थपियो");
       }
@@ -192,7 +192,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
 
         const matchedDetail = officialDetailsArray.find(detail => detail.id === row.id);
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
 
         return axios.patch(url, formData, {
           headers: {
@@ -244,7 +244,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
           formData.append("citizenship_back", row.citizenship_back);
         }
 
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
 
         return axios.patch(url, formData, {
           headers: {
@@ -278,11 +278,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         formData.append('remarks', data.remarks);
       }
 
-      let url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/`;
+      let url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/map-cost-estimate/`;
       let method = 'post';
 
       if (data.editMapCostId) {
-        url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/${data.editMapCostId}/`;
+        url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/map-cost-estimate/${data.editMapCostId}/`;
         method = 'patch';
       }
 
@@ -313,7 +313,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const handleDownload = async (itemSerialNo: number, projectSerialNo: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/projects/consumer-committee/generate-pdf/${itemSerialNo}/${projectSerialNo}/`,
+        `http://213.199.53.33:8000/api/projects/consumer-committee/generate-pdf/${itemSerialNo}/${projectSerialNo}/`,
         {
           responseType: 'blob',
         }
@@ -336,7 +336,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const handleDownloadProjectAgreement = async (itemSerialNo: number, projectSerialNo: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
+        `http://213.199.53.33:8000/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
         {
           responseType: 'blob',
         }
@@ -359,7 +359,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const handleDownloadProjectAgreementAndWorkLoad = async (itemSerialNo: number, projectSerialNo: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
+        `http://213.199.53.33:8000/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
         {
           responseType: 'blob',
         }
@@ -390,11 +390,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       };
 
       if (agreementDetail) {
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/${agreementDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/project-agreement-details/${agreementDetail.id}/`;
         await axios.patch(url, data, config);
         toast.success("समिति विवरण सफलतापूर्वक अपडेट गरियो");
       } else {
-        const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/project-agreement-details/`;
         await axios.post(url, { ...data, project: project.serial_number }, config);
         toast.success("समिति विवरण सफलतापूर्वक थपियो");
       }
@@ -408,7 +408,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const handleDownloadOtherDocument = async (itemSerialNo: number, projectSerialNo: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/projects/other-documents/download/${itemSerialNo}/${projectSerialNo}/`,
+        `http://213.199.53.33:8000/api/projects/other-documents/download/${itemSerialNo}/${projectSerialNo}/`,
         {
           responseType: 'blob',
         }
@@ -438,7 +438,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
       };
 
-      const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/`;
+      const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/documents/`;
       await axios.post(url, formPayload, config);
 
       toast.success("डकुमेन्ट सफलतापूर्वक अपलोड भयो।");
@@ -466,7 +466,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         formData.append('file', data.file);
       }
 
-      const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/${documentDetail.id}/`;
+      const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/documents/${documentDetail.id}/`;
       await axios.patch(url, formData, config);
 
       toast.success("डकुमेन्ट सफलतापूर्वक सम्पादन भयो");
@@ -480,7 +480,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const handleDeleteDocument = async (id: number) => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.delete(`http://localhost:8000/api/projects/${project.serial_number}/documents/${id}/`, {
+      await axios.delete(`http://213.199.53.33:8000/api/projects/${project.serial_number}/documents/${id}/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

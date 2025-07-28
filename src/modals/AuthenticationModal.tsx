@@ -44,7 +44,7 @@ export default function AuthenticationModal({
     const fetchUsers = async () => {
         const token = localStorage.getItem('access_token')
         try {
-            const response = await fetch('http://localhost:8000/api/users/',{
+            const response = await fetch('http://213.199.53.33:8000/api/users/',{
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -71,7 +71,7 @@ export default function AuthenticationModal({
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`,
+                `http://213.199.53.33:8000/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`,
                 {
                     method: 'PATCH',
                     headers: {

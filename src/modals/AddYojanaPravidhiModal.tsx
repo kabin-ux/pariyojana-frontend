@@ -126,7 +126,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     }
 
     try {
-      await axios.post(`http://localhost:8000${endpoint}`, formData, {
+      await axios.post(`http://213.199.53.33:8000${endpoint}`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
