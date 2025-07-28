@@ -66,30 +66,30 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
     // Load project data when modal opens
     // Load project data when modal opens
-    useEffect(() => {
-        if (isOpen && projectData) {
-            setFormData({
-                plan_name: projectData.plan_name || '',
-                thematic_area: projectData.thematic_area?.id?.toString() || '',
-                sub_area: projectData.sub_area?.id?.toString() || '',
-                project_level: projectData.project_level?.id?.toString() || '',
-                expenditure_title: projectData.expenditure_title?.id?.toString() || '',
-                expenditure_center: projectData.expenditure_center?.id?.toString() || '',
-                proposed_amount: projectData.budget || '',
-                source: projectData.source?.id?.toString() || '',
-                ward_no: projectData.ward_no || '',
-                location: projectData.location || '',
-                gps_coordinate: projectData.gps_coordinate || '',
-                expected_output: projectData.expected_result || '',
-                unit: projectData.unit?.id?.toString() || '',
-                fiscal_year: projectData.fiscal_year?.id, // Not present in your response; handle accordingly if required
-                feasibility_study: projectData.feasibility_study || '',
-                detailed_study: projectData.detailed_study || '',
-                environmental_study: projectData.environmental_study || '',
-                description: projectData.remarks || ''
-            });
-        }
-    }, [isOpen, projectData]);
+useEffect(() => {
+    if (isOpen && projectData) {
+        setFormData({
+            plan_name: projectData.plan_name || '',
+            thematic_area: projectData.thematic_area?.id?.toString() || '',
+            sub_area: projectData.sub_area?.id?.toString() || '',
+            project_level: projectData.project_level?.id?.toString() || '',
+            expenditure_title: projectData.expenditure_title?.id?.toString() || '',
+            expenditure_center: projectData.expenditure_center?.id?.toString() || '',
+            proposed_amount: projectData.budget || '',
+            source: projectData.source?.id?.toString() || '',
+            ward_no: projectData.ward_no || '',
+            location: projectData.location || '',
+            gps_coordinate: projectData.gps_coordinate || '',
+            expected_output: projectData.expected_result || '',
+            unit: projectData.unit?.id?.toString() || '',
+            fiscal_year: projectData.fiscal_year?.id?.toString() || '', // Handle both object and null cases
+            feasibility_study: projectData.feasibility_study || '',
+            detailed_study: projectData.detailed_study || '',
+            environmental_study: projectData.environmental_study || '',
+            description: projectData.remarks || ''
+        });
+    }
+}, [isOpen, projectData]);
 
     // Filter sub-areas based on selected thematic area
     const filteredSubAreas = sub_areas?.filter((sub_area: any) => {
@@ -427,8 +427,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                             >
                                 <option value="">आर्थिक वर्ष</option>
                                 {fiscalYears?.map((year: any) => (
-                                    <option key={year.id} value={year.id}>
-                                        {year.year}
+                                    <option key={year.id} value={year.id.toString()}>
+                                        {year.name || year.year} {/* Use whichever property exists */}
                                     </option>
                                 ))}
                             </select>
