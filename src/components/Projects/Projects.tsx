@@ -309,7 +309,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
     try {
       const response = await axios.get(
-        'http://127.0.0.1:8000/api/projects/projects/export/',
+        'http://213.199.53.33:8000/api/projects/projects/export/',
         {
           responseType: 'blob',
           headers: {
