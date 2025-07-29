@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Plus, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import AddYojanaPravidhiModal from '../modals/AddYojanaPravidhiModal';
 
 const ProjectMethods: React.FC = () => {

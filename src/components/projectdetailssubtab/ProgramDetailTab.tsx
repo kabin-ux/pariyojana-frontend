@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Edit } from 'lucide-react';
 import { formatBudget, formatWardNumber, toNepaliNumber } from '../../utils/formatters';
-import type { BeneficiaryData, ProgramDetail } from '../../types/projectDetail';
 import BeneficiaryDialog from '../../modals/AddEditYojanaModal';
-import axios from 'axios';
 
 interface ProgramDetailsTabProps {
   projectData: any;
@@ -17,7 +15,6 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
   // Default beneficiary data matching your image
   const [beneficiaryData, setBeneficiaryData] = useState<any[]>([]);
   const [beneficiaryLoading, setBeneficiaryLoading] = useState(false);
-  const [selectedBeneficiary, setSelectedBeneficiary] = useState<BeneficiaryData | null>(null);
 
   useEffect(() => {
     if (!projectData || !projectData.serial_number) return;
@@ -49,32 +46,32 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
     other_families: 'अन्य वर्गको परिवार संख्या'
   };
 
-  const handleEditBeneficiary = () => {
-    const firstItem = beneficiaryData[0]; // or pick specific one
-    if (firstItem) {
-      setSelectedBeneficiary({
-        familyCount: firstItem.familyCount ?? 0,
-        totalPopulation: {
-          female: firstItem.female ?? 0,
-          male: firstItem.male ?? 0,
-          other: firstItem.other ?? 0
-        },
-        indigenousCount: firstItem.indigenousCount ?? 0,
-        dalitCount: firstItem.dalitCount ?? 0,
-        childrenPopulation: {
-          female: firstItem.children_female ?? 0,
-          male: firstItem.children_male ?? 0,
-          other: firstItem.children_other ?? 0
-        },
-        otherCategoryPopulation: {
-          female: firstItem.other_female ?? 0,
-          male: firstItem.other_male ?? 0,
-          other: firstItem.other_other ?? 0
-        }
-      });
-      setIsDialogOpen(true);
-    }
-  };
+  // const handleEditBeneficiary = () => {
+  //   const firstItem = beneficiaryData[0]; // or pick specific one
+  //   if (firstItem) {
+  //     setSelectedBeneficiary({
+  //       familyCount: firstItem.familyCount ?? 0,
+  //       totalPopulation: {
+  //         female: firstItem.female ?? 0,
+  //         male: firstItem.male ?? 0,
+  //         other: firstItem.other ?? 0
+  //       },
+  //       indigenousCount: firstItem.indigenousCount ?? 0,
+  //       dalitCount: firstItem.dalitCount ?? 0,
+  //       childrenPopulation: {
+  //         female: firstItem.children_female ?? 0,
+  //         male: firstItem.children_male ?? 0,
+  //         other: firstItem.children_other ?? 0
+  //       },
+  //       otherCategoryPopulation: {
+  //         female: firstItem.other_female ?? 0,
+  //         male: firstItem.other_male ?? 0,
+  //         other: firstItem.other_other ?? 0
+  //       }
+  //     });
+  //     setIsDialogOpen(true);
+  //   }
+  // };
 
 
   if (loading) {

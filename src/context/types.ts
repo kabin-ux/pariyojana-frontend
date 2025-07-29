@@ -1,11 +1,35 @@
+// types.ts
+const roles = [
+  'admin',
+  'planning section',
+  'ward/office seceratery',
+  'engineer',
+  'ward engineer',
+  'user committee',
+  'Data Entry',
+  'Department chief',
+] as const;
+
+export type UserRole = typeof roles[number];
 
 export interface User {
-  // user_id: number;
-  id: number;
+  user_id: number;
+  id?: number; // For form operations
   full_name: string;
-  // username: string;
-  role: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  role: UserRole;
+  ward_no?: string;
+  position?: string;
+  mahashakha?: string;
+  shakha?: string;
+  ra_pr_stah?: string;
+  is_active?: boolean;
+  isSelf?: boolean;
 }
+
+// Rest of your existing interfaces...
 
 export interface AuthState {
   isAuthenticated: boolean;

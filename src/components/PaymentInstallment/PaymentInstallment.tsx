@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, Home, ChevronRight, Edit, Download, Copy, MoreHorizontal, Plus, Trash2, Upload, DownloadCloud, View, Notebook, ImageDown, Lock as Dock, File, FileMinus2, FileMinusIcon, FileCheck2, FileCheck, Building2, Calendar, MapPin, Phone, User, Users, DollarSign, FileText, Camera, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { formatBudget, toNepaliNumber } from '../../utils/formatters';
+import React, { useState, useEffect } from 'react';
+import { Edit, Plus,  Upload, View, Lock as  FileCheck, Building2, Calendar,  FileText, Camera } from 'lucide-react';
+import {  toNepaliNumber } from '../../utils/formatters';
 import * as BS from 'bikram-sambat-js';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -10,39 +10,10 @@ import { useProjectDetail } from '../../hooks/useProjectDetail';
 import AddBankRecommendationModal from '../../modals/AddBankRecommendationModal';
 import PaymentDetailModal from '../../modals/AddPaymentDetailsModal';
 
-// interface ProjectDetailProps {
-//     project: {
-//         id: number;
-//         serial_number: number;
-//         name: string;
-//         ward_number: number;
-//         budget: number;
-//         status: string;
-//         start_date: string;
-//         end_date: string;
-//         description: string;
-//     };
-// }
 
 interface Project {
     serial_number: number;
     budget?: number;
-}
-
-interface InstallmentItem {
-    serial_no: number;
-    title: string;
-    description?: string;
-    file_uploaded_name?: string;
-}
-
-interface PaymentDetail {
-    id: number;
-    serial_no: number;
-    title: string;
-    amount_paid: number;
-    payment_percent: number;
-    physical_progress: number;
 }
 
 
@@ -66,49 +37,6 @@ interface ProjectDetailProps {
     project: Project;
 }
 
-const FIRST_BACK_TITLES = [
-    { "serial_no": 1, "title": "उपभोक्ता समिति बैठक र निर्णय", "description": "(काम सुरुवात तथा पेश्की माग सम्बन्धित)" },
-    { "serial_no": 2, "title": "उपभोक्ता समितिले अग्रीम पहिलो/ पेश्की माग सम्बन्धित निवेदन" },
-    { "serial_no": 3, "title": "वडा कार्यालयको पेश्की भुक्तानी सिफरिस" }
-]
-
-const SECOND_BACK_TITLES = [
-    { "serial_no": 1, "title": "उपभोक्ता समिति बैठक र निर्णय", "description": "(दोस्रो किस्ता भुक्तानी माग सम्बन्धित)" },
-    { "serial_no": 2, "title": "नापजाँच गरी दोस्रो किस्ता भुक्तानीका लागी निवेदन" },
-    { "serial_no": 3, "title": "योजना संचालन स्थलको फोटो - ४ प्रति", "description": "(दोस्रो किस्ता भुक्तानीगर्नु पुर्वको फोटो)" },
-    { "serial_no": 4, "title": "आयोजनाको आम्दानी र खर्चको विवरण" },
-    { "serial_no": 5, "title": "उपभोक्ता समितिको भौतिक तथा वित्तिय प्रगती प्रतिवेदन" },
-    { "serial_no": 6, "title": "नापी किताव" },
-    { "serial_no": 7, "title": "ठेक्का सम्बन्धि बिल" },
-    { "serial_no": 8, "title": "प्राविधिको प्रतिवेदन" },
-    { "serial_no": 9, "title": "वडा कार्यालयको भुक्तानी सिफरिस" },
-]
-
-const THIRD_BACK_TITLES = [
-    { "serial_no": 1, "title": "उपभोक्ता समिति बैठक र निर्णय", "description": "(अन्तिम किस्ता भुक्तानी माग सम्बन्धित)" },
-    { "serial_no": 2, "title": "नापजाँच गरी दोस्रो अन्तिम भुक्तानीका लागी निवेदन" },
-    { "serial_no": 3, "title": "योजना संचालन स्थलको फोटो - ४ प्रति", "description": "(अन्तिम किस्ता भुक्तानीगर्नु पुर्वको फोटो)" },
-    { "serial_no": 4, "title": "आयोजनाको आम्दानी र खर्चको विवरण" },
-    { "serial_no": 5, "title": "उपभोक्ता समितिको भौतिक तथा वित्तिय प्रगती प्रतिवेदन" },
-    { "serial_no": 6, "title": "नापी किताव" },
-    { "serial_no": 7, "title": "वडा कार्यालयको भुक्तानी सिफरिस" },
-    { "serial_no": 8, "title": "अनुगमन तथा सहजिकरण समितिको प्रतिवेदन" },
-    { "serial_no": 9, "title": "ठेक्का सम्बन्धि बिल" },
-    { "serial_no": 10, "title": "कार्य स्विकार / कार्य सम्पन्न प्रतिवेदन" },
-    { "serial_no": 11, "title": "सामजिक समिक्षा फाराम" },
-    { "serial_no": 12, "title": "खर्च सार्वजनिक सुचना फारम" },
-    { "serial_no": 13, "title": "आयोजना हस्तान्तरण फाराम" },
-    { "serial_no": 14, "title": "अनुगमन तथा सुपरिवेक्ष समितिको प्रतिवेदन" },
-    { "serial_no": 15, "title": "जाचपास समितीको निर्णय" },
-]
-
-const INSTALLMENT_DESC = [
-    { "serial_no": 1, "title": "पहिलो पेश्की भुक्तानी" },
-    { "serial_no": 2, "title": "दोस्रो किस्ता भुक्तानी	" },
-    { "serial_no": 3, "title": "अन्तिम किस्ता भुक्तानी	" }
-]
-
-
 
 // Assuming you have the BS library properly imported
 const today = new Date(); // current Gregorian date
@@ -116,8 +44,7 @@ const bsDate = BS.ADToBS(today); // Convert to BS
 
 const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
     const [activeTab, setActiveTab] = useState('बैंकको विवरण');
-    const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    // const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [bankDetails, setBankDetails] = useState<BankDetail[]>([]);
     const [bankRecommendationDetails, setBankRecommendationDetails] = useState<any[]>([]);
     const [bankAccountPhotos, setBankAccountPhotos] = useState<any[]>([]);
@@ -125,7 +52,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
     const [editRecommendationId, setEditRecommendationId] = useState<number | null>(null);
     const [editAccountPhotoId, setEditAccountPhotoId] = useState<number | null>(null);
     const [isPaymentDetailModalOpen, setPaymentDetailModalOpen] = useState(false);
-    const [isDownloading, setIsDownloading] = useState<{ [key: string]: boolean }>({});
+    // const [isDownloading, setIsDownloading] = useState<{ [key: string]: boolean }>({});
 
     const projectIdNum = project?.serial_number;
     const {
@@ -207,7 +134,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                 method = 'patch';
             }
 
-            const response = await axios({
+             await axios({
                 url,
                 method,
                 data: formData,
@@ -252,7 +179,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                 method = 'patch';
             }
 
-            const response = await axios({
+             await axios({
                 url,
                 method,
                 data: formData,
@@ -317,12 +244,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
         secondInstallment,
         thirdInstallment,
         paymentDetails,
-        firstLoading,
-        secondLoading,
-        thirdLoading,
-        firstError,
-        secondError,
-        thirdError,
+       
         refetch
     } = useInstallmentDetails(project.serial_number);
     const [isBankModalOpen, setIsBankModalOpen] = useState(false);
@@ -344,7 +266,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
             const token = localStorage.getItem('access_token');
             const url = `http://213.199.53.33:8000/api/projects/${projectIdNum}/payment-details/`;
 
-            const response = await axios.post(url, {
+             await axios.post(url, {
                 title: data.title,
                 amount_paid: data.amount_paid,
                 payment_percent: data.payment_percent,
@@ -455,31 +377,31 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
     };
 
     // Add this function at the component level
-    const handleDownloadPDF = async (installmentType: 'first' | 'second' | 'third', serialNo: number, projectId: string) => {
-        try {
-            setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: true });
+    // const handleDownloadPDF = async (installmentType: 'first' | 'second' | 'third', serialNo: number, projectId: string) => {
+    //     try {
+    //         setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: true });
 
-            const response = await axios.get(
-                `http://213.199.53.33:8000/api/projects/${installmentType}-installment/generate-pdf/${serialNo}/${projectId}/`,
-                { responseType: 'blob' }
-            );
+    //         const response = await axios.get(
+    //             `http://213.199.53.33:8000/api/projects/${installmentType}-installment/generate-pdf/${serialNo}/${projectId}/`,
+    //             { responseType: 'blob' }
+    //         );
 
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `${installmentType}-installment-${serialNo}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('PDF download failed:', error);
-            toast.error('डाउनलोड गर्न समस्या भयो।');
-        } finally {
-            setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: false });
-        }
-    };
+    //         const blob = new Blob([response.data], { type: 'application/pdf' });
+    //         const url = window.URL.createObjectURL(blob);
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.setAttribute('download', `${installmentType}-installment-${serialNo}.pdf`);
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         link.remove();
+    //         window.URL.revokeObjectURL(url);
+    //     } catch (error) {
+    //         console.error('PDF download failed:', error);
+    //         toast.error('डाउनलोड गर्न समस्या भयो।');
+    //     } finally {
+    //         setIsDownloading({ ...isDownloading, [`${installmentType}-${serialNo}`]: false });
+    //     }
+    // };
 
 
 
@@ -496,7 +418,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                 url = `http://213.199.53.33:8000/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
                 method = 'patch';
             }
-            const response = await axios({
+             await axios({
                 url,
                 method,
                 data: {
@@ -578,21 +500,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
     const remainingAmount = parseFloat(String(project.budget ?? '0')) - totalPaid;
 
 
-    const ActionButton = ({ icon: Icon, onClick, className = "", title }: {
-        icon: any;
-        onClick: () => void;
-        className?: string;
-        title: string;
-    }) => (
-        <button
-            type="button"
-            className={`p-2 rounded-lg transition-colors duration-200 ${className}`}
-            onClick={onClick}
-            title={title}
-        >
-            <Icon className="w-4 h-4" />
-        </button>
-    );
+ 
 
     const handlePayment = async (projectId: number) => {
         try {
@@ -910,7 +818,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {firstInstallment?.map((item, index) => (
+                                    {firstInstallment?.map((item) => (
                                         <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
                                             <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
                                             <td className="py-3 px-4 text-gray-900 text-sm">
@@ -992,7 +900,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {secondInstallment?.map((item, index) => (
+                                    {secondInstallment?.map((item) => (
                                         <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
                                             <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
                                             <td className="py-3 px-4 text-gray-900 text-sm">
@@ -1074,7 +982,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {thirdInstallment?.map((item, index) => (
+                                    {thirdInstallment?.map((item) => (
                                         <tr key={item.serial_no} className="border-b border-gray-100 hover:bg-gray-50">
                                             <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
                                             <td className="py-3 px-4 text-gray-900 text-sm">

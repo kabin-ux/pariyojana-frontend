@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import NepaliDate from 'nepali-date-converter';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import 'nepali-datepicker-reactjs/dist/index.css';
 
@@ -24,7 +23,7 @@ interface ProjectAgreementModalProps {
     projectId?: string;
 }
 
-const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData, projectId }) => {
+const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData }) => {
     const [formData, setFormData] = useState<FormData>({
         totalAmount: '',
         contractualAmount: '',

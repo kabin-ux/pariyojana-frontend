@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Bar, Doughnut, Pie } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import Notifications from './Notification/Notifications';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -47,25 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
   );
 };
 
-interface ProjectItemProps {
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-}
 
-const ProjectItem: React.FC<ProjectItemProps> = ({ title, subtitle, icon }) => {
-  return (
-    <div className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg">
-      <div className="p-2 bg-blue-100 rounded-lg">
-        {icon}
-      </div>
-      <div className="flex-1">
-        <p className="text-sm font-medium text-gray-900">{title}</p>
-        <p className="text-xs text-yellow-600">{subtitle}</p>
-      </div>
-    </div>
-  );
-};
 
 const Dashboard: React.FC = () => {
 

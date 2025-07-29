@@ -10,18 +10,18 @@ import { EmptyState } from '../WardOffice/EmptyState';
 import { ReportContent } from './ReportContent';
 import { ReportTabs } from './ReportTabs';
 
-interface AssemblyData {
-  id: number;
-  plan_name: string;
-  thematic_area: string;
-  sub_area: string;
-  source: string;
-  expenditure_center: string;
-  budget: string;
-  ward_no: string;
-  status: string;
-  priority_no: number;
-}
+// interface AssemblyData {
+//   id: number;
+//   plan_name: string;
+//   thematic_area: string;
+//   sub_area: string;
+//   source: string;
+//   expenditure_center: string;
+//   budget: string;
+//   ward_no: string;
+//   status: string;
+//   priority_no: number;
+// }
 
 const CityAssembly: React.FC = () => {
   const [activeTab, setActiveTab] = useState('सभामा पेश भएका परियोजना');

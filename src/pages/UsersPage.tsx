@@ -11,7 +11,6 @@ import {
     UserCheck,
     UserX,
     Trash2,
-    X,
     Users,
     Filter,
     Download,
@@ -19,16 +18,8 @@ import {
 } from 'lucide-react';
 import UserFormModal from '../components/UserFormModal';
 import toast from 'react-hot-toast';
+import type { User } from '../context/types';
 
-interface User {
-    id: number;
-    full_name: string;
-    email: string;
-    role: string;
-    phone: string;
-    ward_no: string;
-    is_active: boolean;
-}
 
 // Create a separate component for the UserRow to use hooks properly
 const UserRow: React.FC<{
@@ -71,7 +62,7 @@ const UserRow: React.FC<{
         }, []);
 
         return (
-            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+            <tr key={user.user_id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-4 px-6 text-sm text-gray-900">{index + 1}</td>
                 <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
@@ -164,7 +155,7 @@ const UserRow: React.FC<{
                                         onClick={() => {
                                             const action = user.is_active ? 'निष्क्रिय' : 'सक्रिय';
                                             if (window.confirm(`${user.full_name} लाई ${action} गर्नुहुन्छ?`)) {
-                                                toggleUserStatus(user.id, !user.is_active);
+                                                toggleUserStatus(user.user_id, !user.is_active);
                                             }
                                             setMenuOpen(false);
                                         }}
@@ -184,7 +175,7 @@ const UserRow: React.FC<{
                                             className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 flex items-center gap-3 text-red-600 transition-colors cursor-pointer"
                                             onClick={() => {
                                                 if (window.confirm(`${user.full_name} लाई स्थायी रूपमा मेटाउनुहुन्छ? यो कार्य फिर्ता गर्न सकिँदैन।`)) {
-                                                    deleteUser(user.id);
+                                                    deleteUser(user.user_id);
                                                 }
                                                 setMenuOpen(false);
                                             }}
@@ -219,7 +210,6 @@ const UsersPage: React.FC = () => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [viewMode, setViewMode] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [filterRole, setFilterRole] = useState<string>('all');
     const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -237,6 +227,7 @@ const UsersPage: React.FC = () => {
                 navigate('/login');
                 return;
             }
+            console.log(viewMode)
 
             const response = await axios.get('http://213.199.53.33:8000/api/users/', {
                 headers: { Authorization: `Bearer ${token}` },
@@ -287,31 +278,31 @@ const UsersPage: React.FC = () => {
     };
 
     const resetPassword = async () => {
-    if (!resetPasswordUser) return;
+        if (!resetPasswordUser) return;
 
-    try {
-        const token = localStorage.getItem('access_token');
+        try {
+            const token = localStorage.getItem('access_token');
 
-        const url = resetPasswordUser.isSelf
-            ? `http://213.199.53.33:8000/api/auth/reset-password/`
-            : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.id}/`;
+            const url = resetPasswordUser.isSelf
+                ? `http://213.199.53.33:8000/api/auth/reset-password/`
+                : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.user_id}/`;
 
-        const res = await axios.post(
-            url,
-            { new_password: newPassword },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+            await axios.post(
+                url,
+                { new_password: newPassword },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-        toast.success('Password reset successfully!');
-    } catch (error) {
-        console.error('Error resetting password:', error);
-        toast.error('Error resetting password');
-    } finally {
-        setShowPasswordModal(false);
-        setNewPassword('');
-        setResetPasswordUser(null);
-    }
-};
+            toast.success('Password reset successfully!');
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            toast.error('Error resetting password');
+        } finally {
+            setShowPasswordModal(false);
+            setNewPassword('');
+            setResetPasswordUser(null);
+        }
+    };
 
 
     useEffect(() => {
@@ -320,7 +311,7 @@ const UsersPage: React.FC = () => {
 
     const filteredUsers = users.filter((user) => {
         const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesRole = filterRole === 'all' || user.role === filterRole;
         const matchesStatus = filterStatus === 'all' ||
             (filterStatus === 'active' && user.is_active) ||
@@ -461,7 +452,7 @@ const UsersPage: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200">
                                     {filteredUsers.map((user, index) => (
                                         <UserRow
-                                            key={user.id}
+                                            key={user.user_id}
                                             user={user}
                                             index={index}
                                             setSelectedUser={setSelectedUser}

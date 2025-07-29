@@ -1,23 +1,23 @@
-import { Download, Edit, MoreHorizontal } from 'lucide-react';
+import {  Edit, MoreHorizontal } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditProjectModal from '../../modals/EditProjectsModal';
 
-interface WardData {
-  id: number;
-  plan_name: string;
-  date: string;
-  thematic_area?: string;
-  sub_area?: string;
-  source?: string;
-  expenditure_center?: string;
-  budget?: string;
-  ward_no?: string;
-  status?: string;
-  priority_no?: string;
-}
+// interface WardData {
+//   id: number;
+//   plan_name: string;
+//   date: string;
+//   thematic_area?: string;
+//   sub_area?: string;
+//   source?: string;
+//   expenditure_center?: string;
+//   budget?: string;
+//   ward_no?: string;
+//   status?: string;
+//   priority_no?: string;
+// }
 
 interface ProjectsTableProps {
   data: any[];
@@ -30,7 +30,6 @@ interface ProjectsTableProps {
 export const ProjectsTable = ({
   data,
   searchTerm,
-  isWardLevel = false,
   tabType,
   refetch
 }: ProjectsTableProps) => {
@@ -114,10 +113,7 @@ export const ProjectsTable = ({
     }
   };
 
-  const handleForward = (label: string) => {
-    alert(`${label} सफल भयो!`);
-    // You may trigger an API here instead of alert
-  };
+
 
   const renderDynamicProjectsTable = () => (
     <div>

@@ -45,7 +45,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   isSubmitting,
   editingProjectId,
   thematicAreas,
-  sub_areas,
   projectLevels,
   expenditureTitles,
   expenditureCenters,

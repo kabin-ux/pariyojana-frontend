@@ -1,4 +1,4 @@
-import React, { useState, type FC, type FormEvent } from 'react';
+import { useState, type FC, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/bg4.png';
 import toplogo from '../assets/toplogo.png';
@@ -11,7 +11,9 @@ interface LoginResponse {
   refresh: string;
   user_id: number;
   full_name: string;
-  role: string;
+  email?: string;
+  role: "admin" | "planning section" | "ward/office seceratery" | "engineer" | "ward engineer" | "user committee" | "Data Entry" | "Department chief";
+  ward_no?: number;
 }
 
 const LoginPage: FC = () => {
@@ -27,37 +29,42 @@ const LoginPage: FC = () => {
   const { login } = useAuth();
 
   const handleLogin = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await loginUser(email, password);
-      const data: LoginResponse = res.data;
+  e.preventDefault();
+  try {
+    const res = await loginUser(email, password);
+    const data: LoginResponse = res.data;
 
-      if (rememberMe) {
-        localStorage.setItem('saved_email', email);
-        localStorage.setItem('saved_password', password);
-        localStorage.setItem('remember_me', 'true');
-      } else {
-        localStorage.removeItem('saved_email');
-        localStorage.removeItem('saved_password');
-        localStorage.setItem('remember_me', 'false');
-      }
-
-      localStorage.setItem('user', JSON.stringify(data));
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
-
-      login({
-        id: data.user_id,
-        full_name: data.full_name,
-        role: data.role,
-      });
-
-      navigate('/');
-    } catch (err) {
-      console.error('Login error:', err);
-      setError('Invalid email or password');
+    if (rememberMe) {
+      localStorage.setItem('saved_email', email);
+      localStorage.setItem('saved_password', password);
+      localStorage.setItem('remember_me', 'true');
+    } else {
+      localStorage.removeItem('saved_email');
+      localStorage.removeItem('saved_password');
+      localStorage.setItem('remember_me', 'false');
     }
-  };
+
+    // Prepare user data for storage and context
+    const userData = {
+      user_id: data.user_id,
+      full_name: data.full_name,
+      role: data.role,
+    };
+
+    // Store tokens and user data
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
+    localStorage.setItem('user', JSON.stringify(userData));
+
+    // Pass the user data to your auth context
+    login(userData);
+
+    navigate('/');
+  } catch (err) {
+    console.error('Login error:', err);
+    setError('Invalid email or password');
+  }
+};
 
   return (
     <div

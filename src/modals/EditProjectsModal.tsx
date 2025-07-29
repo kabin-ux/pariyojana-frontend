@@ -9,7 +9,7 @@ interface EditProjectModalProps {
     onClose: () => void;
     onSave: () => void;
     projectData: any;
-    projectType: "ward" | "municipality" | "thematic" | "ward_thematic" | "municipality-pride" | "provience-transfer-projects" | "federal-gov-projects" | "budget-committee";
+    projectType: "ward" | "municipality" | "thematic" |  "ward_thematic" | "municipality-pride" | "provience-transfer-projects" | "federal-gov-projects" | "budget-committee"   | "wardrecommend";
 }
 
 const EditProjectModal: React.FC<EditProjectModalProps> = ({

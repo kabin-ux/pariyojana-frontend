@@ -1,5 +1,7 @@
 import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
+import type { User, UserRole } from '../context/types';
 
+// Define roles here since it's used in the component
 const roles = [
   'admin',
   'planning section',
@@ -10,20 +12,6 @@ const roles = [
   'Data Entry',
   'Department chief',
 ] as const;
-
-export interface User {
-  id?: number;
-  full_name: string;
-  last_name?: string;
-  email: string;
-  phone: string;
-  role: (typeof roles)[number];
-  ward_no: string;
-  position?: string;
-  mahashakha?: string;
-  shakha?: string;
-  ra_pr_stah?: string;
-}
 
 interface UserFormModalProps {
   open: boolean;
@@ -36,7 +24,7 @@ interface UserFormModalProps {
 
 type InputField = {
   label: string;
-  name: keyof User;
+  name: keyof Omit<User, 'user_id' | 'is_active' | 'isSelf'>; // Exclude non-form fields
   type?: string;
   required?: boolean;
 };
@@ -60,12 +48,12 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   user,
   onSuccess,
 }) => {
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<Omit<User, 'user_id' | 'is_active' | 'isSelf'>>({
     full_name: '',
     last_name: '',
     email: '',
     phone: '',
-    role: '' as User['role'],
+    role: '' as UserRole,
     ward_no: '',
     position: '',
     mahashakha: '',
@@ -80,7 +68,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         last_name: user.last_name ?? '',
         email: user.email ?? '',
         phone: user.phone ?? '',
-        role: user.role ?? '' as User['role'],
+        role: user.role ?? '' as UserRole,
         ward_no: user.ward_no ?? '',
         position: user.position ?? '',
         mahashakha: user.mahashakha ?? '',
@@ -93,7 +81,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         last_name: '',
         email: '',
         phone: '',
-        role: '' as User['role'],
+        role: '' as UserRole,
         ward_no: '',
         position: '',
         mahashakha: '',
@@ -105,7 +93,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -117,8 +105,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       let url = 'http://213.199.53.33:8000/api/users/';
       let method: 'post' | 'put' = 'post';
 
-      if (editMode && user?.id) {
-        url += `${user.id}/`;
+      if (editMode && user?.user_id) { // Changed from id to user_id
+        url += `${user.user_id}/`;
         method = 'put';
       }
 
@@ -129,7 +117,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          // Include user_id if editing
+          ...(editMode && user?.user_id && { user_id: user.user_id })
+        }),
       });
 
       if (!response.ok) {

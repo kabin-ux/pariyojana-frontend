@@ -4,7 +4,7 @@ import { type SettingsItem } from '../types/settings';
 import { settingsApi } from '../services/settingsApi';
 import AddEditModal from '../modals/AddEditModal';
 import DeleteConfirmModal from '../modals/DeleteConfirmModal';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { toNepaliNumber } from '../utils/formatters';
 
 const Settings: React.FC = () => {

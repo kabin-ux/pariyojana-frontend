@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
-import type { SettingsItem, ThematicArea, SubThematicArea, Group, Unit, Template } from '../types/settings';
+import type { SettingsItem } from '../types/settings';
 import { dependentDataApi } from '../services/settingsApi';
 import { toNepaliNumber } from '../utils/formatters';
 

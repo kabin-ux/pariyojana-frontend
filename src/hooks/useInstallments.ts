@@ -126,6 +126,8 @@ export const useInstallmentDetails = (projectId: number) => {
         secondError,
         thirdError,
         fourthError,
+        bankError,
+        bankLoading,
         refetch, // 👈 expose this for reuse after upload
     };
 };

@@ -136,7 +136,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
       formData.append('serial_no', serialNo.toString());
       formData.append('file', file);
 
-      const response = await axios.post(
+      await axios.post(
         `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
         formData,
         {

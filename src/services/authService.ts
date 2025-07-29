@@ -4,21 +4,13 @@ import axios from 'axios';
 const BASE_URL = 'http://213.199.53.33:8000/api/auth';
 
 
-// Define response types
-interface User {
-  id: number;
-  full_name: string;
-  username: string;
-  role: string;
-}
 
 interface LoginResponse {
-  user_id: number;
-  full_name: string;
-  role: string;
   access: string;
   refresh: string;
-  user: User;
+  user_id: number;
+  full_name: string;
+  role: 'admin' | 'engineer' | 'planning section' | 'ward/office seceratery' | 'ward engineer' | 'user committee' | 'Data Entry' | 'Department chief';
 }
 
 export const loginUser = async (

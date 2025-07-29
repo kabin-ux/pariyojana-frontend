@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload } from 'lucide-react';
+import { Search,  Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload } from 'lucide-react';
 import axios from 'axios';
 import AddCompanyModal from '../modals/AddCompanyModal';
 import toast from 'react-hot-toast';

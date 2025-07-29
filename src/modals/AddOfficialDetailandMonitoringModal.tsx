@@ -39,22 +39,22 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
 
     if (!isOpen) return null;
 
-    const handleAddMember = () => {
-        const newId = Math.max(...formRows.map(row => row.id)) + 1;
-        const newRow: FormRow = {
-            id: newId,
-            post: 'सदस्य',
-            full_name: '',
-            gender: '',
-            address: '',
-            citizenship_no: '',
-            contact_no: '',
-            citizenshipCopy: '',
-            citizenship_front: null,
-            citizenship_back: null
-        };
-        setFormRows(prev => [...prev, newRow]);
-    };
+    // const handleAddMember = () => {
+    //     const newId = Math.max(...formRows.map(row => row.id)) + 1;
+    //     const newRow: FormRow = {
+    //         id: newId,
+    //         post: 'सदस्य',
+    //         full_name: '',
+    //         gender: '',
+    //         address: '',
+    //         citizenship_no: '',
+    //         contact_no: '',
+    //         citizenshipCopy: '',
+    //         citizenship_front: null,
+    //         citizenship_back: null
+    //     };
+    //     setFormRows(prev => [...prev, newRow]);
+    // };
 
     const handleDeleteRow = (id: number) => {
         // Only allow deletion if it's a सदस्य position and there are more than the original rows

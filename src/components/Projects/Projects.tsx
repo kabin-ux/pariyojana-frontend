@@ -15,7 +15,6 @@ import SearchAndFilter from './SearchAndFilter';
 import ProjectsHeader from './ProjectHeader';
 import ProjectDetail from '../ProjectDetails/ProjectDetail';
 import Breadcrumb from '../BreadCrumb';
-import type { ProjectSubmitPayload } from '../../types/project';
 
 interface ProjectsProps {
   onProjectSelect?: (projectId: string) => void;
@@ -280,7 +279,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await axios.post(
+       await axios.post(
         'http://127.0.0.1:8000/api/projects/projects/import_excel/',
         formData,
         {

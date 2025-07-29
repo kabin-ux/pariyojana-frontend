@@ -24,9 +24,6 @@ interface ChartData {
   }>;
 }
 
-interface ChartDataResponse {
-  [key: string]: ChartData;
-}
 
 export const ReportContent = ({ activeTab }: ReportContentProps) => {
   const {

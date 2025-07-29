@@ -1,17 +1,16 @@
-import { Edit, Copy, FileText } from 'lucide-react';
 
-interface Project {
-  id: number;
-  plan_name: string;
-  thematic_area: string;
-  sub_area: string;
-  source: string;
-  expenditure_center: string;
-  budget: string;
-  ward_no: string;
-  status: string;
-  priority_no: number;
-}
+// interface Project {
+//   id: number;
+//   plan_name: string;
+//   thematic_area: string;
+//   sub_area: string;
+//   source: string;
+//   expenditure_center: string;
+//   budget: string;
+//   ward_no: string;
+//   status: string;
+//   priority_no: number;
+// }
 
 interface MunicipalOfficeTableProps {
   activeTab: string;

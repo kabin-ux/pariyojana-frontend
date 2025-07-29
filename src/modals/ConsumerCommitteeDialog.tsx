@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import 'nepali-datepicker-reactjs/dist/index.css';
 
@@ -22,7 +20,7 @@ interface Props {
     onSave: (data: ConsumerCommitteeData) => void;
     committeeData?: ConsumerCommitteeData | null;
     projectId: number;
-    token: string;
+    // token: string;
 }
 
 const ConsumerCommitteeDialog: React.FC<Props> = ({
@@ -30,7 +28,6 @@ const ConsumerCommitteeDialog: React.FC<Props> = ({
     onClose,
     onSave,
     committeeData,
-    projectId,
 }) => {
     const [formData, setFormData] = useState<ConsumerCommitteeData>({
         consumer_committee_name: '',

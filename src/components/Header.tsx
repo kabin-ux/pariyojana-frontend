@@ -1,5 +1,5 @@
-import React, { type FC } from 'react';
-import { Bell, User, ChevronDown, LogOut } from 'lucide-react';
+import  { type FC } from 'react';
+import {  User } from 'lucide-react';
 import toplogo from '../assets/toplogo.png';
 import { useAuth } from '../context/hooks';
 

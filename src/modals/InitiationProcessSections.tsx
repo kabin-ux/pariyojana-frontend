@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Download, Copy } from 'lucide-react';
 import axios from 'axios';
-import DropdownMenu from './DropDownMenu';
 import * as BS from 'bikram-sambat-js';
 import { toNepaliNumber } from '../utils/formatters';
 
@@ -67,15 +65,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
         }
     };
 
-    const handleDelete = async (id: number) => {
-        try {
-            await axios.delete(`http://213.199.53.33:8000/api/projects/initiation/${id}/`);
-            fetchInitiationProcess();
-        } catch (err) {
-            console.error('Error deleting initiation process:', err);
-            alert('मेटाउन सकिएन');
-        }
-    };
+   
 
     useEffect(() => {
         fetchInitiationProcess();

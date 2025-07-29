@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Download, MoreHorizontal } from 'lucide-react';
 import { Breadcrumb } from './BreadCrumbs';
 import { MainTabs } from './WardTabs';
 import { ReportTabs } from './ReportTabs';
@@ -51,7 +50,7 @@ const WardOfficeNew: React.FC = () => {
     prioritizedWardThematicProjects = [],
     loading,
     error,
-    refetch
+
   } = usePlanning();
 
   const getDataForActiveTab = (): WardData[] => {

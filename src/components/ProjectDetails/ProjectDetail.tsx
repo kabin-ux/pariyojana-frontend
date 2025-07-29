@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
-import { toNepaliNumber } from '../../utils/formatters';
 import ProgramDetailsTab from '../../components/projectdetailssubtab/ProgramDetailTab';
 import InitiationProcessSection from '../../modals/InitiationProcessSections';
 import PaymentInstallment from '../PaymentInstallment/PaymentInstallment';
@@ -42,13 +41,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   const [documentDetail, setDocumentDetail] = useState<any>(null);
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
   const [uploadedProjectAgreementFiles, setUploadedProjectAgreementFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
-  const [uploadedWorkFiles, setUploadedWorkFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
   const [uploadedProjectAgreementWorkFiles, setUploadedProjectAgreementWorkFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
 
   const projectIdNum = parseInt(project?.serial_number);
   const {
-    programDetails,
-    initiationProcess,
     consumerCommitteeDetails,
     officialDetails,
     monitoringCommittee,
@@ -304,7 +300,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     }
   };
 
-  const handleSendAuthentication = async (data: any) => {
+  const handleSendAuthentication = async () => {
     console.log('Authentication sent successfully!');
     toast.success('प्रमाणीकरण सफलतापूर्वक पठाइयो');
     await loadCostEstimate();
