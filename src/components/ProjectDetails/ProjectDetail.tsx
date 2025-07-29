@@ -520,7 +520,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
   const handleGenerateBill = async (projectId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/projects/bill/project/${projectId}/pdf/`, {
+      const response = await fetch(`http://213.199.53.33:8000/api/projects/bill/project/${projectId}/pdf/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/pdf',
