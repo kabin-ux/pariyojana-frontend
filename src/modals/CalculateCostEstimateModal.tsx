@@ -81,8 +81,8 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
         try {
             const hasId = formData.id !== undefined;
             const url = hasId
-                ? `http://127.0.0.1:8000/api/projects/${projectId}/calculate-costestimations/${formData.id}/`
-                : `http://127.0.0.1:8000/api/projects/${projectId}/calculate-costestimations/`;
+                ? `http://213.199.53.33:8000/api/projects/${projectId}/calculate-costestimations/${formData.id}/`
+                : `http://213.199.53.33:8000/api/projects/${projectId}/calculate-costestimations/`;
 
             const method = hasId ? 'patch' : 'post';
 
