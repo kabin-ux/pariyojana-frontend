@@ -15,7 +15,7 @@ interface CostEstimateData {
 interface CostEstimateModalProps {
     isOpen: boolean;
     onClose: () => void;
-    costData: CostEstimateData | null;
+    costData: CostEstimateData[];
     onSave: (data: CostEstimateData) => void;
     projectId: number;
 }
@@ -108,11 +108,12 @@ const CostEstimateModal: React.FC<CostEstimateModalProps> = ({
     };
 
     const handleCancel = () => {
-        if (costData) {
-            setFormData(costData);
+        if (costData && costData.length > 0) {
+            setFormData(costData[0]);
         }
         onClose();
     };
+
 
     if (!isOpen) return null;
 

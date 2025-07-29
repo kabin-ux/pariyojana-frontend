@@ -5,6 +5,19 @@ import { useBudgetReports } from '../../hooks/useBudgetTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+interface ChartData {
+  budget_distribution: Array<{
+    label: string;
+    percentage: number;
+    value: number;
+  }>;
+  project_count_distribution: Array<{
+    label: string;
+    percentage: number;
+    value: number;
+  }>;
+}
+
 interface ReportContentProps {
     activeTab: string;
 }
@@ -47,58 +60,55 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         downloadWardLevelBudgetPDF,
     } = useBudgetReports();
 
-    let chartData = {};
+  let chartData: ChartData = { budget_distribution: [], project_count_distribution: [] };
     let reportTitle = '';
-    let excelLink = '';
-    let pdfLink = '';
+    let hasExcelLink = false;
+    let hasPDFLink = false;
 
     switch (activeTab) {
         case 'वडा स्तरीय कार्यक्रम':
-            chartData = wardLevelBudgetChart;
+            chartData = wardLevelBudgetChart as ChartData;
             reportTitle = 'वडा स्तरीय कार्यक्रम';
-            excelLink = wardLevelBudgetReport;
-            pdfLink = wardLevelBudgetReportPDF;
-            console.log('URLs:', { excelLink, pdfLink });
+            hasExcelLink = !!wardLevelBudgetReport;
+            hasPDFLink = !!wardLevelBudgetReportPDF;
             break;
         case 'नगर स्तरीय कार्यक्रम':
-            chartData = municipalityLevelBudgetChart;
+            chartData = municipalityLevelBudgetChart as ChartData;
             reportTitle = 'नगर स्तरीय कार्यक्रम';
-            excelLink = municipalityLevelBudgetReport;
-            pdfLink = municipalityLevelBudgetReportPDF;
+            hasExcelLink = !!municipalityLevelBudgetReport;
+            hasPDFLink = !!municipalityLevelBudgetReportPDF;
             break;
         case 'विषयगत समितिको कार्यक्रम':
-            chartData = thematicBudgetChart;
+            chartData = thematicBudgetChart as ChartData;
             reportTitle = 'विषयगत समितिको कार्यक्रम';
-            excelLink = thematicBudgetReport;
-            pdfLink = thematicBudgetReportPDF;
+            hasExcelLink = !!thematicBudgetReport;
+            hasPDFLink = !!thematicBudgetReportPDF;
             break;
         case 'नगर गौरव आयोजना':
-            chartData = municipalityPrideBudgetChart;
+            chartData = municipalityPrideBudgetChart as ChartData;
             reportTitle = 'नगर गौरव आयोजना';
-            excelLink = municipalityPrideBudgetReport;
-            pdfLink = municipalityPrideBudgetReportPDF;
+            hasExcelLink = !!municipalityPrideBudgetReport;
+            hasPDFLink = !!municipalityPrideBudgetReportPDF;
             break;
         case 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम':
-            chartData = federalGovernmentBudgetChart;
+            chartData = federalGovernmentBudgetChart as ChartData;
             reportTitle = 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम';
-            excelLink = federalGovernmentBudgetReport;
-            pdfLink = federalGovernmentBudgetReportPDF;
+            hasExcelLink = !!federalGovernmentBudgetReport;
+            hasPDFLink = !!federalGovernmentBudgetReportPDF;
             break;
         case 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम':
-            chartData = provincialGovernmentBudgetChart;
+            chartData = provincialGovernmentBudgetChart as ChartData;
             reportTitle = 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम';
-            excelLink = provincialGovernmentBudgetReport;
-            pdfLink = provincialGovernmentBudgetReportPDF;
+            hasExcelLink = !!provincialGovernmentBudgetReport;
+            hasPDFLink = !!provincialGovernmentBudgetReportPDF;
             break;
         default:
-            chartData = {};
+            chartData = { budget_distribution: [], project_count_distribution: [] };
     }
 
     const { budget_distribution = [], project_count_distribution = [] } = chartData;
 
     if (activeTab && chartData) {
-        const topBudget = budget_distribution[0];
-        const topProject = project_count_distribution[0];
 
         return (
             <div>
@@ -111,29 +121,29 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'नगर स्तरीय कार्यक्रम':
-                                            downloadMunicipalityLevelBudgetExcel(reportTitle);
+                                            downloadMunicipalityLevelBudgetExcel();
                                             break;
                                         case 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम':
-                                            downloadFederalGovernmentBudgetExcel(reportTitle);
+                                            downloadFederalGovernmentBudgetExcel();
                                             break;
                                         case 'नगर गौरव आयोजना':
-                                            downloadMunicipalityPrideBudgetExcel(reportTitle);
+                                            downloadMunicipalityPrideBudgetExcel();
                                             break;
                                         case 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम':
-                                            downloadProvincialGovernmentBudgetExcel(reportTitle);
+                                            downloadProvincialGovernmentBudgetExcel();
                                             break;
                                         case 'विषयगत समितिको कार्यक्रम':
-                                            downloadThematicBudgetExcel(reportTitle);
+                                            downloadThematicBudgetExcel();
                                             break;
                                         case 'वडा स्तरीय कार्यक्रम':
-                                            downloadWardLevelBudgetExcel(reportTitle);
+                                            downloadWardLevelBudgetExcel();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!excelLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
+                                disabled={!hasExcelLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasExcelLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}
@@ -147,29 +157,29 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'नगर स्तरीय कार्यक्रम':
-                                            downloadMunicipalityLevelBudgetPDF(reportTitle);
+                                            downloadMunicipalityLevelBudgetPDF();
                                             break;
                                         case 'संघिय सरकारबाट हस्तान्तरित कार्यक्रम':
-                                            downloadFederalGovernmentBudgetPDF(reportTitle);
+                                            downloadFederalGovernmentBudgetPDF();
                                             break;
                                         case 'नगर गौरव आयोजना':
-                                            downloadMunicipalityPrideBudgetPDF(reportTitle);
+                                            downloadMunicipalityPrideBudgetPDF();
                                             break;
                                         case 'प्रदेश सरकारबाट हस्तान्तरित कार्यक्रम':
-                                            downloadProvincialGovernmentBudgetPDF(reportTitle);
+                                            downloadProvincialGovernmentBudgetPDF();
                                             break;
                                         case 'विषयगत समितिको कार्यक्रम':
-                                            downloadThematicBudgetPDF(reportTitle);
+                                            downloadThematicBudgetPDF();
                                             break;
                                         case 'वडा स्तरीय कार्यक्रम':
-                                            downloadWardLevelBudgetPDF(reportTitle);
+                                            downloadWardLevelBudgetPDF();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!pdfLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
+                                disabled={!hasPDFLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasPDFLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}

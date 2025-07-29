@@ -5,24 +5,65 @@ import * as BS from 'bikram-sambat-js';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useInstallmentDetails } from '../../hooks/useInstallments';
-import BankAccountModal from '../../modals/AddBankDetailsModal';
+import BankAccountModal, { type SignatoryOption } from '../../modals/AddBankDetailsModal';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
 import AddBankRecommendationModal from '../../modals/AddBankRecommendationModal';
 import PaymentDetailModal from '../../modals/AddPaymentDetailsModal';
 
+// interface ProjectDetailProps {
+//     project: {
+//         id: number;
+//         serial_number: number;
+//         name: string;
+//         ward_number: number;
+//         budget: number;
+//         status: string;
+//         start_date: string;
+//         end_date: string;
+//         description: string;
+//     };
+// }
+
+interface Project {
+    serial_number: number;
+    budget?: number;
+}
+
+interface InstallmentItem {
+    serial_no: number;
+    title: string;
+    description?: string;
+    file_uploaded_name?: string;
+}
+
+interface PaymentDetail {
+    id: number;
+    serial_no: number;
+    title: string;
+    amount_paid: number;
+    payment_percent: number;
+    physical_progress: number;
+}
+
+
+
+interface BankDetail {
+    id: number;
+    branch: string;
+    bank_name: string;
+    signatories_details: SignatoryOption[];
+}
+
+interface BudgetFormData {
+    title: string;
+    amount_paid: string | number;
+    payment_percent: number;
+    physical_progress: number;
+    agreement_amount: number;
+}
+
 interface ProjectDetailProps {
-    project: {
-        id: number;
-        serial_number: string;
-        name: string;
-        ward_number: number;
-        budget: number;
-        status: string;
-        start_date: string;
-        end_date: string;
-        description: string;
-    };
-    onBack: () => void;
+    project: Project;
 }
 
 const FIRST_BACK_TITLES = [
@@ -73,20 +114,20 @@ const INSTALLMENT_DESC = [
 const today = new Date(); // current Gregorian date
 const bsDate = BS.ADToBS(today); // Convert to BS
 
-const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
+const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
     const [activeTab, setActiveTab] = useState('बैंकको विवरण');
     const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [bankDetails, setBankDetails] = useState([]);
-    const [bankRecommendationDetails, setBankRecommendationDetails] = useState([]);
-    const [bankAccountPhotos, setBankAccountPhotos] = useState([]);
+    const [bankDetails, setBankDetails] = useState<BankDetail[]>([]);
+    const [bankRecommendationDetails, setBankRecommendationDetails] = useState<any[]>([]);
+    const [bankAccountPhotos, setBankAccountPhotos] = useState<any[]>([]);
     const [editBankId, setEditBankId] = useState<number | null>(null);
     const [editRecommendationId, setEditRecommendationId] = useState<number | null>(null);
     const [editAccountPhotoId, setEditAccountPhotoId] = useState<number | null>(null);
     const [isPaymentDetailModalOpen, setPaymentDetailModalOpen] = useState(false);
     const [isDownloading, setIsDownloading] = useState<{ [key: string]: boolean }>({});
 
-    const projectIdNum = parseInt(project?.serial_number);
+    const projectIdNum = project?.serial_number;
     const {
         officialDetails, loadConsumerCommitteeDetails
     } = useProjectDetail(projectIdNum)
@@ -523,13 +564,18 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         );
     };
 
-    const totalPaid = paymentDetails.reduce((sum, item) => sum + parseFloat(item.amount_paid || '0'), 0);
+    const totalPaid = paymentDetails?.reduce(
+        (sum, item) => sum + Number(item.amount_paid || 0),
+        0
+    ) ?? 0;
+    // console.log("totelpaid",totalPaid)
+
     const totalPercent = paymentDetails.reduce(
         (sum, item) => sum + (Number(item.payment_percent) || 0),
         0
     );
     const maxProgress = paymentDetails.reduce((max, item) => Math.max(max, item.physical_progress || 0), 0);
-    const remainingAmount = parseFloat(project.budget || '0') - totalPaid;
+    const remainingAmount = parseFloat(String(project.budget ?? '0')) - totalPaid;
 
 
     const ActionButton = ({ icon: Icon, onClick, className = "", title }: {
@@ -548,7 +594,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
         </button>
     );
 
-    const handlePayment = async (projectId) => {
+    const handlePayment = async (projectId: number) => {
         try {
             const response = await axios.get(`http://213.199.53.33:8000/api/projects/installment/payment/project/${projectId}/pdf/`, {
                 responseType: 'blob', // important for binary data like PDF
@@ -585,7 +631,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                     </div>
 
                     {/* Show "add" button only if no bank details exist */}
-                    {bankDetails.length === 0 && (
+                    {bankDetails?.length === 0 && (
                         <button
                             type="button"
                             className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -597,7 +643,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                     )}
 
                     {/* Show "edit" button only if bank details exist */}
-                    {bankDetails.length > 0 && (
+                    {bankDetails?.length > 0 && (
                         <button
                             type="button"
                             className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -608,7 +654,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                     )}
                 </div>
 
-                {bankDetails.length > 0 && (
+                {bankDetails?.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-600">बैंकको नाम:</label>
@@ -627,7 +673,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                             <p className="text-lg font-semibold text-gray-900 bg-white p-3 rounded-lg ">
                                 <ul>
                                     {bankDetails[0].signatories_details.map(signatory => (
-                                        <li key={signatory.id}>{signatory.display_name}</li>
+                                        <li key={signatory.id}>{signatory.full_name}</li>
                                     ))}
                                 </ul>
                             </p>
@@ -637,10 +683,10 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
 
                 {isBankModalOpen && (
                     <BankAccountModal
-                        bankDetails={editBankId !== null ? bankDetails.find(b => b.id === editBankId) : {}}
+                        bankDetails={editBankId !== null ? bankDetails.find(b => b.id === editBankId) : null}
                         signatories={officialDetails}
                         bankOptions={banks}
-                        onSubmit={(data) => addBankDetails(parseInt(project.serial_number), data)}
+                        onSubmit={(data) => addBankDetails((project.serial_number), data)}
                         onClose={() => {
                             setIsBankModalOpen(false);
                             setEditBankId(null);
@@ -883,7 +929,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onChange={e => {
                                                         const file = e.target.files?.[0];
                                                         if (file) {
-                                                            uploadFirstInstallment(file, parseInt(project.serial_number), item.serial_no);
+                                                            uploadFirstInstallment(file, project.serial_number, item.serial_no);
                                                         }
                                                     }}
                                                 />
@@ -965,7 +1011,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onChange={e => {
                                                         const file = e.target.files?.[0];
                                                         if (file) {
-                                                            uploadSecondInstallment(file, parseInt(project.serial_number), item.serial_no);
+                                                            uploadSecondInstallment(file, project.serial_number, item.serial_no);
                                                         }
                                                     }}
                                                 />
@@ -1047,7 +1093,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                                     onChange={e => {
                                                         const file = e.target.files?.[0];
                                                         if (file) {
-                                                            uploadThirdInstallment(file, parseInt(project.serial_number), item.serial_no);
+                                                            uploadThirdInstallment(file, project.serial_number, item.serial_no);
                                                         }
                                                     }}
                                                 />
@@ -1140,7 +1186,9 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                             <td className="py-3 px-4">{toNepaliNumber(bsDate)}</td>
                                             <td className="py-3 px-4">{toNepaliNumber(item.amount_paid)}</td>
                                             <td className="py-3 px-4">{toNepaliNumber(item.payment_percent)}%</td>
-                                            <td className="py-3 px-4">{toNepaliNumber(item.physical_progress)}%</td>
+                                            <td className="py-3 px-4">
+                                                {toNepaliNumber(item.physical_progress ?? 0)}%
+                                            </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex items-center space-x-3">
                                                     <button
@@ -1172,16 +1220,17 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तानी गरिएको रकम:</p>
-                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(totalPaid.toFixed(2))}</p>
+                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(totalPaid?.toFixed(2))}</p>
+
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तानी हुन बाकी रकम:</p>
-                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(remainingAmount.toFixed(2))}</p>
+                                    <p className="text-lg font-semibold">रु. {toNepaliNumber(remainingAmount?.toFixed(2))}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">कुल भुक्तनी प्रतिशत (%):</p>
                                     <p className="text-lg font-semibold">
-                                        {toNepaliNumber(totalPercent.toFixed(2))}%
+                                        {toNepaliNumber(totalPercent?.toFixed(2))}%
                                     </p>
                                 </div>
                                 <div>
@@ -1201,7 +1250,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project, onBack }) =
                                     amount_paid: '',
                                     payment_percent: 0,
                                     physical_progress: 0,
-                                    agreement_amount: parseFloat(project.budget) || 0
+                                    agreement_amount: project.budget || 0
                                 }}
                             />
                         )}

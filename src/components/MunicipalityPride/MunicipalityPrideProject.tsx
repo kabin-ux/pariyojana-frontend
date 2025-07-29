@@ -10,6 +10,7 @@ import { ReportTabs } from './ReportTabs';
 import { ReportContent } from './ReportContent';
 import { EmptyState } from '../WardOffice/EmptyState';
 import EditProjectModal from '../../modals/EditProjectsModal';
+import type { ProjectType } from '../../types/projectType';
 
 
 const MunicipalityPrideProject: React.FC = () => {
@@ -49,7 +50,7 @@ const MunicipalityPrideProject: React.FC = () => {
     setEditModalOpen(true);
   };
 
-  const getProjectType = () => {
+  const getProjectType = (): ProjectType => {
     if (activeTab === 'प्रविष्टी भएका नगर गौरव आयोजना') return 'municipality-pride';
     return 'municipality-pride';
   };

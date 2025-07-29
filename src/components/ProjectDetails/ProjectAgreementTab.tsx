@@ -15,6 +15,7 @@ interface ProjectAgreementTabProps {
   onDownloadProjectAgreement: (itemSerialNo: number, projectSerialNo: number) => void;
   onDownloadProjectAgreementAndWorkLoad: (itemSerialNo: number, projectSerialNo: number) => void;
   onAgreementFileUpload?: (serialNo: number, file: File) => void;
+  onFileUpload?: (serialNo: number, file: File) => void;
   onWorkFileUpload?: (serialNo: number, file: File) => void;
   uploadedProjectAgreementFiles?: { [key: number]: { file: File; type: string } };
   uploadedProjectAgreementWorkFiles?: { [key: number]: { file: File; type: string } };
@@ -99,7 +100,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       );
 
       const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-      
+
       // Update only agreement files state
       setLocalUploadedAgreementFiles(prev => {
         const newState = { ...prev };
@@ -145,7 +146,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       );
 
       const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-      
+
       // Update only work files state
       setLocalUploadedWorkFiles(prev => {
         const newState = { ...prev };

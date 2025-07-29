@@ -6,10 +6,10 @@ import { useSettings } from '../hooks/useSetting';
 
 interface WorkTypeData {
     id?: number;
-    project: number;
+    project?: number;
     name: string;
     unit: number;
-    unit_name: string;
+    unit_name?: string;
 }
 
 interface CostEstimateModalProps {
@@ -31,20 +31,17 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
 
     const [formData, setFormData] = useState<WorkTypeData>({
         name: '',
-        unit: 0,
+        unit: 0
     });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (workTypeData) {
-            const costDetail = Array.isArray(workTypeData) ? workTypeData[0] : workTypeData;
-
             setFormData({
-                id: workTypeData.id || undefined,
+                id: workTypeData.id,
                 name: workTypeData.name || '',
-                unit: workTypeData.unit || '',
+                unit: workTypeData.unit || 0,
             });
-            console.log("formadatata", formData)
         } else {
             setFormData({
                 name: '',
@@ -56,14 +53,16 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
     const handleInputChange = (field: keyof WorkTypeData, value: string) => {
         setFormData(prev => ({
             ...prev,
-            [field]: field === 'unit' ? value : Number(value)
+            [field]: field === 'unit' ? Number(value) : value
         }));
     };
 
-    const handleTextInputChange = (field, value) => {
-        setFormData({ ...formData, [field]: value });
+    const handleTextInputChange = (field: keyof WorkTypeData, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
-
 
     const handleSave = async () => {
         const token = localStorage.getItem('access_token');
@@ -77,7 +76,7 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
             const hasId = formData.id !== undefined;
             const url = hasId
                 ? `http://127.0.0.1:8000/api/projects/${projectId}/work-types/${formData.id}/`
-                : ` http://127.0.0.1:8000/api/projects/${projectId}/work-types/`;
+                : `http://127.0.0.1:8000/api/projects/${projectId}/work-types/`;
 
             const method = hasId ? 'patch' : 'post';
 
@@ -90,12 +89,12 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
                 },
             });
 
-            toast.success(hasId ? 'लागत अनुमान अपडेट भयो!' : 'लागत अनुमान सेभ भयो!');
+            toast.success(hasId ? 'कामको प्रकार अपडेट भयो!' : 'कामको प्रकार सेभ भयो!');
             onSave(response.data);
             onClose();
         } catch (error) {
-            console.error('Error saving cost estimate:', error);
-            toast.error('लागत अनुमान सेभ गर्न असफल भयो।');
+            console.error('Error saving work type:', error);
+            toast.error('कामको प्रकार सेभ गर्न असफल भयो।');
         } finally {
             setLoading(false);
         }
@@ -111,16 +110,15 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900">लागत अनुमान</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">कामको प्रकार</h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
                 </div>
 
                 <div className="p-6 space-y-4">
-
                     <div>
-                        <label className=" text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             कामको प्रकार:
                         </label>
                         <input
@@ -141,12 +139,15 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             <option value="">एकाइ</option>
-                            {units.map(unit => (
-                                <option key={unit.id} value={unit.id.toString()}>{unit.name}</option>
+                            {units.map((unit: { id: number; name: string }) => (
+                                <option key={unit.id} value={unit.id}>
+                                    {unit.name}
+                                </option>
                             ))}
                         </select>
                     </div>
                 </div>
+
                 <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
                     <button
                         onClick={handleCancel}

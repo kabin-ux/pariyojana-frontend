@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { toNepaliNumber } from '../utils/formatters';
 
-interface BudgetFormData {
+export interface BudgetFormData {
     id?: number | null;
     title: string;
     amount_paid: string;

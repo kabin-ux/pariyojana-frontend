@@ -5,7 +5,6 @@ import { useAuth } from './context/hooks';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
-import WardOffice from './components/WardOffice';
 // import Projects from './components/Projects';
 import Authentication from './components/Authentication';
 import Inventory from './components/Inventory';

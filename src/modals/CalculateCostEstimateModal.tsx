@@ -16,7 +16,7 @@ interface CostEstimateData {
 interface CostEstimateModalProps {
     isOpen: boolean;
     onClose: () => void;
-    costData: CostEstimateData | null;
+    costData: CostEstimateData[];
     onSave: (data: CostEstimateData) => void;
     projectId: number;
 }
@@ -135,7 +135,7 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                         >
                             <option value="">आर्थिक वर्ष</option>
                             {fiscalYears.map(year => (
-                                <option key={year.id} value={year.id.toString()}>{year.year}</option>
+                                <option key={year.id} value={year.id.toString()}>{'year' in year && (year.year)}</option>
                             ))}
                         </select>
                     </div>

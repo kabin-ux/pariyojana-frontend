@@ -1,13 +1,30 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+interface InstallmentDetails {
+    serial_no: number;
+    title: string;
+    description: string;
+    date: string; // could also be Date if parsed
+    status: string;
+    file_uploaded_name: string;
+}
+interface PaymentDetail {
+    id: number;
+    serial_no: number;
+    title: string;
+    physical_progress?: number;
+    payment_percent: number;
+    amount_paid: number;
+}
+
 export const useInstallmentDetails = (projectId: number) => {
     const [banks, setBanks] = useState([]);
     const [firstInstallment, setFirstInstallment] = useState<InstallmentDetails[] | null>(null);
     const [secondInstallment, setSecondInstallment] = useState<InstallmentDetails[] | null>(null);
     const [thirdInstallment, setThirdInstallment] = useState<InstallmentDetails[] | null>(null);
 
-    const [paymentDetails, setPaymentDetails] = useState([]);
+    const [paymentDetails, setPaymentDetails] = useState<PaymentDetail[]>([]);
 
     const [bankLoading, setBankLoading] = useState(true);
     const [firstLoading, setFirstLoading] = useState(true);

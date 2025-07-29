@@ -5,6 +5,19 @@ import { useMunicipalityPrideReports } from '../../hooks/useMunicipalityPrideTab
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+interface ChartData {
+    budget_distribution: Array<{
+        label: string;
+        percentage: number;
+        value: number;
+    }>;
+    project_count_distribution: Array<{
+        label: string;
+        percentage: number;
+        value: number;
+    }>;
+}
+
 interface ReportContentProps {
     activeTab: string;
 }
@@ -27,27 +40,26 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         downloadMunicipalityPrideSubmitBudgetPDF,
     } = useMunicipalityPrideReports();
 
-    let chartData = {};
+    let chartData: ChartData = { budget_distribution: [], project_count_distribution: [] };
     let reportTitle = '';
-    let excelLink = '';
-    let pdfLink = '';
+  let hasExcelLink = false;
+  let hasPDFLink = false;
 
     switch (activeTab) {
         case 'प्रविष्टी भएका नगर गौरव आयोजना':
-            chartData = municipalityPrideChart;
+            chartData = municipalityPrideChart as ChartData;
             reportTitle = 'प्रविष्टी भएका नगर गौरव आयोजना';
-            excelLink = municipalityPrideReport;
-            pdfLink = municipalityPrideReportPDF;
-            console.log('URLs:', { excelLink, pdfLink });
+            hasExcelLink = !!municipalityPrideReport;
+            hasPDFLink = !!municipalityPrideReportPDF;
             break;
         case 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना':
-            chartData = municipalityPrideSubmitBudgetChart;
+            chartData = municipalityPrideSubmitBudgetChart as ChartData;
             reportTitle = 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना';
-            excelLink = municipalityPrideSubmitBudgetReport;
-            pdfLink = municipalityPrideSubmitBudgetReportPDF;
+            hasExcelLink = !!municipalityPrideSubmitBudgetReport;
+            hasPDFLink = !!municipalityPrideSubmitBudgetReportPDF;
             break;
         default:
-            chartData = {};
+            chartData = { budget_distribution: [], project_count_distribution: [] };
     }
 
     const { budget_distribution = [], project_count_distribution = [] } = chartData;
@@ -172,17 +184,17 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'प्रविष्टी भएका नगर गौरव आयोजना':
-                                            downloadMunicipalityPrideExcel(reportTitle);
+                                            downloadMunicipalityPrideExcel();
                                             break;
                                         case 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना':
-                                            downloadMunicipalityPrideSubmitBudgetExcel(reportTitle);
+                                            downloadMunicipalityPrideSubmitBudgetExcel();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!excelLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
+                                disabled={!hasExcelLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasExcelLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}
@@ -196,17 +208,17 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'प्रविष्टी भएका नगर गौरव आयोजना':
-                                            downloadMunicipalityPridePDF(reportTitle);
+                                            downloadMunicipalityPridePDF();
                                             break;
                                         case 'बजेट तथा कार्यक्रम तर्जुमा समितिमा पेश गरिएको परियोजना':
-                                            downloadMunicipalityPrideSubmitBudgetPDF(reportTitle);
+                                            downloadMunicipalityPrideSubmitBudgetPDF();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!pdfLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
+                                disabled={!hasPDFLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasPDFLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}

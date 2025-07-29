@@ -1,7 +1,7 @@
 import { Edit } from "lucide-react";
 
 interface MunicipalityPrideTableRowProps {
-    activeTab,
+    activeTab: string,
     project: any;
     index: number;
     onRecommend: (id: number) => void;

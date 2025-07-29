@@ -192,7 +192,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         }
 
         const matchedDetail = officialDetailsArray.find(detail => detail.id === row.id);
-        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/official-details/${matchedDetail?.id}/`;
 
         return axios.patch(url, formData, {
           headers: {
@@ -228,7 +228,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         const matchedDetail = monitoringDetailsArray.find(detail => detail.id === row.id);
 
         formData.append("project", project.serial_number);
-        formData.append("serial_no", matchedDetail.serial_no.toString());
+        formData.append("serial_no", matchedDetail?.serial_no?.toString() ?? '');
         formData.append("post", row.post);
         formData.append("full_name", row.full_name || '');
         formData.append("address", row.address || '');
@@ -244,7 +244,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
           formData.append("citizenship_back", row.citizenship_back);
         }
 
-        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
+        const url = `http://213.199.53.33:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail?.id}/`;
 
         return axios.patch(url, formData, {
           headers: {
