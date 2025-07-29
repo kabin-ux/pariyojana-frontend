@@ -9,7 +9,8 @@ import type {
   CostEstimateDetail,
   MapCostEstimate,
   ProjectAgreementDetail,
-  Document
+  Document,
+  WorkTypeDetail
 } from '../types/projectDetail';
 
 export const useProjectDetail = (projectId: number) => {
@@ -19,9 +20,9 @@ export const useProjectDetail = (projectId: number) => {
   const [officialDetails, setOfficialDetails] = useState<OfficialDetail[]>([]);
   const [monitoringCommittee, setMonitoringCommittee] = useState<MonitoringCommittee[]>([]);
   const [costEstimateDetails, setCostEstimateDetails] = useState<CostEstimateDetail[]>([]);
-  const [calculateCostEstimateDetails, setCalculateCostEstimateDetails] = useState([]);
-  const [workType, setWorkType] = useState([]);
-  const [workInProgress, setWorkInProgress] = useState([]);
+  const [calculateCostEstimateDetails, setCalculateCostEstimateDetails] = useState<CostEstimateDetail[]>([]);
+  const [workType, setWorkType] = useState<WorkTypeDetail[]>([]);
+  const [workInProgress, setWorkInProgress] = useState<WorkTypeDetail[]>([]);
   const [mapCostEstimate, setMapCostEstimate] = useState<MapCostEstimate[]>([]);
   const [projectAgreementDetails, setProjectAgreementDetails] = useState<ProjectAgreementDetail[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);

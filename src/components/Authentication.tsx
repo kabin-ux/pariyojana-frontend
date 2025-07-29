@@ -5,9 +5,11 @@ import { useAuth } from '../context/hooks';
 
 interface AuthDocument {
   id: number;
+  source_id: number;
   file_title: string;
   uploader_role: string;
   status: string;
+  status_nepali: string;
   file_path: string;
   project: number;
   checker: number;
@@ -57,7 +59,7 @@ const Authentication: React.FC = () => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(
-        `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument.source_id}/check/`,
+        `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument?.source_id}/check/`,
         {
           method: 'PATCH',
           headers: {

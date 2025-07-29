@@ -6,12 +6,16 @@ const BASE_URL = 'http://213.199.53.33:8000/api/auth';
 
 // Define response types
 interface User {
-  id: string;
+  id: number;
+  full_name: string;
   username: string;
   role: string;
 }
 
 interface LoginResponse {
+  user_id: number;
+  full_name: string;
+  role: string;
   access: string;
   refresh: string;
   user: User;

@@ -6,6 +6,19 @@ import { useCityCouncilReports } from '../../hooks/useCityCouncilTabReports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+interface ChartData {
+    budget_distribution: Array<{
+        label: string;
+        percentage: number;
+        value: number;
+    }>;
+    project_count_distribution: Array<{
+        label: string;
+        percentage: number;
+        value: number;
+    }>;
+}
+
 interface ReportContentProps {
     activeTab: string;
 }
@@ -28,26 +41,26 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
         downloadApprovedPDF,
     } = useCityCouncilReports();
 
-    let chartData = {};
+    let chartData: ChartData = { budget_distribution: [], project_count_distribution: [] };
     let reportTitle = '';
-    let excelLink = '';
-    let pdfLink = '';
+    let hasExcelLink = false;
+    let hasPDFLink = false;
 
     switch (activeTab) {
         case 'सभामा पेश भएका परियोजना':
-            chartData = submittedChart;
+            chartData = submittedChart as ChartData;
             reportTitle = 'सभामा पेश भएका परियोजना';
-            excelLink = submittedReport;
-            pdfLink = submittedReportPDF;
+            hasExcelLink = !!submittedReport;
+            hasPDFLink = !!submittedReportPDF;
             break;
         case 'नगर सभाले स्वीकृत गरिएको परियोजना':
-            chartData = approvedChart;
+            chartData = approvedChart as ChartData;
             reportTitle = 'नगर सभाले स्वीकृत गरिएको परियोजना';
-            excelLink = approvedReport;
-            pdfLink = approvedReportPDF;
+            hasExcelLink = !!approvedReport;
+            hasPDFLink = !!approvedReportPDF;
             break;
         default:
-            chartData = {};
+            chartData = { budget_distribution: [], project_count_distribution: [] };
     }
 
     const { budget_distribution = [], project_count_distribution = [] } = chartData;
@@ -106,17 +119,17 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'सभामा पेश भएका परियोजना':
-                                            downloadSubmittedExcel(reportTitle);
+                                            downloadSubmittedExcel();
                                             break;
                                         case 'नगर सभाले स्वीकृत गरिएको परियोजना':
-                                            downloadApprovedExcel(reportTitle);
+                                            downloadApprovedExcel();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!excelLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
+                                disabled={!hasExcelLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasExcelLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}
@@ -130,17 +143,17 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                                 onClick={() => {
                                     switch (activeTab) {
                                         case 'सभामा पेश भएका परियोजना':
-                                            downloadSubmittedPDF(reportTitle);
+                                            downloadSubmittedPDF();
                                             break;
                                         case 'नगर सभाले स्वीकृत गरिएको परियोजना':
-                                            downloadApprovedPDF(reportTitle);
+                                            downloadApprovedPDF();
                                             break;
                                         default:
                                             break;
                                     }
                                 }}
-                                disabled={!pdfLink}
-                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
+                                disabled={!hasPDFLink}
+                                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasPDFLink
                                     ? 'hover:bg-gray-50 cursor-pointer'
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     }`}

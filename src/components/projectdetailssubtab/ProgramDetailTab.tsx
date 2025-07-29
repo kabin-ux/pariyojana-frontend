@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Edit } from 'lucide-react';
 import { formatBudget, formatWardNumber, toNepaliNumber } from '../../utils/formatters';
-import type { ProgramDetail } from '../../types/projectDetail';
-import BeneficiaryDialog, { type BeneficiaryData } from '../../modals/AddEditYojanaModal';
+import type { BeneficiaryData, ProgramDetail } from '../../types/projectDetail';
+import BeneficiaryDialog from '../../modals/AddEditYojanaModal';
 import axios from 'axios';
 
 interface ProgramDetailsTabProps {
@@ -207,7 +207,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 विनियोजित रकम रु.:
               </label>
-              <p className="text-gray-900 text-sm">{formatBudget(toNepaliNumber(projectData.budget))}</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(formatBudget(projectData.budget))}</p>
             </div>
 
             <div className="flex gap-2">

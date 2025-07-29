@@ -1,19 +1,20 @@
 import React from 'react';
 import { ChevronRight, Edit, Trash2 } from 'lucide-react';
 import { formatBudget, formatWardNumber, formatStatus, getStatusColor, getNameById, toNepaliNumber } from '../../utils/formatters';
+import type { Project } from '../../types/project';
 
-interface Project {
-  id: number;
-  serial_number: number;
-  project_name: string;
-  area: number;
-  sub_area: number;
-  source: number;
-  expenditure_center: number;
-  budget: number;
-  ward_no: number;
-  status: string;
-}
+// interface Project {
+//   id: number;
+//   serial_number: number;
+//   project_name: string;
+//   area: number;
+//   sub_area: number;
+//   source: number;
+//   expenditure_center: number;
+//   budget: number;
+//   ward_no: number;
+//   status: string;
+// }
 
 interface ProjectsTableProps {
   projects: Project[];
@@ -161,7 +162,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   {getNameById(expenditureCenters, project.expenditure_center)}
                 </td>
                 <td className="py-4 px-3 text-sm text-gray-700 font-medium">
-                  {formatBudget(toNepaliNumber(project.budget))}
+                  {toNepaliNumber(formatBudget(project.budget))}
                 </td>
                 <td className="py-4 px-3 text-sm text-gray-700 text-center">
                   {formatWardNumber(project.ward_no)}

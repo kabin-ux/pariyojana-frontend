@@ -1,6 +1,6 @@
 import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 
-const roles: string[] = [
+const roles = [
   'admin',
   'planning section',
   'ward/office seceratery',
@@ -9,16 +9,15 @@ const roles: string[] = [
   'user committee',
   'Data Entry',
   'Department chief',
-];
+] as const;
 
-// Type for individual user
 export interface User {
   id?: number;
   full_name: string;
   last_name?: string;
   email: string;
   phone: string;
-  role: string;
+  role: (typeof roles)[number];
   ward_no: string;
   position?: string;
   mahashakha?: string;
@@ -26,7 +25,6 @@ export interface User {
   ra_pr_stah?: string;
 }
 
-// Props for the modal component
 interface UserFormModalProps {
   open: boolean;
   onClose: () => void;
@@ -35,6 +33,24 @@ interface UserFormModalProps {
   user: User | null;
   onSuccess: () => void;
 }
+
+type InputField = {
+  label: string;
+  name: keyof User;
+  type?: string;
+  required?: boolean;
+};
+
+const inputFields: InputField[] = [
+  { label: 'नाम *', name: 'full_name', required: true },
+  { label: 'थर', name: 'last_name' },
+  { label: 'इमेल *', name: 'email', type: 'email', required: true },
+  { label: 'फोन नम्बर *', name: 'phone', required: true },
+  { label: 'पद', name: 'position' },
+  { label: 'महाशाखा', name: 'mahashakha' },
+  { label: 'शाखा', name: 'shakha' },
+  { label: 'रा.प्र.स्था.', name: 'ra_pr_stah' },
+];
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
   open,
@@ -49,7 +65,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     last_name: '',
     email: '',
     phone: '',
-    role: '',
+    role: '' as User['role'],
     ward_no: '',
     position: '',
     mahashakha: '',
@@ -60,16 +76,16 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   useEffect(() => {
     if (user) {
       setFormData({
-        full_name: user.full_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        role: user.role || '',
-        ward_no: user.ward_no || '',
-        position: user.position || '',
-        mahashakha: user.mahashakha || '',
-        shakha: user.shakha || '',
-        ra_pr_stah: user.ra_pr_stah || '',
+        full_name: user.full_name ?? '',
+        last_name: user.last_name ?? '',
+        email: user.email ?? '',
+        phone: user.phone ?? '',
+        role: user.role ?? '' as User['role'],
+        ward_no: user.ward_no ?? '',
+        position: user.position ?? '',
+        mahashakha: user.mahashakha ?? '',
+        shakha: user.shakha ?? '',
+        ra_pr_stah: user.ra_pr_stah ?? '',
       });
     } else {
       setFormData({
@@ -77,7 +93,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         last_name: '',
         email: '',
         phone: '',
-        role: '',
+        role: '' as User['role'],
         ward_no: '',
         position: '',
         mahashakha: '',
@@ -89,13 +105,16 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      let url = 'http://213.199.53.33:8000/api/users';
+      let url = 'http://213.199.53.33:8000/api/users/';
       let method: 'post' | 'put' = 'post';
 
       if (editMode && user?.id) {
@@ -158,65 +177,59 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         </h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Render dynamic input fields */}
-          {([
-            { label: 'नाम *', name: 'full_name', required: true },
-            { label: 'थर', name: 'last_name' },
-            { label: 'इमेल *', name: 'email', type: 'email', required: true },
-            { label: 'फोन नम्बर *', name: 'phone', required: true },
-            { label: 'पद', name: 'position' },
-            { label: 'महाशाखा', name: 'mahashakha' },
-            { label: 'शाखा', name: 'shakha' },
-            { label: 'रा. प्र. स्तह', name: 'ra_pr_stah' },
-          ] as const).map(({ label, name, required, type = 'text' }) => (
-            <label key={name}>
-              {label}
-              <input
-                type={type}
-                name={name}
-                value={formData[name] || ''}
+          {inputFields.map(({ label, name, required, type = 'text' }) => (
+            <div key={name} className="mb-4">
+              <label>
+                {label}
+                <input
+                  type={type}
+                  name={name}
+                  value={formData[name] ?? ''}
+                  onChange={handleChange}
+                  required={required}
+                  disabled={viewOnly}
+                  style={{ width: '100%', padding: 8, marginBottom: 12 }}
+                />
+              </label>
+            </div>
+          ))}
+
+          <div className="mb-4">
+            <label>
+              प्रयोगकर्ता भूमिका *
+              <select
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
-                required={required}
+                required
+                disabled={viewOnly}
+                style={{ width: '100%', padding: 8, marginBottom: 12 }}
+              >
+                <option value="">-- भूमिका छान्नुहोस् --</option>
+                {roles.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mb-4">
+            <label>
+              वडा नंं. *
+              <input
+                type="number"
+                name="ward_no"
+                value={formData.ward_no}
+                onChange={handleChange}
+                required
+                min={1}
                 disabled={viewOnly}
                 style={{ width: '100%', padding: 8, marginBottom: 12 }}
               />
             </label>
-          ))}
-
-          {/* Role Selection */}
-          <label>
-            प्रयोगकर्ता भूमिका *
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              required
-              disabled={viewOnly}
-              style={{ width: '100%', padding: 8, marginBottom: 12 }}
-            >
-              <option value="">-- भूमिका छान्नुहोस् --</option>
-              {roles.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {/* Ward No */}
-          <label>
-            वडा नंं. *
-            <input
-              type="number"
-              name="ward_no"
-              value={formData.ward_no}
-              onChange={handleChange}
-              required
-              min={1}
-              disabled={viewOnly}
-              style={{ width: '100%', padding: 8, marginBottom: 12 }}
-            />
-          </label>
+          </div>
 
           <div className="flex justify-end mt-5 space-x-2">
             <button
@@ -226,7 +239,6 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             >
               Cancel
             </button>
-
             {!viewOnly && (
               <button
                 type="submit"
@@ -236,7 +248,6 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
               </button>
             )}
           </div>
-
         </form>
       </div>
     </div>

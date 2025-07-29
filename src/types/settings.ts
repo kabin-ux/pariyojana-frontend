@@ -12,6 +12,8 @@ export interface ThematicArea extends BaseSettingsItem {
 }
 
 export interface SubThematicArea extends BaseSettingsItem {
+  id: number;
+  name: string;
   thematic_area: number;
   thematic_area_name?: string;
 }
@@ -22,47 +24,54 @@ export interface Group extends BaseSettingsItem {
   sub_thematic_area_name?: string;
   thematic_area_name?: string;
 }
+export interface FiscalYear extends BaseSettingsItem {
+  year: string; // or number, depending on your API
+}
 
-export interface ProjectLevel extends BaseSettingsItem {}
 
-export interface ExpenditureTitle extends BaseSettingsItem {}
+export interface ProjectLevel extends BaseSettingsItem { }
 
-export interface ExpenditureCenter extends BaseSettingsItem {}
+export interface ExpenditureTitle extends BaseSettingsItem { }
 
-export interface Source extends BaseSettingsItem {}
+export interface ExpenditureCenter extends BaseSettingsItem { }
+
+export interface Source extends BaseSettingsItem { }
 
 export interface Unit extends BaseSettingsItem {
   short_name: string;
 }
 
-export interface PrideProjectTitle extends BaseSettingsItem {}
+export interface PrideProjectTitle extends BaseSettingsItem { }
 
-export interface FiscalYear extends BaseSettingsItem {}
+export interface FiscalYear extends BaseSettingsItem { }
 
-export interface Bank extends BaseSettingsItem {}
+export interface Bank extends BaseSettingsItem { }
 
 export interface Template extends BaseSettingsItem {
   code: string;
   title: string;
 }
 
-export type SettingsItem = 
-  | ThematicArea 
-  | SubThematicArea 
-  | Group 
-  | ProjectLevel 
-  | ExpenditureTitle 
-  | ExpenditureCenter 
-  | Source 
-  | Unit 
-  | PrideProjectTitle 
-  | FiscalYear 
-  | Bank 
+export type SettingsItem =
+  | ThematicArea
+  | SubThematicArea
+  | Group
+  | ProjectLevel
+  | ExpenditureTitle
+  | ExpenditureCenter
+  | Source
+  | Unit
+  | PrideProjectTitle
+  | FiscalYear
+  | Bank
   | Template;
 
 export interface ApiResponse<T> {
-  results: T[];
+  results: T[];   // ✅ paginated list
   count: number;
   next: string | null;
   previous: string | null;
+  status: string;
+  message?: string;
+  data: T;       // 👈 this creates confusion, especially if T = T[]
 }

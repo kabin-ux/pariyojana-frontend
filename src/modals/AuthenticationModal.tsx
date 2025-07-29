@@ -16,19 +16,19 @@ interface AuthenticationModalProps {
     onClose: () => void;
     documentData: any;
     projectIdNum: string | number;
-    editMapCostId: string | number;
-    onAuthenticationSent?: () => void;
+    editMapCostId: string | number | null;
+    onAuthenticationSent?: (data: any) => void;
 }
 
-export default function AuthenticationModal({ 
-    onClose, 
-    documentData, 
-    projectIdNum, 
+export default function AuthenticationModal({
+    onClose,
+    documentData,
+    projectIdNum,
     editMapCostId,
-    onAuthenticationSent 
+    onAuthenticationSent
 }: AuthenticationModalProps) {
     const { user } = useAuth();
-    
+
     const [currentModal, setCurrentModal] = useState('form');
     const [users, setUsers] = useState<User[]>([]);
     const [selectedChecker, setSelectedChecker] = useState<number | ''>('');
@@ -44,7 +44,7 @@ export default function AuthenticationModal({
     const fetchUsers = async () => {
         const token = localStorage.getItem('access_token')
         try {
-            const response = await fetch('http://213.199.53.33:8000/api/users/',{
+            const response = await fetch('http://213.199.53.33:8000/api/users/', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -93,11 +93,11 @@ export default function AuthenticationModal({
 
             const result = await response.json();
             console.log('Authentication sent successfully:', result);
-            
+
             setCurrentModal('details');
-            
+
             if (onAuthenticationSent) {
-                onAuthenticationSent();
+                onAuthenticationSent(result);
             }
         } catch (err) {
             console.error('Error sending authentication:', err);
@@ -176,7 +176,7 @@ export default function AuthenticationModal({
                                     चेक जाँच गर्ने व्यक्ति: <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <select 
+                                    <select
                                         value={selectedChecker}
                                         onChange={(e) => setSelectedChecker(Number(e.target.value) || '')}
                                         className="w-full p-3 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
@@ -197,7 +197,7 @@ export default function AuthenticationModal({
                                     स्वीकृत गर्ने व्यक्ति: <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <select 
+                                    <select
                                         value={selectedApprover}
                                         onChange={(e) => setSelectedApprover(Number(e.target.value) || '')}
                                         className="w-full p-3 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"

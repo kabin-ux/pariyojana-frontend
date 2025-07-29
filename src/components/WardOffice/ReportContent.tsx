@@ -11,6 +11,23 @@ interface ReportContentProps {
   activeTab: string;
 }
 
+interface ChartData {
+  budget_distribution: Array<{
+    label: string;
+    percentage: number;
+    value: number;
+  }>;
+  project_count_distribution: Array<{
+    label: string;
+    percentage: number;
+    value: number;
+  }>;
+}
+
+interface ChartDataResponse {
+  [key: string]: ChartData;
+}
+
 export const ReportContent = ({ activeTab }: ReportContentProps) => {
   const {
     wardLevelChart = {},
@@ -47,54 +64,50 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
 
   console.log(wardLevelChart)
 
-  let chartData = {};
+  let chartData: ChartData = { budget_distribution: [], project_count_distribution: [] };
   let reportTitle = '';
-  let excelLink = '';
-  let pdfLink = '';
+  let hasExcelLink = false;
+  let hasPdfLink = false;
 
   switch (activeTab) {
     case 'वडा परियोजना प्रविष्टी':
-      chartData = wardLevelChart;
+      chartData = wardLevelChart as ChartData;
       reportTitle = 'वडा परियोजना प्रविष्टी';
-      excelLink = wardLevelReport;
-      pdfLink = wardLevelReportPDF;
-      console.log('URLs:', { excelLink, pdfLink });
+      hasExcelLink = !!wardLevelReport;
+      hasPdfLink = !!wardLevelReportPDF;
       break;
     case 'नगर परियोजना प्रविष्टी':
-      chartData = municipalityLevelChart;
+      chartData = municipalityLevelChart as ChartData;
       reportTitle = 'नगर परियोजना प्रविष्टी';
-      excelLink = municipalityLevelReport;
-      pdfLink = municipalityLevelReportPDF;
+      hasExcelLink = !!municipalityLevelReport;
+      hasPdfLink = !!municipalityLevelReportPDF;
       break;
     case 'विषयगत समितिका परियोजना':
-      chartData = wardLevelThematicChart;
+      chartData = wardLevelThematicChart as ChartData;
       reportTitle = 'विषयगत समितिका परियोजना';
-      excelLink = wardLevelThematicReport;
-      pdfLink = wardLevelThematicReportPDF;
+      hasExcelLink = !!wardLevelThematicReport;
+      hasPdfLink = !!wardLevelThematicReportPDF;
       break;
     case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
-      chartData = prioritizedWardChart;
+      chartData = prioritizedWardChart as ChartData;
       reportTitle = 'वडा समितिले प्राथमिकरण गरिएको परियोजना';
-      excelLink = prioritizedWardReport;
-      pdfLink = prioritizedWardReportPDF;
+      hasExcelLink = !!prioritizedWardReport;
+      hasPdfLink = !!prioritizedWardReportPDF;
       break;
     case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
-      chartData = prioritizedWardThematicChart;
+      chartData = prioritizedWardThematicChart as ChartData;
       reportTitle = 'प्राथमिकरण भएका विषयगत समितिका परियोजना';
-      excelLink = prioritizedWardThematicReport;
-      pdfLink = prioritizedWardThematicReportPDF;
+      hasExcelLink = !!prioritizedWardThematicReport;
+      hasPdfLink = !!prioritizedWardThematicReportPDF;
       break;
     default:
-      chartData = {};
+      chartData = { budget_distribution: [], project_count_distribution: [] };
   }
 
   const { budget_distribution = [], project_count_distribution = [] } = chartData;
 
 
   if (activeTab && chartData) {
-    const topBudget = budget_distribution[0];
-    const topProject = project_count_distribution[0];
-
     return (
       <div>
         {/* Report Download Section */}
@@ -108,26 +121,26 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                 onClick={() => {
                   switch (activeTab) {
                     case 'वडा परियोजना प्रविष्टी':
-                      downloadWardLevelExcel(reportTitle);
+                      downloadWardLevelExcel();
                       break;
                     case 'नगर परियोजना प्रविष्टी':
-                      downloadMunicipalityLevelExcel(reportTitle);
+                      downloadMunicipalityLevelExcel();
                       break;
                     case 'विषयगत समितिका परियोजना':
-                      downloadWardLevelThematicExcel(reportTitle);
+                      downloadWardLevelThematicExcel();
                       break;
                     case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
-                      downloadPrioritizedWardExcel(reportTitle);
+                      downloadPrioritizedWardExcel();
                       break;
                     case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
-                      downloadPrioritizedWardThematicExcel(reportTitle);
+                      downloadPrioritizedWardThematicExcel();
                       break;
                     default:
                       break;
                   }
                 }}
-                disabled={!excelLink}
-                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${excelLink
+                disabled={!hasExcelLink}
+                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasExcelLink
                   ? 'hover:bg-gray-50 cursor-pointer'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
@@ -141,26 +154,26 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
                 onClick={() => {
                   switch (activeTab) {
                     case 'वडा परियोजना प्रविष्टी':
-                      downloadWardLevelPDF(reportTitle);
+                      downloadWardLevelPDF();
                       break;
                     case 'नगर परियोजना प्रविष्टी':
-                      downloadMunicipalityLevelPDF(reportTitle);
+                      downloadMunicipalityLevelPDF();
                       break;
                     case 'विषयगत समितिका परियोजना':
-                      downloadWardLevelThematicPDF(reportTitle);
+                      downloadWardLevelThematicPDF();
                       break;
                     case 'वडा समितिले प्राथमिकरण गरिएको परियोजना':
-                      downloadPrioritizedWardPDF(reportTitle);
+                      downloadPrioritizedWardPDF();
                       break;
                     case 'प्राथमिकरण भएका विषयगत समितिका परियोजना':
-                      downloadPrioritizedWardThematicPDF(reportTitle);
+                      downloadPrioritizedWardThematicPDF();
                       break;
                     default:
                       break;
                   }
                 }}
-                disabled={!pdfLink}
-                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${pdfLink
+                disabled={!hasPdfLink}
+                className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${hasPdfLink
                   ? 'hover:bg-gray-50 cursor-pointer'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
@@ -170,17 +183,6 @@ export const ReportContent = ({ activeTab }: ReportContentProps) => {
               </button>
             </div>
           </div>
-
-          {/* Debug info (remove in production) */}
-          {/* {process.env.NODE_ENV === 'development' && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                <strong>Debug Info:</strong><br />
-                Excel URL: {excelLink || 'Not available'}<br />
-                PDF URL: {pdfLink || 'Not available'}
-              </p>
-            </div>
-          )} */}
         </div>
 
         {/* Charts Section */}

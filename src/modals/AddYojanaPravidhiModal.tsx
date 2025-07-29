@@ -5,7 +5,7 @@ import { useSettings } from '../hooks/useSetting';
 
 interface Props {
   onClose: () => void;
-  type: string; // 'ward', 'province', 'federal', etc.
+  type: string | null; // 'ward', 'province', 'federal', etc.
 }
 
 const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
@@ -13,7 +13,6 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     plan_name: '',
     thematic_area: '',
     sub_area: '',
-    // project_level: '',
     expenditure_title: '',
     expenditure_center: '',
     proposed_amount: '',
@@ -28,8 +27,9 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     feasibility_consultant: '',
     detailed_study: '',
     environmental_study: '',
-    plan_type: type || '', // or fixed as "municipality_level"
-    project_level: ''
+    plan_type: type || '',
+    project_level: '',
+    description: '',
   });
 
 
@@ -45,13 +45,13 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
   const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
 
 
- const filteredsub_areas = sub_areas?.filter((sub_area: any) => {
-  if (!formData.thematic_area) return true;
-  const selectedThematicArea = thematicAreas?.find(
-    (area: any) => area.id.toString() === formData.thematic_area
-  );
-  return (sub_area as any).thematic_area === selectedThematicArea?.id;
-}) || [];
+  const filteredsub_areas = sub_areas?.filter((sub_area: any) => {
+    if (!formData.thematic_area) return true;
+    const selectedThematicArea = thematicAreas?.find(
+      (area: any) => area.id.toString() === formData.thematic_area
+    );
+    return (sub_area as any).thematic_area === selectedThematicArea?.id;
+  }) || [];
 
   console.log(filteredsub_areas)
   // Ward options with proper mapping
@@ -63,12 +63,13 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
   ];
-
-  const requiredFields = [
-    'plan_name', 'thematic_area', 'sub_area', 'project_level', 'gps_coordinate',
-    'expenditure_title', 'expenditure_center', 'proposed_amount', 'source',
-    'ward_no', 'feasibility_study', 'detailed_study', 'environmental_study'
-  ];
+  
+// Tell TS requiredFields contains keys of formData
+const requiredFields: (keyof FormDataType)[] = [
+  'plan_name', 'thematic_area', 'sub_area', 'project_level', 'gps_coordinate',
+  'expenditure_title', 'expenditure_center', 'proposed_amount', 'source',
+  'ward_no', 'feasibility_study', 'detailed_study', 'environmental_study'
+];
 
 
   const handleInputChange = (e: React.ChangeEvent<any>) => {
@@ -85,13 +86,15 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
       }));
     }
   };
+  type FormDataType = typeof formData;
 
   const validateForm = (): boolean => {
-    const newErrors: any = {};
+    const newErrors: Partial<Record<keyof FormDataType, boolean>> = {};
     let isValid = true;
 
-    requiredFields.forEach(field => {
-      if (!formData[field]) {
+    requiredFields.forEach((field) => {
+      const value = formData[field];
+      if (!value || value.toString().trim() === '') {
         newErrors[field] = true;
         isValid = false;
       }
@@ -119,7 +122,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
       return;
     }
 
-    const endpoint = apiMap[type];
+    const endpoint = apiMap[type || ''];
     if (!endpoint) {
       alert('अमान्य प्रकार! उचित API पत्ता लागेन।');
       return;
@@ -154,12 +157,12 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                 required
                 value={formData.fiscal_year}
                 onChange={handleInputChange}
-                name="fiscal_year" 
+                name="fiscal_year"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">आर्थिक वर्ष</option>
                 {fiscalYears.map(year => (
-                  <option key={year.id} value={year.id.toString()}>{year.year}</option>
+                  <option key={year.id} value={year.id.toString()}>{'year' in year && (year.year)}</option>
                 ))}
               </select>
             </div>            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1 cursor-pointer">

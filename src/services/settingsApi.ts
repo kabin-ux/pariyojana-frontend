@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { SettingsItem, ApiResponse } from '../types/settings';
+import type { SettingsItem, ApiResponse, SubThematicArea } from '../types/settings';
 
 const API_BASE_URL = 'http://213.199.53.33:8000/api/settings';
 
@@ -41,11 +41,23 @@ const getEndpoint = (tab: string): string => {
 // Generic CRUD operations
 export const settingsApi = {
   // Get all items for a tab
-  getAll: async (tab: string): Promise<SettingsItem[]> => {
+     getAll: async (tab: string): Promise<SettingsItem[]> => {
     const endpoint = getEndpoint(tab);
     try {
-      const response = await apiClient.get<ApiResponse<SettingsItem>>(`/${endpoint}/`);
-      return response.data || response.data as any; // Handle both paginated and non-paginated responses
+      const response = await apiClient.get<ApiResponse<SettingsItem> | SettingsItem[]>(`/${endpoint}/`);
+      
+      // Handle both response formats
+      if (Array.isArray(response.data)) {
+        // Direct array response
+        return response.data;
+      } else if (response.data.results) {
+        // Paginated response (ApiResponse)
+        return response.data.results;
+      } else if (response.data.data) {
+        // Alternative response format with data property
+        return Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+      }
+      return [];
     } catch (error) {
       console.error(`Error fetching ${endpoint}:`, error);
       throw error;
@@ -118,7 +130,7 @@ export const dependentDataApi = {
   // Get thematic areas for sub-area dropdown
   getThematicAreas: async () => {
     try {
-      const response = await apiClient.get<ApiResponse<any>>('/thematic-area/');
+      const response = await apiClient.get<ApiResponse<SettingsItem>>('/thematic-area/');
       return response.data.results || response.data as any;
     } catch (error) {
       console.error('Error fetching thematic areas:', error);
@@ -127,13 +139,14 @@ export const dependentDataApi = {
   },
 
   // Get sub-thematic areas for group dropdown
-  getSubThematicAreas: async () => {
-    try {
-      const response = await apiClient.get<ApiResponse<any>>('/sub-thematic-area/');
-      return response.data || response.data as any;
-    } catch (error) {
-      console.error('Error fetching sub-thematic areas:', error);
-      return [];
-    }
+getSubThematicAreas: async (): Promise<SubThematicArea[]> => {
+  try {
+    const response = await apiClient.get<ApiResponse<SubThematicArea>>('/sub-thematic-area/');
+    return response.data.results; // ✅ Use 'results' from the response
+  } catch (error) {
+    console.error('Error fetching sub-thematic areas:', error);
+    return [];
   }
+}
+
 };

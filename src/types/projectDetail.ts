@@ -43,6 +43,21 @@ export interface InitiationProcess {
   file?: string;
 }
 
+type PopulationBreakdown = {
+  female: number;
+  male: number;
+  other: number;
+};
+
+export type BeneficiaryData = {
+  familyCount: number;
+  totalPopulation: PopulationBreakdown;
+  indigenousCount: number;
+  dalitCount: number;
+  childrenPopulation: PopulationBreakdown;
+  otherCategoryPopulation: PopulationBreakdown;
+};
+
 export interface ConsumerCommitteeDetail {
   id: number;
   project: number;
@@ -69,6 +84,7 @@ export interface OfficialDetail {
 
 export interface MonitoringCommittee {
   id: number;
+  serial_no: number;
   project: number;
   position: string;
   name: string;
@@ -111,6 +127,17 @@ export interface ProjectAgreementDetail {
   public_cooperation_percentage?: number;
   work_start_date?: string;
   work_completion_date?: string;
+}
+
+export interface WorkTypeDetail {
+  id: number;
+  project: number;
+  committee_name?: string;
+  address?: string;
+  formation_date?: string;
+  representative_name?: string;
+  representative_position?: string;
+  contact_number?: string;
 }
 
 export interface Document {

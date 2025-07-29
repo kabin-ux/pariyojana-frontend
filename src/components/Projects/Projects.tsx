@@ -13,8 +13,9 @@ import Pagination from './Pagination';
 import ProjectsTable from './ProjectsTable';
 import SearchAndFilter from './SearchAndFilter';
 import ProjectsHeader from './ProjectHeader';
-import Breadcrumb from '../Breadcrumb';
 import ProjectDetail from '../ProjectDetails/ProjectDetail';
+import Breadcrumb from '../BreadCrumb';
+import type { ProjectSubmitPayload } from '../../types/project';
 
 interface ProjectsProps {
   onProjectSelect?: (projectId: string) => void;
@@ -92,7 +93,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     page: currentPage,
     search: searchTerm
   });
-
+  console.log("dataa", projects)
   // Ward options with proper mapping
   const wardOptions = [
     { value: 1, label: 'वडा नं. - १' },
@@ -191,22 +192,23 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     try {
       const submitData = {
         project_name: formData.project_name,
-        area: formData.area ? parseInt(formData.area) : null,
-        sub_area: formData.sub_area ? parseInt(formData.sub_area) : null,
-        project_level: formData.project_level ? parseInt(formData.project_level) : null,
-        expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : null,
-        expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : null,
-        budget: formData.budget ? parseFloat(formData.budget) : null,
-        source: formData.source ? parseInt(formData.source) : null,
+        area: formData.area ? parseInt(formData.area) : undefined,
+        sub_area: formData.sub_area ? parseInt(formData.sub_area) : undefined,
+        project_level: formData.project_level ? parseInt(formData.project_level) : undefined,
+        expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : undefined,
+        expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : undefined,
+        budget: formData.budget ? parseFloat(formData.budget) : undefined,
+        source: formData.source ? parseInt(formData.source) : undefined,
         operation_location: formData.operation_location,
-        ward_no: formData.ward_no ? parseInt(formData.ward_no) : null,
+        ward_no: formData.ward_no ? parseInt(formData.ward_no) : undefined,
         location_gps: formData.location_gps,
         outcome: formData.outcome,
-        unit: formData.unit ? parseInt(formData.unit) : null,
+        unit: formData.unit ? parseInt(formData.unit) : undefined,
         description: formData.description,
-        fiscal_year: formData.fiscal_year ? parseInt(formData.fiscal_year) : null,
-        status: 'not_started'
+        fiscal_year: formData.fiscal_year ? parseInt(formData.fiscal_year) : undefined,
+        status: 'not_started',
       };
+
 
       if (editingProjectId) {
         await projectApi.update(editingProjectId, submitData);
@@ -273,7 +275,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
     setIsImporting(true);
     const token = localStorage.getItem('access_token');
-    
+
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -305,7 +307,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const handleExport = async () => {
     setIsExporting(true);
     const token = localStorage.getItem('access_token');
-    
+
     try {
       const response = await axios.get(
         'http://127.0.0.1:8000/api/projects/projects/export/',

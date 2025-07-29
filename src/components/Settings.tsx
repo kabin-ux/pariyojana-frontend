@@ -54,7 +54,7 @@ const Settings: React.FC = () => {
     }
   };
 
-  const filteredData = data.filter(item => {
+  const filteredData = data?.filter(item => {
     const searchFields = [
       item.name?.toLowerCase() || '',
       (item as any).committee_name?.toLowerCase() || '', // Changed from 'committee'
@@ -340,7 +340,9 @@ const Settings: React.FC = () => {
         return (
           <>
             <td className="py-3 px-4 text-gray-900">{toNepaliNumber(index + 1)}</td>
-            <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.year)}</td>
+            {'year' in item && (
+              <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.year)}</td>
+            )}
             <td className="py-3 px-4">
               <ToggleSwitch
                 enabled={item.is_active}
@@ -505,7 +507,7 @@ const Settings: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ) : filteredData.length === 0 ? (
+                ) : filteredData?.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center">
                       <div className="flex flex-col items-center justify-center text-gray-500">
@@ -519,7 +521,7 @@ const Settings: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map((item, index) => (
+                  filteredData?.map((item, index) => (
                     <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                       {renderTableRow(item, index)}
                     </tr>
@@ -533,7 +535,7 @@ const Settings: React.FC = () => {
           <div className="flex items-center justify-center mt-6">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">
-                कुल: {filteredData.length} वटा
+                कुल: {filteredData?.length} वटा
               </span>
             </div>
           </div>

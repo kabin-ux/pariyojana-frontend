@@ -151,7 +151,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
 
         {isAuthenticationModalOpen && (
           <AuthenticationModal
-            onSave={onFileUpload}
+            // onSave={onFileUpload}
             onClose={() => {
               setAuthenticationModalOpen(false);
               setSelectedMapCostItem(null);

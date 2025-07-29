@@ -20,18 +20,18 @@ interface FiscalYear {
 interface FormData {
   company_name: string;
   address: string;
-  correspondenceAddress: string;
+  correspondence_address: string;
   contact_person: string;
   email: string;
   mobile_number: string;
-  telephone: string;
+  telephone_number: string;
   company_registration_number: string;
   pan_number: string;
-  has_registration_certificate: 'छ' | 'छैन' | '';
-  is_renewed: 'छ' | 'छैन' | '';
-  has_vat_pan_certificate: 'छ' | 'छैन' | '';
-  has_tax_clearance: 'छ' | 'छैन' | '';
-  has_license_copy: 'छ' | 'छैन' | '';
+  has_registration_certificate: boolean,
+  is_renewed: boolean,
+  has_vat_pan_certificate: boolean,
+  has_tax_clearance: boolean,
+  has_license_copy: boolean,
   goods_description: string;
   construction_description: string;
   consulting_description: string;

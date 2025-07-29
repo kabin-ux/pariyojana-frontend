@@ -14,6 +14,10 @@ interface InventoryData {
   tax_clearence: boolean;
   license_copy: boolean;
   inventory_document: string;
+  pan_file: string;
+  license_file: string;
+  tax_clearance_file: string;
+  registration_certificate_file: string;
   actions: string[];
 }
 
