@@ -34,6 +34,7 @@ const UserRow: React.FC<{
     toggleUserStatus: (userId: number, newStatus: boolean) => void;
     deleteUser: (userId: number) => void;
     getRoleColor: (role: string) => string;
+    handleResetPassword: (user: User) => void;
 }> = ({
     user,
     index,
@@ -41,8 +42,9 @@ const UserRow: React.FC<{
     setModalOpen,
     setEditMode,
     setViewMode,
-    setResetPasswordUser,
-    setShowPasswordModal,
+    // setResetPasswordUser,
+    // setShowPasswordModal,
+    handleResetPassword,
     toggleUserStatus,
     deleteUser,
     getRoleColor
@@ -138,11 +140,22 @@ const UserRow: React.FC<{
                                         <span>सम्पादन गर्नुहोस्</span>
                                     </button>
 
-                                    <button
+                                    {/* <button
                                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors cursor-pointer"
                                         onClick={() => {
                                             setResetPasswordUser(user);
                                             setShowPasswordModal(true);
+                                            setMenuOpen(false);
+                                        }}
+                                    >
+                                        <Key className="h-4 w-4 text-orange-600" />
+                                        <span>पासवर्ड रिसेट गर्नुहोस्</span>
+                                    </button> */}
+
+                                    <button
+                                        // ...existing props...
+                                        onClick={() => {
+                                            handleResetPassword(user);
                                             setMenuOpen(false);
                                         }}
                                     >
@@ -202,6 +215,15 @@ const UserRow: React.FC<{
         );
     };
 
+const getLoggedInUser = () => {
+    try {
+        const userStr = localStorage.getItem('user');
+        return userStr ? JSON.parse(userStr) : null;
+    } catch {
+        return null;
+    }
+};
+
 
 const UsersPage: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
@@ -216,7 +238,7 @@ const UsersPage: React.FC = () => {
     const [resetPasswordUser, setResetPasswordUser] = useState<User | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-
+    const loggedInUser = getLoggedInUser();
     const navigate = useNavigate();
 
     const fetchUsers = async () => {
@@ -277,12 +299,48 @@ const UsersPage: React.FC = () => {
         }
     };
 
+    const handleResetPassword = (user: User) => {
+        setResetPasswordUser({
+            ...user,
+            isSelf: loggedInUser && user.user_id === loggedInUser.user_id
+        });
+        setShowPasswordModal(true);
+    };
+
+    // const resetPassword = async () => {
+    //     if (!resetPasswordUser) return;
+
+    //     try {
+
+    //         const token = localStorage.getItem('access_token');
+    //         console.log("reset user:", resetPasswordUser)
+
+    //         const url = resetPasswordUser.isSelf
+    //             ? `http://213.199.53.33:8000/api/auth/reset-password/`
+    //             : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.id}/`;
+
+    //         await axios.post(
+    //             url,
+    //             { new_password: newPassword },
+    //             { headers: { Authorization: `Bearer ${token}` } }
+    //         );
+
+    //         toast.success('Password reset successfully!');
+    //     } catch (error) {
+    //         console.error('Error resetting password:', error);
+    //         toast.error('Error resetting password');
+    //     } finally {
+    //         setShowPasswordModal(false);
+    //         setNewPassword('');
+    //         setResetPasswordUser(null);
+    //     }
+    // };
+
     const resetPassword = async () => {
         if (!resetPasswordUser) return;
 
         try {
             const token = localStorage.getItem('access_token');
-
             const url = resetPasswordUser.isSelf
                 ? `http://213.199.53.33:8000/api/auth/reset-password/`
                 : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.user_id}/`;
@@ -464,6 +522,8 @@ const UsersPage: React.FC = () => {
                                             toggleUserStatus={toggleUserStatus}
                                             deleteUser={deleteUser}
                                             getRoleColor={getRoleColor}
+                                            handleResetPassword={handleResetPassword}
+
                                         />
                                     ))}
                                 </tbody>
