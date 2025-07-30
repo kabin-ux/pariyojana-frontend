@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Edit, Upload, FileCheck, Eye } from 'lucide-react';
 import { toNepaliNumber, formatBudget } from '../../utils/formatters';
 import ProjectAgreementModal from '../../modals/ProjectAgreementModal';
@@ -56,15 +56,69 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   const [selectedAgreementUploadItem, setSelectedAgreementUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
   const [selectedWorkUploadItem, setSelectedWorkUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
 
-  const [localUploadedAgreementFiles, setLocalUploadedAgreementFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
-  const [localUploadedWorkFiles, setLocalUploadedWorkFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
+  const [localUploadedAgreementFiles, setLocalUploadedAgreementFiles] = useState<{ [key: number]: { file: File; type: string; file_url?: string } }>({});
+  const [localUploadedWorkFiles, setLocalUploadedWorkFiles] = useState<{ [key: number]: { file: File; type: string, file_url?: string } }>({});
 
   const [previewAgreementImage, setPreviewAgreementImage] = useState<{ url: string; title: string } | null>(null);
   const [previewWorkImage, setPreviewWorkImage] = useState<{ url: string; title: string } | null>(null);
 
+  const [fetchedAgreementFiles, setFetchedAgreementFiles] = useState<any[]>([]);
+  const [fetchedWorkFiles, setFetchedWorkFiles] = useState<any[]>([]);
+
   const today = new Date();
   const bsDate = BS.ADToBS(today);
   const agreementDetail = projectAgreementDetails[0];
+
+  const fetchAgreementFiles = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await axios.get(
+        `http://213.199.53.33:8000/api/projects/project-aggrement/${project.serial_number}/`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      setFetchedAgreementFiles(response.data);
+    } catch (error) {
+      console.error('Failed to fetch agreement files:', error);
+      toast.error('सम्झौता फाइलहरू लोड गर्न सकिएन');
+    }
+  };
+
+  const fetchWorkFiles = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await axios.get(
+        `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      setFetchedWorkFiles(response.data);
+    } catch (error) {
+      console.error('Failed to fetch work files:', error);
+      toast.error('कार्यादेश फाइलहरू लोड गर्न सकिएन');
+    }
+  };
+
+  useEffect(() => {
+    fetchAgreementFiles();
+    fetchWorkFiles();
+  }, [project.serial_number]);
 
   const handleAgreementUploadClick = (serialNo: number, title: string) => {
     setSelectedAgreementUploadItem({ serial_no: serialNo, title });
@@ -89,7 +143,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       await axios.post(
-        `http://213.199.53.33:8000/api/projects/project-aggrement/upload/`,
+        `http://213.199.53.33:8000/api/projects/project-aggrement/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -114,6 +168,8 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+      fetchAgreementFiles(); // Refresh the agreement files list
+
       setIsAgreementFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -132,10 +188,9 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       const formData = new FormData();
       formData.append('file', file);
       formData.append('serial_no', project.serial_number.toString());
-      formData.append('document_type', serialNo.toString());
 
       await axios.post(
-        `http://213.199.53.33:8000/api/projects/project-plan-tracker/upload/`,
+        `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -160,6 +215,8 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+      fetchWorkFiles(); // Refresh the work files list
+
       setIsWorkFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -169,19 +226,45 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   };
 
   const handleAgreementPreviewImage = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] || uploadedProjectAgreementFiles[serialNo];
-    if (uploadedFile && uploadedFile.type === 'image') {
+    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
+      uploadedProjectAgreementFiles[serialNo] ||
+      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
+
+    if (!uploadedFile) return;
+
+    const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      setPreviewAgreementImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
+      return;
+    }
+
+    // For local uploads
+    if (uploadedFile.type === 'image') {
       const url = URL.createObjectURL(uploadedFile.file);
-      const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
       setPreviewAgreementImage({ url, title: item?.title || 'Image Preview' });
     }
   };
 
   const handleWorkPreviewImage = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] || uploadedProjectAgreementWorkFiles[serialNo];
-    if (uploadedFile && uploadedFile.type === 'image') {
+    const uploadedFile = localUploadedWorkFiles[serialNo] ||
+      uploadedProjectAgreementWorkFiles[serialNo] ||
+      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
+
+    if (!uploadedFile) return;
+
+    const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      setPreviewWorkImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
+      return;
+    }
+
+    // For local uploads
+    if (uploadedFile.type === 'image') {
       const url = URL.createObjectURL(uploadedFile.file);
-      const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
       setPreviewWorkImage({ url, title: item?.title || 'Image Preview' });
     }
   };
@@ -200,40 +283,64 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-  // Separate the status check functions for agreement and work
   const getAgreementUploadStatus = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] || uploadedProjectAgreementFiles[serialNo];
+    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
+      uploadedProjectAgreementFiles[serialNo] ||
+      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
     return uploadedFile ? 'अपलोड गरिएको' : '–';
   };
 
   const getWorkUploadStatus = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] || uploadedProjectAgreementWorkFiles[serialNo];
+    const uploadedFile = localUploadedWorkFiles[serialNo] ||
+      uploadedProjectAgreementWorkFiles[serialNo] ||
+      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
     return uploadedFile ? 'अपलोड गरिएको' : '–';
   };
 
-  // Separate the isFileUploaded checks
   const isAgreementFileUploaded = (serialNo: number) => {
-    const localFile = localUploadedAgreementFiles[serialNo];
-    const propFile = uploadedProjectAgreementFiles[serialNo];
-
-    return !!(localFile || propFile);
+    return !!(localUploadedAgreementFiles[serialNo] ||
+      uploadedProjectAgreementFiles[serialNo] ||
+      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString()));
   };
 
   const isWorkFileUploaded = (serialNo: number) => {
-    const localFile = localUploadedWorkFiles[serialNo];
-    const propFile = uploadedProjectAgreementWorkFiles[serialNo];
-
-    return !!(localFile || propFile);
+    return !!(localUploadedWorkFiles[serialNo] ||
+      uploadedProjectAgreementWorkFiles[serialNo] ||
+      fetchedWorkFiles.find(file => file.document_type === serialNo.toString()));
   };
 
   const getAgreementFileType = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] || uploadedProjectAgreementFiles[serialNo];
-    return uploadedFile?.type || null;
+    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
+      uploadedProjectAgreementFiles[serialNo] ||
+      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
+
+    if (!uploadedFile) return null;
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      const extension = uploadedFile.file_url.split('.').pop()?.toLowerCase();
+      return extension === 'pdf' ? 'pdf' : 'image';
+    }
+
+    // For local uploads
+    return uploadedFile.type;
   };
 
   const getWorkFileType = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] || uploadedProjectAgreementWorkFiles[serialNo];
-    return uploadedFile?.type || null;
+    const uploadedFile = localUploadedWorkFiles[serialNo] ||
+      uploadedProjectAgreementWorkFiles[serialNo] ||
+      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
+
+    if (!uploadedFile) return null;
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      const extension = uploadedFile.file_url.split('.').pop()?.toLowerCase();
+      return extension === 'pdf' ? 'pdf' : 'image';
+    }
+
+    // For local uploads
+    return uploadedFile.type;
   };
 
   return (

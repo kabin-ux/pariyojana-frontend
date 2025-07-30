@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Upload, DownloadCloud, FileMinusIcon, Trash2, Eye } from 'lucide-react';
 import { toNepaliNumber } from '../../utils/formatters';
 import ConsumerCommitteeDialog from '../../modals/ConsumerCommitteeDialog';
@@ -64,8 +64,9 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [selectedUploadItem, setSelectedUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
-  const [localUploadedFiles, setLocalUploadedFiles] = useState<{ [key: number]: { file: File; type: string } }>({});
+  const [localUploadedFiles, setLocalUploadedFiles] = useState<{ [key: number]: { file: File; type: string, file_url?: string } }>({});
   const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+  const [uploadedFilesData, setUploadedFilesData] = useState<any[]>([]);
 
   const today = new Date();
   const bsDate = BS.ADToBS(today);
@@ -112,6 +113,32 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
     citizenship_back: member.citizenship_back,
   }));
 
+  const fetchUploadedFiles = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await axios.get(
+        `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUploadedFilesData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch uploaded files:', error);
+      // toast.error('अपलोड गरिएका फाइलहरू लोड गर्न सकिएन');
+    }
+  };
+
+  useEffect(() => {
+    fetchUploadedFiles();
+  }, [project.serial_number]);
   const handleAdd = () => {
     setIsDialogOpen(true);
   };
@@ -126,55 +153,69 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   };
 
   const handleFileUpload = async (serialNo: number, file: File) => {
-    try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
-
-      const formData = new FormData();
-      formData.append('serial_no', serialNo.toString());
-      formData.append('file', file);
-
-      await axios.post(
-        `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
-      toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-
-      // Call the parent's onFileUpload if provided
-      if (onFileUpload) {
-        onFileUpload(serialNo, file);
-      }
-
-      // Update local state to track uploaded files
-      const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-      setLocalUploadedFiles(prev => ({
-        ...prev,
-        [serialNo]: { file, type: fileType }
-      }));
-    } catch (error) {
-      console.error('File upload failed:', error);
-      toast.error('फाइल अपलोड गर्न सकिएन');
-      throw error;
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('Authentication token not found');
     }
-  };
 
-  const handlePreviewImage = (serialNo: number) => {
-    const uploadedFile = localUploadedFiles[serialNo] || uploadedFiles[serialNo];
-    if (uploadedFile && uploadedFile.type === 'image') {
-      const url = URL.createObjectURL(uploadedFile.file);
-      const item = CONSUMER_COMMITTEE_TITLES.find(item => item.serial_no === serialNo);
-      setPreviewImage({ url, title: item?.title || 'Image Preview' });
+    const formData = new FormData();
+    formData.append('serial_no', serialNo.toString());
+    formData.append('file', file);
+
+    await axios.post(
+      `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+    fetchUploadedFiles(); // Refresh the uploaded files list
+
+    // Call the parent's onFileUpload if provided
+    if (onFileUpload) {
+      onFileUpload(serialNo, file);
     }
-  };
+
+    // Update local state to track uploaded files
+    const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+    setLocalUploadedFiles(prev => ({
+      ...prev,
+      [serialNo]: { file, type: fileType }
+    }));
+  } catch (error) {
+    console.error('File upload failed:', error);
+    toast.error('फाइल अपलोड गर्न सकिएन');
+    throw error;
+  }
+};
+
+ const handlePreviewImage = (serialNo: number) => {
+  const uploadedFile = localUploadedFiles[serialNo] || 
+                      uploadedFiles[serialNo] || 
+                      uploadedFilesData.find(file => file.serial_no === serialNo);
+  
+  if (!uploadedFile) return;
+
+  const item = CONSUMER_COMMITTEE_TITLES.find(item => item.serial_no === serialNo);
+  
+  // For API-fetched files
+  if (uploadedFile.file_url) {
+    setPreviewImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
+    return;
+  }
+  
+  // For local uploads
+  if (uploadedFile.type === 'image') {
+    const url = URL.createObjectURL(uploadedFile.file);
+    setPreviewImage({ url, title: item?.title || 'Image Preview' });
+  }
+};
 
   const closePreview = () => {
     if (previewImage) {
@@ -184,17 +225,33 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   };
 
   const getUploadStatus = (serialNo: number) => {
-    const uploadedFile = localUploadedFiles[serialNo] || uploadedFiles[serialNo];
+    const uploadedFile = localUploadedFiles[serialNo] ||
+      uploadedFiles[serialNo] ||
+      uploadedFilesData.find(file => file.serial_no === serialNo);
     return uploadedFile ? 'अपलोड गरिएको' : '–';
   };
 
   const isFileUploaded = (serialNo: number) => {
-    return !!(localUploadedFiles[serialNo] || uploadedFiles[serialNo]);
+    return !!(localUploadedFiles[serialNo] ||
+      uploadedFiles[serialNo] ||
+      uploadedFilesData.find(file => file.serial_no === serialNo));
   };
 
   const getFileType = (serialNo: number) => {
-    const uploadedFile = localUploadedFiles[serialNo] || uploadedFiles[serialNo];
-    return uploadedFile?.type || null;
+    const uploadedFile = localUploadedFiles[serialNo] ||
+      uploadedFiles[serialNo] ||
+      uploadedFilesData.find(file => file.serial_no === serialNo);
+
+    if (!uploadedFile) return null;
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      const extension = uploadedFile.file_url.split('.').pop()?.toLowerCase();
+      return extension === 'pdf' ? 'pdf' : 'image';
+    }
+
+    // For local uploads
+    return uploadedFile.type;
   };
 
   return (
