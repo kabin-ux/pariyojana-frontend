@@ -1,4 +1,5 @@
 import { Edit } from "lucide-react";
+import { formatWardNumber } from "../../utils/formatters";
 
 interface MunicipalityPrideTableRowProps {
     activeTab: string,
@@ -18,7 +19,7 @@ export const MunicipalityPrideTableRow = ({ activeTab, project, onRecommend, onE
         <td className="py-3 px-4 text-gray-900">{project.source.name}</td>
         <td className="py-3 px-4 text-gray-900">{project.expenditure_center.name}</td>
         <td className="py-3 px-4 text-gray-900">{project.budget}</td>
-        <td className="py-3 px-4 text-gray-900">{project.ward_no}</td>
+        <td className="py-3 px-4 text-gray-900">{formatWardNumber(project.ward_no)}</td>
         <td className="py-3 px-4 text-gray-900">{project.status}</td>
         <td className="py-3 px-4 text-gray-900">{project.priority_no}</td>
         <td className="py-3 px-4 text-gray-900">

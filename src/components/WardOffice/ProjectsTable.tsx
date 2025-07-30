@@ -4,6 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditProjectModal from '../../modals/EditProjectsModal';
+import { formatWardNumber } from '../../utils/formatters';
 
 // interface WardData {
 //   id: number;
@@ -158,7 +159,7 @@ export const ProjectsTable = ({
                   <td className="py-3 px-4 text-sm text-gray-800">{item.source.name || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.expenditure_center.name || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.budget || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.ward_no || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{formatWardNumber(item.ward_no) || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.status || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.priority_no || '-'}</td>
                   <td className="py-3 px-4">

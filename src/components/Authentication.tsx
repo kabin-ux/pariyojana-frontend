@@ -7,6 +7,7 @@ interface AuthDocument {
   id: number;
   source_id: number;
   file_title: string;
+  file_title_display: string;
   uploader_role: string;
   status: string;
   status_nepali: string;
@@ -124,7 +125,7 @@ const Authentication: React.FC = () => {
   const needsApproval = selectedDocument?.status === 'checked';
 
   const filteredData = authenticationDocuments.filter(item =>
-    item.file_title.toLowerCase().includes(searchTerm.toLowerCase())
+    item.file_title_display.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
     <main className="flex-1 p-6">
@@ -182,7 +183,7 @@ const Authentication: React.FC = () => {
               <div className="space-y-4 mb-6">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">फाइल शीर्षक:</p>
-                  <p className="text-gray-900 font-medium">{selectedDocument.file_title}</p>
+                  <p className="text-gray-900 font-medium">{selectedDocument.file_title_display}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">स्थिति:</p>
@@ -255,7 +256,7 @@ const Authentication: React.FC = () => {
               {filteredData.map((item, index) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-sm text-gray-900">{index + 1}</td>
-                  <td className="py-3 px-4 text-sm text-gray-900">{item.file_title}</td>
+                  <td className="py-3 px-4 text-sm text-gray-900">{item.file_title_display}</td>
                   <td className="py-3 px-4 text-sm text-gray-900">{item.uploader_role}</td>
                   <td className="py-3 px-4">
                     <span

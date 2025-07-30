@@ -1,4 +1,5 @@
 import { Edit } from "lucide-react";
+import { formatWardNumber } from "../../utils/formatters";
 
 interface BudgetCommitteeProps {
     activeTab: string;
@@ -47,7 +48,7 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend, onEdit 
                             <td className="py-3 px-4 text-sm text-gray-800">{project.source.name || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.expenditure_center.name || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.budget || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-800">{project.ward_no || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{formatWardNumber(project.ward_no) || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.status || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.priority_no || '-'}</td>
                             <td className="py-3 px-4 space-x-2">

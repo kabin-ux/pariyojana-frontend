@@ -1,4 +1,5 @@
 import { Edit } from "lucide-react";
+import { formatWardNumber } from "../../utils/formatters";
 
 interface SubjectCommitteeTableRowProps {
   item: any;
@@ -27,7 +28,7 @@ export const SubjectCommitteeTableRow = ({
     <td className="py-3 px-4">{item.source.name || '-'}</td>
     <td className="py-3 px-4">{item.expenditure_center.name || '-'}</td>
     <td className="py-3 px-4">{item.budget || '-'}</td>
-    <td className="py-3 px-4">{item.ward_no || '-'}</td>
+    <td className="py-3 px-4">{formatWardNumber(item.ward_no) || '-'}</td>
     <td className="py-3 px-4">{item.status || '-'}</td>
     <td className="py-3 px-4">{item.priority_no || '-'}</td>
     <td className="py-3 px-4">

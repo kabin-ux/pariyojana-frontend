@@ -1,3 +1,5 @@
+import { formatWardNumber } from "../../utils/formatters";
+
 interface Project {
     id: number;
     plan_name: string;
@@ -6,7 +8,7 @@ interface Project {
     source: string;
     expenditure_center: string;
     budget: string;
-    ward_no: string;
+    ward_no: number[];
     status: string;
     priority_no: number;
 }
@@ -89,7 +91,7 @@ const TableRow: React.FC<{ item: Project; activeTab: string; onRecommend: (id: n
         <td className="py-3 px-4 text-gray-900">{item.source}</td>
         <td className="py-3 px-4 text-gray-900">{item.expenditure_center}</td>
         <td className="py-3 px-4 text-gray-900">रु {item.budget}</td>
-        <td className="py-3 px-4 text-gray-900">{item.ward_no}</td>
+        <td className="py-3 px-4 text-gray-900">{formatWardNumber(item.ward_no)}</td>
         <td className="py-3 px-4">
             <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
                 {item.status}

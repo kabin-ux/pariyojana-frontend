@@ -12,6 +12,8 @@
 //   priority_no: number;
 // }
 
+import { formatWardNumber } from "../../utils/formatters";
+
 interface MunicipalOfficeTableProps {
   activeTab: string;
   data: any[];
@@ -58,7 +60,7 @@ const MunicipalOfficeTable: React.FC<MunicipalOfficeTableProps> = ({ activeTab, 
                   <td className="py-3 px-4 text-gray-900">{item.source}</td>
                   <td className="py-3 px-4 text-gray-900">{item.expenditure_center}</td>
                   <td className="py-3 px-4 text-gray-900">रु {item.budget}</td>
-                  <td className="py-3 px-4 text-gray-900">{item.ward_no}</td>
+                  <td className="py-3 px-4 text-gray-900">{formatWardNumber(item.ward_no)}</td>
                   <td className="py-3 px-4">
                     <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
                       {item.status}
