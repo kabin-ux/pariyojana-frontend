@@ -2,10 +2,34 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import { useSettings } from '../hooks/useSetting';
+import toast from 'react-hot-toast';
 
 interface Props {
   onClose: () => void;
   type: string | null; // 'ward', 'province', 'federal', etc.
+}
+
+interface FormData {
+  plan_name: string;
+  thematic_area: string;
+  sub_area: string;
+  expenditure_title: string;
+  expenditure_center: string;
+  proposed_amount: string;
+  source: string;
+  ward_no: number[];
+  location: string;
+  gps_coordinate: string;
+  expected_result: string;
+  unit: string;
+  fiscal_year: string;
+  feasibility_study: string;
+  feasibility_consultant: string;
+  detailed_study: string;
+  environmental_study: string;
+  plan_type: string;
+  project_level: string;
+  description: string;
 }
 
 const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
@@ -17,7 +41,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     expenditure_center: '',
     proposed_amount: '',
     source: '',
-    ward_no: '',
+    ward_no: [] as number[], // Explicitly type as number[]
     location: '',
     gps_coordinate: '',
     expected_result: '',
@@ -33,8 +57,9 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
   });
 
 
-  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
-  // Fetch dynamic dropdown data
+  const [errors, setErrors] = useState<Record<keyof FormData, boolean>>(
+    {} as Record<keyof FormData, boolean>
+  );  // Fetch dynamic dropdown data
   const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
   const { data: sub_areas } = useSettings('उप-क्षेत्र', true);
   const { data: projectLevels } = useSettings('योजनाको स्तर', true);
@@ -63,44 +88,65 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
   ];
-  
-// Tell TS requiredFields contains keys of formData
-const requiredFields: (keyof FormDataType)[] = [
-  'plan_name', 'thematic_area', 'sub_area', 'project_level', 'gps_coordinate',
-  'expenditure_title', 'expenditure_center', 'proposed_amount', 'source',
-  'ward_no', 'feasibility_study', 'detailed_study', 'environmental_study'
-];
+
+  // Tell TS requiredFields contains keys of formData
+  const requiredFields: (keyof FormDataType)[] = [
+    'plan_name', 'thematic_area', 'sub_area', 'project_level', 'gps_coordinate',
+    'expenditure_title', 'expenditure_center', 'proposed_amount', 'source',
+    'ward_no', 'feasibility_study', 'detailed_study', 'environmental_study'
+  ];
 
 
-  const handleInputChange = (e: React.ChangeEvent<any>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
 
-    if (errors[name]) {
+    if (name === 'ward_no' && e.target instanceof HTMLSelectElement) {
+      const options = e.target.options;
+      const selectedValues: number[] = [];
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          selectedValues.push(Number(options[i].value));
+        }
+      }
+      setFormData(prev => ({
+        ...prev,
+        ward_no: selectedValues
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+
+    if (errors[name as keyof FormData]) {
       setErrors(prev => ({
         ...prev,
         [name]: false
       }));
     }
   };
+
   type FormDataType = typeof formData;
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof FormDataType, boolean>> = {};
+    const newErrors: Partial<Record<keyof FormData, boolean>> = {};
     let isValid = true;
 
     requiredFields.forEach((field) => {
       const value = formData[field];
-      if (!value || value.toString().trim() === '') {
+      if (field === 'ward_no') {
+        if (!value || value.length === 0) {
+          newErrors[field] = true;
+          isValid = false;
+        }
+      } else if (!value || value.toString().trim() === '') {
         newErrors[field] = true;
         isValid = false;
       }
     });
 
-    setErrors(newErrors);
+    setErrors(newErrors as Record<keyof FormData, boolean>);
     return isValid;
   };
 
@@ -115,30 +161,33 @@ const requiredFields: (keyof FormDataType)[] = [
   };
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('access_token')
+    const token = localStorage.getItem('access_token');
     if (!validateForm()) {
-      console.log(formData)
-      alert('कृपया सबै आवश्यक फिल्डहरू भर्नुहोस्।');
+      console.log(formData);
+      toast.error('कृपया सबै आवश्यक फिल्डहरू भर्नुहोस्।');
       return;
     }
 
     const endpoint = apiMap[type || ''];
     if (!endpoint) {
-      alert('अमान्य प्रकार! उचित API पत्ता लागेन।');
+      toast.error('अमान्य प्रकार! उचित API पत्ता लागेन।');
       return;
     }
 
     try {
-      await axios.post(`http://213.199.53.33:8000${endpoint}`, formData, {
+      await axios.post(`http://213.199.53.33:8000${endpoint}`, {
+        ...formData,
+        ward_no: formData.ward_no,
+      }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      alert('योजना सफलतापूर्वक थपियो!');
-      onClose(); // Close modal
+      toast.success('योजना सफलतापूर्वक थपियो!');
+      onClose();
     } catch (error) {
       console.error('API Error:', error);
-      alert('योजना थप्न असफल भयो।');
+      toast.error('योजना थप्न असफल भयो।');
     }
   };
 
@@ -184,7 +233,7 @@ const requiredFields: (keyof FormDataType)[] = [
               value={formData.plan_name}
               onChange={handleInputChange}
               placeholder="योजना तथा कार्यक्रमको नाम"
-              className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.projectName ? 'border-red-500' : 'border-gray-300'
+              className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.plan_name ? 'border-red-500' : 'border-gray-300'
                 }`}
             />
           </div>
@@ -237,7 +286,7 @@ const requiredFields: (keyof FormDataType)[] = [
                 name="project_level"
                 value={formData.project_level}
                 onChange={handleInputChange}
-                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.plan_level ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.project_level ? 'border-red-500' : 'border-gray-300'}`}
               >
                 <option value="">योजनाको स्तर</option>
                 {projectLevels?.map((item: any) => (
@@ -346,15 +395,15 @@ const requiredFields: (keyof FormDataType)[] = [
               </label>
               <select
                 name="ward_no"
-                value={formData.ward_no}
+                multiple
+                value={formData.ward_no.map(String)}
                 onChange={handleInputChange}
-                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.ward ? 'border-red-500' : 'border-gray-300'
+                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.ward_no ? 'border-red-500' : 'border-gray-300'
                   }`}
               >
-                <option value="">वडा</option>
-                {wardOptions?.map((item: any) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
+                {wardOptions.map(ward => (
+                  <option key={ward.value} value={ward.value}>
+                    {ward.label}
                   </option>
                 ))}
               </select>

@@ -46,7 +46,7 @@ export interface Project {
   source: number;
   expenditure_center: number;
   budget: number;
-  ward_no: number;
+  ward_no: string[]; // Changed from string to string[]
   status: string;
 }
 

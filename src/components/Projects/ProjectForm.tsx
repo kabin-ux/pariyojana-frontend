@@ -11,7 +11,7 @@ interface NewProjectForm {
   budget: string;
   source: string;
   operation_location: string;
-  ward_no: string;
+  ward_no: number[]; // Changed from string to string[]
   location_gps: string;
   outcome: string;
   unit: string;
@@ -37,6 +37,7 @@ interface ProjectFormProps {
   onInputChange: (field: keyof NewProjectForm, value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
+  onWardNoChange: (wards: number[]) => void; // Add this new prop
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({
@@ -55,7 +56,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   filteredsub_areas,
   onInputChange,
   onSubmit,
-  onCancel
+  onCancel,
+  onWardNoChange
 }) => {
   if (!isOpen) return null;
 
@@ -246,20 +248,39 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                वडा नं. <span className="text-red-500">*</span>
+                वडा नं.
               </label>
               <select
-                required
-                value={formData.ward_no}
-                onChange={(e) => onInputChange('ward_no', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                multiple
+                value={formData.ward_no.map(String)} // Convert numbers to strings for select
+                onChange={(e) => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, option =>
+                    Number(option.value) // Convert back to number
+                  );
+                  onWardNoChange(selectedOptions);
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-auto min-h-[42px]"
               >
-                <option value="">वडा नं.</option>
-                {wardOptions.map(option => (
-                  <option key={option.value} value={option.value.toString()}>{option.label}</option>
+                {wardOptions.map(ward => (
+                  <option key={ward.value} value={ward.value.toString()}>
+                    {ward.label}
+                  </option>
                 ))}
               </select>
+              {formData.ward_no.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {formData.ward_no.map(ward => (
+                    <span
+                      key={ward}
+                      className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                    >
+                      {wardOptions.find(w => w.value === ward)?.label || ward}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
+
           </div>
 
           {/* Row 4: GPS, Expected Result, Unit */}

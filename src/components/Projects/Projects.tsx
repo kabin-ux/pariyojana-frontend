@@ -30,7 +30,7 @@ interface NewProjectForm {
   budget: string;
   source: string;
   operation_location: string;
-  ward_no: string;
+  ward_no: number[]; // Changed from string to string[]
   location_gps: string;
   outcome: string;
   unit: string;
@@ -61,7 +61,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     budget: '',
     source: '',
     operation_location: '',
-    ward_no: '',
+    ward_no: [], // Initialize as empty array
     location_gps: '',
     outcome: '',
     unit: '',
@@ -138,7 +138,9 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         budget: projectToEdit.budget?.toString() || '',
         source: projectToEdit.source?.toString() || '',
         operation_location: projectToEdit.operation_location || '',
-        ward_no: projectToEdit.ward_no?.toString() || '',
+        ward_no: Array.isArray(projectToEdit.ward_no)
+          ? projectToEdit.ward_no.map(Number) // Convert to array of numbers
+          : [Number(projectToEdit.ward_no)], // Handle single value       
         location_gps: projectToEdit.location_gps || '',
         outcome: projectToEdit.outcome || '',
         unit: projectToEdit.unit?.toString() || '',
@@ -184,6 +186,10 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     });
   };
 
+  const handleWardNoChange = (selectedWards: number[]) => {
+    setFormData(prev => ({ ...prev, ward_no: selectedWards }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -199,7 +205,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         budget: formData.budget ? parseFloat(formData.budget) : undefined,
         source: formData.source ? parseInt(formData.source) : undefined,
         operation_location: formData.operation_location,
-        ward_no: formData.ward_no ? parseInt(formData.ward_no) : undefined,
+        ward_no: formData.ward_no, // Already numbers, no conversion needed
         location_gps: formData.location_gps,
         outcome: formData.outcome,
         unit: formData.unit ? parseInt(formData.unit) : undefined,
@@ -239,7 +245,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       budget: '',
       source: '',
       operation_location: '',
-      ward_no: '',
+      ward_no: [], // Initialize as empty array
       location_gps: '',
       outcome: '',
       unit: '',
@@ -279,7 +285,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-       await axios.post(
+      await axios.post(
         'http://213.199.53.33:8000/api/projects/projects/import_excel/',
         formData,
         {
@@ -425,6 +431,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         onInputChange={handleInputChange}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
+        onWardNoChange={handleWardNoChange}
       />
 
       <ImportDialog

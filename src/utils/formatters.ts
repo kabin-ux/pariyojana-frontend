@@ -18,15 +18,23 @@ export const toNepaliNumber = (num: number | string): string => {
   return num?.toString().split('').map(d => (/\d/.test(d) ? nepaliDigits[+d] : d)).join('');
 };
 
-export const formatWardNumber = (wardNo: number | undefined): string => {
-  if (!wardNo) return 'N/A';
-  
+export const formatWardNumber = (wardNo: number | number[] | undefined): string => {
+  if (!wardNo || (Array.isArray(wardNo) && wardNo.length === 0)) return 'N/A';
+
   const nepaliNumbers = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-  const wardStr = wardNo.toString();
-  const nepaliWard = wardStr.split('').map(digit => nepaliNumbers[parseInt(digit)]).join('');
-  
-  return `वडा नं. - ${nepaliWard}`;
+
+  // Helper to convert a number to Nepali digits
+  const toNepali = (num: number) =>
+    num.toString().split('').map(digit => nepaliNumbers[parseInt(digit)]).join('');
+
+  if (Array.isArray(wardNo)) {
+    const formatted = wardNo.map(w => `वडा नं. - ${toNepali(w)}`);
+    return formatted.join(', ');
+  }
+
+  return `वडा नं. - ${toNepali(wardNo)}`;
 };
+
 
 export const formatStatus = (status: string): string => {
   const statusMap: Record<string, string> = {

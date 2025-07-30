@@ -10,7 +10,7 @@ export interface Project {
   fiscal_year: number;
   unit: number;
   budget: number;
-  ward_no: number;
+  ward_no: number[]; // Changed from string to string[]
   status: string;
   location: string | null;
   location_gps: string;
