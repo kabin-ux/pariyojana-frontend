@@ -31,13 +31,12 @@ type InputField = {
 
 const inputFields: InputField[] = [
   { label: 'नाम *', name: 'full_name', required: true },
-  { label: 'थर', name: 'last_name' },
   { label: 'इमेल *', name: 'email', type: 'email', required: true },
   { label: 'फोन नम्बर *', name: 'phone', required: true },
   { label: 'पद', name: 'position' },
-  { label: 'महाशाखा', name: 'mahashakha' },
-  { label: 'शाखा', name: 'shakha' },
-  { label: 'रा.प्र.स्था.', name: 'ra_pr_stah' },
+  { label: 'महाशाखा', name: 'department' },
+  { label: 'शाखा', name: 'section' },
+  { label: 'रा.प्र.स्था.', name: 'administrative_level' },
 ];
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
@@ -50,43 +49,40 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<Omit<User, 'user_id' | 'is_active' | 'isSelf'>>({
     full_name: '',
-    last_name: '',
     email: '',
     phone: '',
     role: '' as UserRole,
     ward_no: '',
     position: '',
-    mahashakha: '',
-    shakha: '',
-    ra_pr_stah: '',
+    department: '',
+    section: '',
+    administrative_level: '',
   });
 
   useEffect(() => {
     if (user) {
       setFormData({
         full_name: user.full_name ?? '',
-        last_name: user.last_name ?? '',
         email: user.email ?? '',
         phone: user.phone ?? '',
         role: user.role ?? '' as UserRole,
         ward_no: user.ward_no ?? '',
         position: user.position ?? '',
-        mahashakha: user.mahashakha ?? '',
-        shakha: user.shakha ?? '',
-        ra_pr_stah: user.ra_pr_stah ?? '',
+        department: user.department ?? '',
+        section: user.section ?? '',
+        administrative_level: user.administrative_level ?? '',
       });
     } else {
       setFormData({
         full_name: '',
-        last_name: '',
         email: '',
         phone: '',
         role: '' as UserRole,
         ward_no: '',
         position: '',
-        mahashakha: '',
-        shakha: '',
-        ra_pr_stah: '',
+        department: '',
+        section: '',
+        administrative_level: '',
       });
     }
   }, [user]);

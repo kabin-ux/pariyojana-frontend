@@ -343,7 +343,7 @@ const UsersPage: React.FC = () => {
             const token = localStorage.getItem('access_token');
             const url = resetPasswordUser.isSelf
                 ? `http://213.199.53.33:8000/api/auth/reset-password/`
-                : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.user_id}/`;
+                : `http://213.199.53.33:8000/api/auth/reset-password/${resetPasswordUser.id}/`;
 
             await axios.post(
                 url,

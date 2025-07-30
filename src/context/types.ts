@@ -22,9 +22,9 @@ export interface User {
   role: UserRole;
   ward_no?: string;
   position?: string;
-  mahashakha?: string;
-  shakha?: string;
-  ra_pr_stah?: string;
+  department?: string;
+  section?: string;
+  administrative_level?: string;
   is_active?: boolean;
   isSelf?: boolean;
 }

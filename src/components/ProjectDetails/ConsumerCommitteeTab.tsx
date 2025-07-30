@@ -43,7 +43,7 @@ const CONSUMER_COMMITTEE_TITLES = [
   { "serial_no": 4, "title": "उपभोत्ता समितिको काम कर्तव्य र अधिकारको विवरण" },
   { "serial_no": 5, "title": "आम भेलाको माईनियुट (उपभोक्ता समिति गठन गर्दा छलफल तथा भेलाका विषयबस्तुहरु)" },
   { "serial_no": 6, "title": "उपभोक्ता समिति गठन गरि पठाइएको बारे (प्रतीनिधीले वडा कार्यालयलाई पेस गर्ने निवेदन )" },
-  { "serial_no": 7, "title": "उपभोत्ता समितिले स्वीकृत गरेको अनुमान स्वीकृति टिप्पणी" }
+  { "serial_no": 7, "title": "परियोजना अनुमान स्वीकृति सम्बन्धी टिप्पणी" }
 ];
 
 const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
@@ -164,7 +164,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
     formData.append('file', file);
 
     await axios.post(
-      `http://213.199.53.33:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
+      `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
       formData,
       {
         headers: {

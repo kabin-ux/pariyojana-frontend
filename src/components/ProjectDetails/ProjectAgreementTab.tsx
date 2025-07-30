@@ -44,10 +44,6 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   onAddProjectAgreement,
   onDownloadProjectAgreement,
   onDownloadProjectAgreementAndWorkLoad,
-  onAgreementFileUpload,
-  onWorkFileUpload,
-  uploadedProjectAgreementFiles = {},
-  uploadedProjectAgreementWorkFiles = {}
 }) => {
   const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
   const [isAgreementFileUploadModalOpen, setIsAgreementFileUploadModalOpen] = useState(false);
@@ -55,9 +51,6 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
 
   const [selectedAgreementUploadItem, setSelectedAgreementUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
   const [selectedWorkUploadItem, setSelectedWorkUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
-
-  const [localUploadedAgreementFiles, setLocalUploadedAgreementFiles] = useState<{ [key: number]: { file: File; type: string; file_url?: string } }>({});
-  const [localUploadedWorkFiles, setLocalUploadedWorkFiles] = useState<{ [key: number]: { file: File; type: string, file_url?: string } }>({});
 
   const [previewAgreementImage, setPreviewAgreementImage] = useState<{ url: string; title: string } | null>(null);
   const [previewWorkImage, setPreviewWorkImage] = useState<{ url: string; title: string } | null>(null);
@@ -142,7 +135,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('serial_no', project.serial_number.toString());
       formData.append('document_type', serialNo.toString());
 
-      await axios.post(
+      const response = await axios.post(
         `http://213.199.53.33:8000/api/projects/project-aggrement/${project.serial_number}/upload/`,
         formData,
         {
@@ -153,23 +146,12 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
         }
       );
 
-      const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-
-      // Update only agreement files state
-      setLocalUploadedAgreementFiles(prev => {
-        const newState = { ...prev };
-        newState[serialNo] = { file, type: fileType };
-        return newState;
-      });
-
-      // Call the specific agreement file upload handler
-      if (onAgreementFileUpload) {
-        onAgreementFileUpload(serialNo, file);
-      }
+      setFetchedAgreementFiles(prev => [
+        ...prev.filter(f => f.serial_no !== serialNo),
+        response.data
+      ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchAgreementFiles(); // Refresh the agreement files list
-
       setIsAgreementFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -188,8 +170,9 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       const formData = new FormData();
       formData.append('file', file);
       formData.append('serial_no', project.serial_number.toString());
+      formData.append('document_type', serialNo.toString());
 
-      await axios.post(
+      const response = await axios.post(
         `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
         formData,
         {
@@ -200,23 +183,12 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
         }
       );
 
-      const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-
-      // Update only work files state
-      setLocalUploadedWorkFiles(prev => {
-        const newState = { ...prev };
-        newState[serialNo] = { file, type: fileType };
-        return newState;
-      });
-
-      // Call the specific work file upload handler
-      if (onWorkFileUpload) {
-        onWorkFileUpload(serialNo, file);
-      }
+      setFetchedWorkFiles(prev => [
+        ...prev.filter(f => f.serial_no !== serialNo),
+        response.data
+      ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchWorkFiles(); // Refresh the work files list
-
       setIsWorkFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -226,9 +198,8 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   };
 
   const handleAgreementPreviewImage = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
-      uploadedProjectAgreementFiles[serialNo] ||
-      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
+    const uploadedFile =
+      fetchedAgreementFiles.find(file => file.serial_no === serialNo);
 
     if (!uploadedFile) return;
 
@@ -248,9 +219,8 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   };
 
   const handleWorkPreviewImage = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] ||
-      uploadedProjectAgreementWorkFiles[serialNo] ||
-      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
+    const uploadedFile =
+      fetchedWorkFiles.find(file => file.serial_no === serialNo);
 
     if (!uploadedFile) return;
 
@@ -283,36 +253,16 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-  const getAgreementUploadStatus = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
-      uploadedProjectAgreementFiles[serialNo] ||
-      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
-    return uploadedFile ? 'अपलोड गरिएको' : '–';
-  };
-
-  const getWorkUploadStatus = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] ||
-      uploadedProjectAgreementWorkFiles[serialNo] ||
-      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
-    return uploadedFile ? 'अपलोड गरिएको' : '–';
-  };
-
-  const isAgreementFileUploaded = (serialNo: number) => {
-    return !!(localUploadedAgreementFiles[serialNo] ||
-      uploadedProjectAgreementFiles[serialNo] ||
-      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString()));
-  };
 
   const isWorkFileUploaded = (serialNo: number) => {
-    return !!(localUploadedWorkFiles[serialNo] ||
-      uploadedProjectAgreementWorkFiles[serialNo] ||
-      fetchedWorkFiles.find(file => file.document_type === serialNo.toString()));
+    return !!(
+      fetchedWorkFiles.find(file => file.serial_no === serialNo && file.file_url)
+    );
   };
 
   const getAgreementFileType = (serialNo: number) => {
-    const uploadedFile = localUploadedAgreementFiles[serialNo] ||
-      uploadedProjectAgreementFiles[serialNo] ||
-      fetchedAgreementFiles.find(file => file.document_type === serialNo.toString());
+    const uploadedFile =
+      fetchedAgreementFiles.find(file => file.serial_no === serialNo);
 
     if (!uploadedFile) return null;
 
@@ -327,9 +277,8 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   };
 
   const getWorkFileType = (serialNo: number) => {
-    const uploadedFile = localUploadedWorkFiles[serialNo] ||
-      uploadedProjectAgreementWorkFiles[serialNo] ||
-      fetchedWorkFiles.find(file => file.document_type === serialNo.toString());
+    const uploadedFile =
+      fetchedWorkFiles.find(file => file.serial_no === serialNo);
 
     if (!uploadedFile) return null;
 
@@ -360,53 +309,56 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {PROJECT_AGREEMENT_TITLES.map((item) => (
-                <tr
-                  key={`agreement-${item.serial_no}`}
-                  className="hover:bg-gray-50 transition duration-150 ease-in-out"
-                >
-                  <td className="py-3 px-4">{toNepaliNumber(item.serial_no)}</td>
-                  <td className="py-3 px-4">
-                    <div className="font-medium text-gray-900">{item.title}</div>
-                    {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
-                  </td>
-                  <td className="py-3 px-4">{toNepaliNumber(bsDate)}</td>
-                  <td className="py-3 px-4">
-                    <span className={isAgreementFileUploaded(item.serial_no) ? 'text-green-600 font-medium' : ''}>
-                      {getAgreementUploadStatus(item.serial_no)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        type="button"
-                        className={`cursor-pointer ${isAgreementFileUploaded(item.serial_no) ? 'text-green-600 hover:text-green-800' : 'text-blue-600 hover:text-blue-800'}`}
-                        onClick={() => handleAgreementUploadClick(item.serial_no, item.title)}
-                        title={isAgreementFileUploaded(item.serial_no) ? 'फाइल परिवर्तन गर्नुहोस्' : 'फाइल अपलोड गर्नुहोस्'}
-                      >
-                        <Upload className="w-5 h-5" />
-                      </button>
-                      {getAgreementFileType(item.serial_no) === 'image' && (
+              {PROJECT_AGREEMENT_TITLES.map((item) => {
+                const uploadedFile = fetchedAgreementFiles.find(file => file.serial_no === item.serial_no);
+                return (
+                  <tr
+                    key={`agreement-${item.serial_no}`}
+                    className="hover:bg-gray-50 transition duration-150 ease-in-out"
+                  >
+                    <td className="py-3 px-4">{toNepaliNumber(item.serial_no)}</td>
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-gray-900">{item.title}</div>
+                      {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                    </td>
+                    <td className="py-3 px-4">{toNepaliNumber(uploadedFile?.date || bsDate)}</td>
+                    <td className="py-3 px-4">
+                      <span className={uploadedFile?.file_url ? 'text-green-600 font-medium' : ''}>
+                        {uploadedFile?.file_url ? 'अपलोड गरिएको' : '–'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center space-x-2">
                         <button
                           type="button"
-                          className="text-purple-600 hover:text-purple-800 cursor-pointer"
-                          onClick={() => handleAgreementPreviewImage(item.serial_no)}
-                          title="छवि हेर्नुहोस्"
+                          className={`cursor-pointer ${uploadedFile?.file_url ? 'text-green-600 hover:text-green-800' : 'text-blue-600 hover:text-blue-800'}`}
+                          onClick={() => handleAgreementUploadClick(item.serial_no, item.title)}
+                          title={uploadedFile?.file_url ? 'फाइल परिवर्तन गर्नुहोस्' : 'फाइल अपलोड गर्नुहोस्'}
                         >
-                          <Eye className="w-5 h-5" />
+                          <Upload className="w-5 h-5" />
                         </button>
-                      )}
-                      <button
-                        onClick={() => onDownloadProjectAgreement(item.serial_no, project.serial_number)}
-                        className="p-1 text-green-600 hover:text-green-800 transition cursor-pointer"
-                        title="Download PDF"
-                      >
-                        <FileCheck className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {uploadedFile?.file_url && getAgreementFileType(item.serial_no) === 'image' && (
+                          <button
+                            type="button"
+                            className="text-purple-600 hover:text-purple-800 cursor-pointer"
+                            onClick={() => handleAgreementPreviewImage(item.serial_no)}
+                            title="छवि हेर्नुहोस्"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                          onClick={() => onDownloadProjectAgreement(item.serial_no, project.serial_number)}
+                        >
+                          <FileCheck className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -504,48 +456,51 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
               </tr>
             </thead>
             <tbody>
-              {PROJECT_AGREEMENT_WORK_TITLES.map((item) => (
-                <tr key={`work-${item.serial_no}`} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
-                  <td className="py-3 px-4 text-gray-900 text-sm">
-                    <div>{item.title}</div>
-                  </td>
-                  <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
-                  <td className="py-3 px-4 text-gray-900 text-sm">
-                    <span className={isWorkFileUploaded(item.serial_no) ? 'text-green-600 font-medium' : ''}>
-                      {getWorkUploadStatus(item.serial_no)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
-                    <button
-                      type="button"
-                      className={`cursor-pointer ${isWorkFileUploaded(item.serial_no) ? 'text-green-600 hover:text-green-800' : 'text-blue-600 hover:text-blue-800'}`}
-                      onClick={() => handleWorkUploadClick(item.serial_no, item.title)}
-                      title={isWorkFileUploaded(item.serial_no) ? 'फाइल परिवर्तन गर्नुहोस्' : 'फाइल अपलोड गर्नुहोस्'}
-                    >
-                      <Upload className="w-5 h-5" />
-                    </button>
-                    {getWorkFileType(item.serial_no) === 'image' && (
+              {PROJECT_AGREEMENT_WORK_TITLES.map((item) => {
+                const uploadedFile = fetchedWorkFiles.find(file => file.serial_no === item.serial_no);
+                return (
+                  <tr key={`work-${item.serial_no}`} className="border-b border-gray-100 hover:bg-gray-50">
+
+                    <td className="py-3 px-4 text-gray-900">{toNepaliNumber(item.serial_no)}</td>
+                    <td className="py-3 px-4 text-gray-900 text-sm">
+                      <div>{item.title}</div>
+                    </td>
+                    <td className="py-3 px-4 text-gray-900 text-sm">{toNepaliNumber(bsDate)}</td>
+                    <td className="py-3 px-4">
+                      <span className={uploadedFile?.file_url ? 'text-green-600 font-medium' : ''}>
+                        {uploadedFile?.file_url ? 'अपलोड गरिएको' : '–'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-900 text-sm flex space-x-2">
                       <button
                         type="button"
-                        className="text-purple-600 hover:text-purple-800 cursor-pointer"
-                        onClick={() => handleWorkPreviewImage(item.serial_no)}
-                        title="छवि हेर्नुहोस्"
+                        className={`cursor-pointer ${isWorkFileUploaded(item.serial_no) ? 'text-green-600 hover:text-green-800' : 'text-blue-600 hover:text-blue-800'}`}
+                        onClick={() => handleWorkUploadClick(item.serial_no, item.title)}
+                        title={isWorkFileUploaded(item.serial_no) ? 'फाइल परिवर्तन गर्नुहोस्' : 'फाइल अपलोड गर्नुहोस्'}
                       >
-                        <Eye className="w-5 h-5" />
+                        <Upload className="w-5 h-5" />
                       </button>
-                    )}
-
-                    <button
-                      type="button"
-                      className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
-                      onClick={() => onDownloadProjectAgreementAndWorkLoad(item.serial_no, project.serial_number)}
-                    >
-                      <FileCheck className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {uploadedFile?.file_url && getWorkFileType(item.serial_no) === 'image' && (
+                        <button
+                          type="button"
+                          className="text-purple-600 hover:text-purple-800 cursor-pointer"
+                          onClick={() => handleWorkPreviewImage(item.serial_no)}
+                          title="छवि हेर्नुहोस्"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                        onClick={() => onDownloadProjectAgreementAndWorkLoad(item.serial_no, project.serial_number)}
+                      >
+                        <FileCheck className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
