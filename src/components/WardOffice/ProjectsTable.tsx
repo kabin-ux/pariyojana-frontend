@@ -1,24 +1,10 @@
-import {  Edit, MoreHorizontal } from 'lucide-react';
+import { Edit, MoreHorizontal } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditProjectModal from '../../modals/EditProjectsModal';
 import { formatWardNumber } from '../../utils/formatters';
-
-// interface WardData {
-//   id: number;
-//   plan_name: string;
-//   date: string;
-//   thematic_area?: string;
-//   sub_area?: string;
-//   source?: string;
-//   expenditure_center?: string;
-//   budget?: string;
-//   ward_no?: string;
-//   status?: string;
-//   priority_no?: string;
-// }
 
 interface ProjectsTableProps {
   data: any[];
@@ -37,12 +23,19 @@ export const ProjectsTable = ({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
 
- const filteredData = data.filter(item =>
-  (item?.title || item?.plan_name || '')
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase())
-);
+  const filteredData = data.filter(item =>
+    (item?.title || item?.plan_name || '')
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
+  // Updated formatWardNumber function to handle both string and array inputs
+  const formatWards = (wardData:  number[]): string => {
+    if (Array.isArray(wardData)) {
+      return wardData.map(ward => formatWardNumber(ward)).join(', ');
+    }
+    return formatWardNumber(wardData) || '-';
+  };
 
   const handlePrioritize = async (id: number) => {
     let endpoint = '';
@@ -74,6 +67,8 @@ export const ProjectsTable = ({
     if (tabType === 'नगर स्तरीय परियोजना') return 'municipality';
     if (tabType === 'विषयगत समितिका परियोजना') return 'thematic';
     if (tabType === 'वडाले मार्ग गर्ने विषयगत समितिका परियोजना') return 'ward_thematic';
+    if (tabType === 'प्राथमिकरण भएका वडा स्तरीय परियोजना') return 'ward';
+    if (tabType === 'प्राथमिकरण भएका विषयगत समितिका परियोजना') return 'thematic';
     return 'ward';
   };
 
@@ -105,7 +100,6 @@ export const ProjectsTable = ({
     }
   };
 
-  // विषयगत समितिमा सिफारिस गर्ने
   const handleRecommendtoThematic = async (id: number) => {
     try {
       await axios.post(`http://213.199.53.33:8000/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
@@ -116,8 +110,6 @@ export const ProjectsTable = ({
       toast.error('विषयगत समितिमा सिफारिस गर्न असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।');
     }
   };
-
-
 
   const renderDynamicProjectsTable = () => (
     <div>
@@ -149,22 +141,38 @@ export const ProjectsTable = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {filteredData.length > 0 ? (
-              filteredData.map((item, index) => (
+            {filteredData?.length > 0 ? (
+              filteredData?.map((item, index) => (
                 <tr
                   key={item.id}
                   className="hover:bg-blue-50 transition-colors duration-150"
                 >
                   <td className="py-3 px-4 text-sm text-gray-800">{index + 1}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.plan_name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.thematic_area.name ? item.thematic_area.name : item.thematic_area || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.sub_area.name || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.source.name || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.expenditure_center.name || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.budget || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{formatWardNumber(item.ward_no) || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.status || '-'}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.priority_no || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.thematic_area?.name || item.thematic_area || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.sub_area?.name || item.sub_area || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.source?.name || item.source || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.expenditure_center?.name || item.expenditure_center || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.budget || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {formatWards(item.ward_no)}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.status || '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                    {item.priority_no || '-'}
+                  </td>
                   <td className="py-3 px-4">
                     {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
                       <div className="flex items-center space-x-2">
@@ -176,7 +184,7 @@ export const ProjectsTable = ({
                         </button>
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-sm  text-green px-3 py-1 rounded-md hover:bg-blue-600"
+                          className="text-sm text-green px-3 py-1 rounded-md hover:bg-blue-600"
                         >
                           <Edit />
                         </button>
@@ -190,7 +198,6 @@ export const ProjectsTable = ({
                       </button>
                     ) : tabType === 'नगर स्तरीय परियोजना' ? (
                       <div className="flex items-center space-x-2">
-
                         <button
                           onClick={() => handleRecommendMunicipalProgramToBudget(item.id)}
                           className="text-sm bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 cursor-pointer"
@@ -199,7 +206,7 @@ export const ProjectsTable = ({
                         </button>
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-sm  text-green px-3 py-1 rounded-md hover:bg-blue-600"
+                          className="text-sm text-green px-3 py-1 rounded-md hover:bg-blue-600"
                         >
                           <Edit />
                         </button>
@@ -243,7 +250,6 @@ export const ProjectsTable = ({
 
   return (
     <div className="mt-6">
-      {/* {isWardLevel && ?.()} */}
       {renderDynamicProjectsTable()}
     </div>
   );

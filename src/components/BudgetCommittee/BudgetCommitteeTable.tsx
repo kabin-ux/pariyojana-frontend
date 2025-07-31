@@ -43,10 +43,10 @@ export const BudgetCommitteeTable = ({ activeTab, projects, onRecommend, onEdit 
                             <td className="py-3 px-4 text-sm text-gray-800 truncate max-w-[200px]" title={project.plan_name}>
                                 {project.plan_name}
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-800">{project.thematic_area.name || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-800">{project.sub_area.name || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-800">{project.source.name || '-'}</td>
-                            <td className="py-3 px-4 text-sm text-gray-800">{project.expenditure_center.name || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.thematic_area.name || project.thematic_area || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.sub_area.name || project.sub_area || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.source.name || project.source || '-'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-800">{project.expenditure_center.name || project.expenditure_center || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.budget || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{formatWardNumber(project.ward_no) || '-'}</td>
                             <td className="py-3 px-4 text-sm text-gray-800">{project.status || '-'}</td>
