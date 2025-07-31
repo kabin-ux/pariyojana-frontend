@@ -13,7 +13,7 @@ interface InventoryData {
   pan_number: string;
   tax_clearence: boolean;
   license_copy: boolean;
-  inventory_document: string;
+  existing_inventory_list: string;
   pan_file: string;
   license_file: string;
   tax_clearance_file: string;
@@ -203,7 +203,7 @@ const Inventory: React.FC = () => {
                   <td className="py-3 px-4">{renderDocumentCell(!!item.pan_file, item.id, 'pan_file')}</td>
                   <td className="py-3 px-4">{renderDocumentCell(!!item.tax_clearance_file, item.id, 'tax_clearance_file')}</td>
                   <td className="py-3 px-4">{renderDocumentCell(!!item.license_file, item.id, 'license_file')}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.inventory_document, item.id, 'inventory_document')}</td>
+                  <td className="py-3 px-4">{renderDocumentCell(!!item.existing_inventory_list, item.id, 'existing_inventory_list')}</td>
                   <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
                 </tr>
               ))}
