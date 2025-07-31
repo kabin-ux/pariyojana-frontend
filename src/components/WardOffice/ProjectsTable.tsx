@@ -37,9 +37,12 @@ export const ProjectsTable = ({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
 
-  const filteredData = data.filter(item =>
-    item?.plan_name?.toLowerCase()?.includes(searchTerm?.toLowerCase() ?? '')
-  );
+ const filteredData = data.filter(item =>
+  (item?.title || item?.plan_name || '')
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase())
+);
+
 
   const handlePrioritize = async (id: number) => {
     let endpoint = '';
@@ -154,7 +157,7 @@ export const ProjectsTable = ({
                 >
                   <td className="py-3 px-4 text-sm text-gray-800">{index + 1}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.plan_name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.thematic_area.name || '-'}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{item.thematic_area.name ? item.thematic_area.name : item.thematic_area || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.sub_area.name || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.source.name || '-'}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.expenditure_center.name || '-'}</td>

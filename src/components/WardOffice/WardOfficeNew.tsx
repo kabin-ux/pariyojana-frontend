@@ -29,7 +29,7 @@ const WardOfficeNew: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeReportTab, setActiveReportTab] = useState(reportTabs[0]);
 
- 
+
 
 
 
@@ -50,7 +50,7 @@ const WardOfficeNew: React.FC = () => {
     prioritizedWardThematicProjects = [],
     loading,
     error,
-
+    refetch
   } = usePlanning();
 
   const getDataForActiveTab = (): WardData[] => {
@@ -123,9 +123,11 @@ const WardOfficeNew: React.FC = () => {
         {filteredData.length > 0 ? (
           <ProjectsTable
             searchTerm={searchTerm}
-            data={filteredData}
+            data={getDataForActiveTab()}
             tabType={activeTab}
+            refetch={refetch}
           />
+
         ) : (
           <div className="mt-8">
             <EmptyState />

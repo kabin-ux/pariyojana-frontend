@@ -9,7 +9,28 @@ interface EditProjectModalProps {
     onClose: () => void;
     onSave: () => void;
     projectData: any;
-    projectType: "ward" | "municipality" | "thematic" |  "ward_thematic" | "municipality-pride" | "provience-transfer-projects" | "federal-gov-projects" | "budget-committee"   | "wardrecommend";
+    projectType: "ward" | "municipality" | "thematic" | "ward_thematic" | "municipality-pride" | "provience-transfer-projects" | "federal-gov-projects" | "budget-committee" | "wardrecommend";
+}
+
+interface FormData {
+    plan_name: string;
+    thematic_area: string;
+    sub_area: string;
+    project_level: string;
+    expenditure_title: string;
+    expenditure_center: string;
+    proposed_amount: string;
+    source: string;
+    ward_no: number[]; // Changed from string to number[]
+    location: string;
+    gps_coordinate: string;
+    expected_output: string;
+    unit: string;
+    fiscal_year: string;
+    feasibility_study: string;
+    detailed_study: string;
+    environmental_study: string;
+    description: string;
 }
 
 const EditProjectModal: React.FC<EditProjectModalProps> = ({
@@ -19,7 +40,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     projectData,
     projectType
 }) => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
         plan_name: '',
         thematic_area: '',
         sub_area: '',
@@ -28,7 +49,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         expenditure_center: '',
         proposed_amount: '',
         source: '',
-        ward_no: '',
+        ward_no: [], // Now an array
         location: '',
         gps_coordinate: '',
         expected_output: '',
@@ -75,7 +96,9 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 expenditure_center: projectData.expenditure_center?.id?.toString() || '',
                 proposed_amount: projectData.budget || '',
                 source: projectData.source?.id?.toString() || '',
-                ward_no: projectData.ward_no || '',
+                ward_no: Array.isArray(projectData.ward_no) ?
+                    projectData.ward_no.map(Number) :
+                    projectData.ward_no ? [Number(projectData.ward_no)] : [], // Handle both array and single value                
                 location: projectData.location || '',
                 gps_coordinate: projectData.gps_coordinate || '',
                 expected_output: projectData.expected_result || '',
@@ -144,7 +167,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : null,
                 proposed_amount: formData.proposed_amount ? parseFloat(formData.proposed_amount) : null,
                 source: formData.source ? parseInt(formData.source) : null,
-                ward_no: formData.ward_no ? parseInt(formData.ward_no) : null,
+                ward_no: formData.ward_no, // Send as array
                 location: formData.location,
                 gps_coordinate: formData.gps_coordinate,
                 expected_result: formData.expected_output,
@@ -355,17 +378,32 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                             </label>
                             <select
                                 required
-                                value={formData.ward_no}
-                                onChange={(e) => handleInputChange('ward_no', e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                multiple
+                                value={formData.ward_no.map(String)} // Convert numbers to strings for comparison
+                                onChange={(e) => {
+                                    const selectedOptions = Array.from(e.target.selectedOptions);
+                                    const selectedValues = selectedOptions.map(option => Number(option.value));
+                                    setFormData(prev => ({ ...prev, ward_no: selectedValues }));
+                                }}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent h-auto min-h-[42px]"
                             >
-                                <option value="">वडा</option>
-                                {wardOptions?.map((item: any) => (
+                                {wardOptions?.map((item) => (
                                     <option key={item.value} value={item.value}>
                                         {item.label}
                                     </option>
                                 ))}
                             </select>
+                            {/* Display selected wards */}
+                            {formData.ward_no.length > 0 && (
+                                <div className="mt-2">
+                                    <span className="text-sm text-gray-600">Selected: </span>
+                                    {formData.ward_no.map(ward => (
+                                        <span key={ward} className="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                                            {wardOptions.find(w => w.value === ward)?.label || `वडा ${ward}`}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
