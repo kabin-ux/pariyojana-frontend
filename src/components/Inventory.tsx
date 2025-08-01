@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search,  Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload } from 'lucide-react';
+import { Search, Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload } from 'lucide-react';
 import axios from 'axios';
 import AddCompanyModal from '../modals/AddCompanyModal';
 import toast from 'react-hot-toast';
 import FileUploadModal from '../modals/FileUploadModal';
 import { toNepaliNumber } from '../utils/formatters';
+import FileViewerModal from '../modals/FileViewerModal';
 
 interface InventoryData {
   id: number;
@@ -30,6 +31,8 @@ const Inventory: React.FC = () => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
   const [fieldKey, setSelectedFieldKey] = useState(''); // default
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [currentFileUrl, setCurrentFileUrl] = useState('');
 
   const fetchInventory = async () => {
     try {
@@ -86,23 +89,45 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const renderDocumentCell = (hasDocument: boolean, companyId: number, fieldKey: string) => (
+  const handleViewFile = (fileUrl: string) => {
+    if (!fileUrl) return;
+
+    // Check if the file is an image or PDF
+    const extension = fileUrl.split('.').pop()?.toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension || '');
+    const isPdf = extension === 'pdf';
+
+    if (isImage || isPdf) {
+      setCurrentFileUrl(fileUrl);
+      setViewerOpen(true);
+    } else {
+      // For other file types, download directly
+      window.open(fileUrl, '_blank');
+    }
+  };
+
+  const renderDocumentCell = (hasDocument: boolean, companyId: number, fieldKey: string, fileUrl: string) => (
     <div className="flex items-center space-x-2">
       <button
         onClick={() => {
           setSelectedCompanyId(companyId);
-          setSelectedFieldKey(fieldKey); // <-- set the fieldKey here
+          setSelectedFieldKey(fieldKey);
           setUploadDialogOpen(true);
         }}
         className={`p-1 rounded cursor-pointer ${hasDocument ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'}`}
       >
         <Upload className="w-4 h-4" />
       </button>
-      <button className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer">
+      <button
+        onClick={() => hasDocument && handleViewFile(fileUrl)}
+        className={`p-1 rounded cursor-pointer ${hasDocument ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'}`}
+        disabled={!hasDocument}
+      >
         <Info className="w-4 h-4" />
       </button>
     </div>
   );
+
 
 
 
@@ -199,15 +224,51 @@ const Inventory: React.FC = () => {
                 <tr key={item.id} className="hover:bg-gray-50 transition">
                   <td className="py-3 px-4 text-sm text-gray-800">{toNepaliNumber(index + 1)}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{item.company_name}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.registration_certificate_file, item.id, 'registration_certificate_file')}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.pan_file, item.id, 'pan_file')}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.tax_clearance_file, item.id, 'tax_clearance_file')}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.license_file, item.id, 'license_file')}</td>
-                  <td className="py-3 px-4">{renderDocumentCell(!!item.existing_inventory_list, item.id, 'existing_inventory_list')}</td>
+                  <td className="py-3 px-4">
+                    {renderDocumentCell(
+                      !!item.registration_certificate_file,
+                      item.id,
+                      'registration_certificate_file',
+                      item.registration_certificate_file
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    {renderDocumentCell(
+                      !!item.pan_file,
+                      item.id,
+                      'pan_file',
+                      item.pan_file
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    {renderDocumentCell(
+                      !!item.tax_clearance_file,
+                      item.id,
+                      'tax_clearance_file',
+                      item.tax_clearance_file
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    {renderDocumentCell(
+                      !!item.license_file,
+                      item.id,
+                      'license_file',
+                      item.license_file
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    {renderDocumentCell(
+                      !!item.existing_inventory_list,
+                      item.id,
+                      'existing_inventory_list',
+                      item.existing_inventory_list
+                    )}
+                  </td>
                   <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
 
@@ -250,7 +311,13 @@ const Inventory: React.FC = () => {
         />
       )}
 
-
+      {viewerOpen && (
+        <FileViewerModal
+          open={viewerOpen}
+          onClose={() => setViewerOpen(false)}
+          fileUrl={currentFileUrl}
+        />
+      )}
 
     </main>
   );

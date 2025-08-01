@@ -207,7 +207,7 @@ const Dashboard: React.FC = () => {
                 data={{
                   labels: wardData.map(d => d.ward_no),
                   datasets: [
-                    { label: 'वडा नंं', data: wardData.map(d => d.total_budget), backgroundColor: '#10b981' },
+                    { label: 'परियोजनाहरू', data: wardData.map(d => d.total_budget), backgroundColor: '#10b981' },
                   ],
                 }}
                 options={{

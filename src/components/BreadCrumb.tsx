@@ -14,7 +14,7 @@ const Breadcrumb: React.FC = () => {
         <span className="text-gray-900 font-medium">वडा कार्यालय</span>
       </div>
       <div className="ml-auto">
-        <span className="text-gray-900 font-medium">वडा नं.- १</span>
+        {/* <span className="text-gray-900 font-medium">वडा नं.- १</span> */}
       </div>
     </div>
   );

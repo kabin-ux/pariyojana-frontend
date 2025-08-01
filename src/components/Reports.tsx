@@ -14,6 +14,11 @@ interface DropdownOption {
   value: string | number;
 }
 
+interface WardOption {
+  label: string;
+  value: number;
+}
+
 const Reports: React.FC = () => {
   const [dropdownData, setDropdownData] = useState<any>(null);
   const [selectedYear, setSelectedYear] = useState<number | string>('');
@@ -56,9 +61,9 @@ const Reports: React.FC = () => {
             label: e.name,
             value: e.id
           })),
-          wards: data.wards.map((w: string) => ({
-            label: w,
-            value: parseInt(w.match(/\d+/)?.[0] || '0')
+          wards: data.wards.map((w: WardOption) => ({
+            label: w.label,
+            value: w.value
           })),
           statuses: data.statuses.map((s: any) => ({
             label: s,
@@ -72,7 +77,7 @@ const Reports: React.FC = () => {
         if (data.sub_areas.length > 0) setSelectedSubSector(data.sub_areas[0].id);
         if (data.sources.length > 0) setSelectedSource(data.sources[0].id);
         if (data.expenditure_centers.length > 0) setSelectedCostCenter(data.expenditure_centers[0].id);
-        if (data.wards.length > 0) setSelectedWard(parseInt(data.wards[0].match(/\d+/)?.[0] || '0'));
+        if (data.wards.length > 0) setSelectedWard(data.wards[0].value);
         if (data.statuses.length > 0) setSelectedStatus(data.statuses[0]);
       })
       .catch(err => console.error('Failed to load dropdown data:', err));

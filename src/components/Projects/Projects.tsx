@@ -22,7 +22,7 @@ interface ProjectsProps {
 
 interface NewProjectForm {
   project_name: string;
-  area: string;
+  thematic_area: string;
   sub_area: string;
   project_level: string;
   expenditure_title: string;
@@ -41,6 +41,15 @@ interface NewProjectForm {
 const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   // State management
   const [searchTerm, setSearchTerm] = useState('');
+ // Update the filters state structure
+  const [filters, setFilters] = useState({
+    area: "", // Changed from thematic_area
+    sub_area: "",
+    source: "",
+    expenditure_center: "",
+    ward_no: "",
+    status: "",
+  })
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +62,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
   const [formData, setFormData] = useState<NewProjectForm>({
     project_name: '',
-    area: '',
+    thematic_area: '',
     sub_area: '',
     project_level: '',
     expenditure_title: '',
@@ -80,6 +89,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
 
   // Fetch projects from API
+// Update the useProjects call
   const {
     data: projects,
     loading: projectsLoading,
@@ -87,12 +97,17 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     totalCount,
     hasNext,
     hasPrevious,
-    refetch: refetchProjects
+    refetch: refetchProjects,
   } = useProjects({
     page: currentPage,
-    search: searchTerm
-  });
-  console.log("dataa", projects)
+    search: searchTerm,
+    area: filters.area, // Changed from thematic_area
+    sub_area: filters.sub_area,
+    source: filters.source,
+    expenditure_center: filters.expenditure_center,
+    ward_no: filters.ward_no,
+    status: filters.status,
+  })
   // Ward options with proper mapping
   const wardOptions = [
     { value: 1, label: 'वडा नं. - १' },
@@ -104,11 +119,12 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   ];
 
   // Filter sub-areas based on selected thematic area
-  const filteredsub_areas = sub_areas.filter(sub_area => {
-    if (!formData.area) return true;
-    const selectedThematicArea = thematicAreas.find(area => area.id.toString() === formData.area);
-    return (sub_area as any).thematic_area === selectedThematicArea?.id;
-  });
+   // Update the formData thematic_area reference in filteredsub_areas
+  const filteredsub_areas = sub_areas.filter((sub_area) => {
+    if (!formData.thematic_area) return true
+    const selectedThematicArea = thematicAreas.find((area) => area.id.toString() === formData.thematic_area)
+    return (sub_area as any).thematic_area === selectedThematicArea?.id
+  })
 
   // Debounced search effect
   useEffect(() => {
@@ -117,7 +133,33 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, filters]);
+
+  // Filter change handler
+   // Update the handleFilterChange function
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+      // Reset sub_area when area changes
+      ...(filterName === "area" && { sub_area: "" }), // Changed from thematic_area
+    }))
+    setCurrentPage(1)
+  }
+
+  // Clear filters handler
+  const handleClearFilters = () => {
+    setFilters({
+      area: "", // Changed from thematic_area
+      sub_area: "",
+      source: "",
+      expenditure_center: "",
+      ward_no: "",
+      status: "",
+    })
+    setSearchTerm("")
+    setCurrentPage(1)
+  }
 
   // Event handlers
   const handleEdit = async (id: number) => {
@@ -130,7 +172,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
       setFormData({
         project_name: projectToEdit.project_name || '',
-        area: projectToEdit.area?.toString() || '',
+        thematic_area: projectToEdit.thematic_area?.toString() || '',
         sub_area: projectToEdit.sub_area?.toString() || '',
         project_level: projectToEdit.project_level?.toString() || '',
         expenditure_title: projectToEdit.expenditure_title?.toString() || '',
@@ -179,7 +221,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const handleInputChange = (field: keyof NewProjectForm, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      if (field === 'area') {
+      if (field === 'thematic_area') {
         newData.sub_area = '';
       }
       return newData;
@@ -197,7 +239,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     try {
       const submitData = {
         project_name: formData.project_name,
-        area: formData.area ? parseInt(formData.area) : undefined,
+        area: formData.thematic_area ? parseInt(formData.thematic_area) : undefined,
         sub_area: formData.sub_area ? parseInt(formData.sub_area) : undefined,
         project_level: formData.project_level ? parseInt(formData.project_level) : undefined,
         expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : undefined,
@@ -237,7 +279,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     setIsDialogOpen(false);
     setFormData({
       project_name: '',
-      area: '',
+      thematic_area: '',
       sub_area: '',
       project_level: '',
       expenditure_title: '',
@@ -381,6 +423,14 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
           <SearchAndFilter
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            filters={filters}
+            thematicAreas={thematicAreas}
+            sub_areas={sub_areas}
+            sources={sources}
+            expenditureCenters={expenditureCenters}
+            wardOptions={wardOptions}
           />
 
           {/* Error Message */}

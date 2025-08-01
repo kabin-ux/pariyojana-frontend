@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 interface NewProjectForm {
   project_name: string;
-  area: string;
+  thematic_area: string;
   sub_area: string;
   project_level: string;
   expenditure_title: string;
@@ -101,8 +101,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               </label>
               <select
                 required
-                value={formData.area}
-                onChange={(e) => onInputChange('area', e.target.value)}
+                value={formData.thematic_area}
+                onChange={(e) => onInputChange('thematic_area', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">विषयगत क्षेत्र</option>
@@ -121,7 +121,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                 value={formData.sub_area}
                 onChange={(e) => onInputChange('sub_area', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={!formData.area}
+                disabled={!formData.thematic_area}
               >
                 <option value="">उप-क्षेत्र</option>
                 {filteredsub_areas.map(sub_area => (
