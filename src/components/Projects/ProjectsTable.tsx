@@ -150,7 +150,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   <span className="truncate">{project.project_name}</span>
                 </td>
                 <td className="py-4 px-3 text-sm text-gray-700">
-                  {getNameById(thematicAreas, project.area)}
+                  {getNameById(thematicAreas, project.thematic_area)}
                 </td>
                 <td className="py-4 px-3 text-sm text-gray-700">
                   {getNameById(sub_areas, project.sub_area)}
