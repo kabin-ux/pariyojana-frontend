@@ -172,7 +172,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
       setFormData({
         project_name: projectToEdit.project_name || '',
-        thematic_area: projectToEdit.thematic_area?.toString() || '',
+        thematic_area: projectToEdit.area?.toString() || '',
         sub_area: projectToEdit.sub_area?.toString() || '',
         project_level: projectToEdit.project_level?.toString() || '',
         expenditure_title: projectToEdit.expenditure_title?.toString() || '',

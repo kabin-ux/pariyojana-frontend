@@ -2,7 +2,7 @@ export interface Project {
   id?: number; // ID is not present in the response, mark optional if necessary
   serial_number: number;
   project_name: string;
-  thematic_area: number;
+  area: number;
   sub_area: number;
   source: number;
   expenditure_center: number;
