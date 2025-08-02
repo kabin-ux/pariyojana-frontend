@@ -250,36 +250,41 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 वडा नं.
               </label>
-              <select
-                multiple
-                value={formData.ward_no.map(String)} // Convert numbers to strings for select
-                onChange={(e) => {
-                  const selectedOptions = Array.from(e.target.selectedOptions, option =>
-                    Number(option.value) // Convert back to number
-                  );
-                  onWardNoChange(selectedOptions);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-auto min-h-[42px]"
-              >
-                {wardOptions.map(ward => (
-                  <option key={ward.value} value={ward.value.toString()}>
-                    {ward.label}
-                  </option>
+              <div className="grid grid-cols-3 gap-2">
+                {wardOptions.map((ward) => (
+                  <label key={ward.value} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      value={ward.value}
+                      checked={formData.ward_no.includes(ward.value)}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        const newWardNos = e.target.checked
+                          ? [...formData.ward_no, value]
+                          : formData.ward_no.filter((w) => w !== value);
+                        onWardNoChange(newWardNos);
+                      }}
+                      className="accent-blue-500"
+                    />
+                    <span className="text-sm">{ward.label}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
+
               {formData.ward_no.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {formData.ward_no.map(ward => (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {formData.ward_no.map((ward) => (
                     <span
                       key={ward}
                       className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
                     >
-                      {wardOptions.find(w => w.value === ward)?.label || ward}
+                      {wardOptions.find((w) => w.value === ward)?.label || ward}
                     </span>
                   ))}
                 </div>
               )}
             </div>
+
 
           </div>
 

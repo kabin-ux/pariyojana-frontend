@@ -15,7 +15,7 @@ const MunicipalOfficeBreadcrumb = () => {
         </div>
       </div>
       <div className="text-sm text-gray-600">
-        <span className="text-gray-900 font-medium">वडा नं.- १</span>
+        {/* <span className="text-gray-900 font-medium">वडा नं.- १</span> */}
       </div>
     </div>
   );

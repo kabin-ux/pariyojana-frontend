@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import type { GlobalState, AuthState, ProjectState } from './types';
 
 const storedUser = localStorage.getItem('user');
@@ -17,7 +18,6 @@ const initialProjectState: ProjectState = {
 const initialState: GlobalState = {
   auth: initialAuthState,
   projects: initialProjectState,
-
 };
 
 type Action =
@@ -38,9 +38,15 @@ const reducer = (state: GlobalState, action: Action): GlobalState => {
         projects: action.payload,
       };
     case 'LOGOUT':
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
       return {
         ...state,
-        auth: initialAuthState,
+        auth: {
+          isAuthenticated: false,
+          user: null,
+          loading: false,
+        },
         projects: initialProjectState,
       };
     default:
@@ -66,6 +72,32 @@ export const useAppContext = () => {
 
 export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  // ✅ Check token expiry on first load
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const decoded: { exp: number } = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
+          dispatch({ type: 'LOGOUT' });
+        } else {
+          // Optional: set timeout to auto-logout exactly at expiry
+          const timeUntilExpiry = decoded.exp * 1000 - Date.now();
+          const logoutTimer = setTimeout(() => {
+            dispatch({ type: 'LOGOUT' });
+          }, timeUntilExpiry);
+
+          return () => clearTimeout(logoutTimer);
+        }
+      } catch (err) {
+        console.error('Invalid token:', err);
+        dispatch({ type: 'LOGOUT' });
+      }
+    }
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

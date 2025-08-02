@@ -77,7 +77,7 @@ const WardOfficeNew: React.FC = () => {
   if (loading) {
     return (
       <div className="flex-1 p-6">
-        <Breadcrumb wardNumber="१" />
+        <Breadcrumb />
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 min-h-[300px] flex items-center justify-center">
           <LoadingSpinner size="lg" />
         </div>
@@ -88,7 +88,7 @@ const WardOfficeNew: React.FC = () => {
   if (error) {
     return (
       <div className="flex-1 p-6">
-        <Breadcrumb wardNumber="१" />
+        <Breadcrumb />
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="text-center text-red-500">
             <p>Error loading data: {error}</p>
@@ -139,7 +139,7 @@ const WardOfficeNew: React.FC = () => {
 
   return (
     <main className="flex-1 p-6">
-      <Breadcrumb wardNumber="१" />
+      <Breadcrumb />
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">वडा कार्यालय</h1>
         <MainTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />

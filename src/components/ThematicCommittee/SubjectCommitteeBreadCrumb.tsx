@@ -1,10 +1,7 @@
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 
-interface SubjectCommitteeBreadcrumbProps {
-  wardNumber: string;
-}
 
-export const SubjectCommitteeBreadcrumb = ({ wardNumber }: SubjectCommitteeBreadcrumbProps) => (
+export const SubjectCommitteeBreadcrumb = () => (
   <div className="flex items-center justify-between mb-6">
     <div className="flex items-center space-x-2 text-sm text-gray-600">
       <ChevronLeft className="w-4 h-4" />
@@ -18,7 +15,7 @@ export const SubjectCommitteeBreadcrumb = ({ wardNumber }: SubjectCommitteeBread
       </div>
     </div>
     <div className="text-sm text-gray-600">
-      <span className="text-gray-900 font-medium">वडा नं.- {wardNumber}</span>
+      {/* <span className="text-gray-900 font-medium">वडा नं.- {wardNumber}</span> */}
     </div>
   </div>
 );

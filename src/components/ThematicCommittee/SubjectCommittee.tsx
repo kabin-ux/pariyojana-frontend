@@ -145,7 +145,7 @@ const SubjectCommittee: React.FC = () => {
 
   return (
     <main className="flex-1 p-6">
-      <SubjectCommitteeBreadcrumb wardNumber="१" />
+      <SubjectCommitteeBreadcrumb  />
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">विषयगत समिति</h1>
