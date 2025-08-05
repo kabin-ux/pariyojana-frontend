@@ -325,7 +325,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       link.remove();
     } catch (error) {
       console.error('PDF download failed:', error);
-      alert('डाउनलोड गर्न समस्या भयो।');
+      toast.error('डाउनलोड गर्न समस्या भयो।');
     }
   };
 
@@ -348,7 +348,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       link.remove();
     } catch (error) {
       console.error('PDF download failed:', error);
-      alert('डाउनलोड गर्न समस्या भयो।');
+      toast.error('डाउनलोड गर्न समस्या भयो।');
     }
   };
 
@@ -371,7 +371,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       link.remove();
     } catch (error) {
       console.error('PDF download failed:', error);
-      alert('डाउनलोड गर्न समस्या भयो।');
+      toast.error('डाउनलोड गर्न समस्या भयो।');
     }
   };
 
@@ -420,7 +420,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       link.remove();
     } catch (error) {
       console.error('PDF download failed:', error);
-      alert('डाउनलोड गर्न समस्या भयो।');
+      toast.error('डाउनलोड गर्न समस्या भयो।');
     }
   };
 
@@ -542,7 +542,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating bill PDF:', error);
-      alert('बिल डाउनलोड गर्न असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।');
+      toast.error('बिल डाउनलोड गर्न असफल भयो। कृपया पुनः प्रयास गर्नुहोस्।');
     }
   };
 

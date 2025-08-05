@@ -1,5 +1,6 @@
 import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import type { User, UserRole } from '../context/types';
+import toast from 'react-hot-toast';
 
 // Define roles here since it's used in the component
 const roles = [
@@ -122,14 +123,14 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert('Error: ' + JSON.stringify(errorData));
+        toast.error('Error: ' + JSON.stringify(errorData));
         return;
       }
 
       onSuccess();
       onClose();
     } catch (error: any) {
-      alert('Submission error: ' + error.message);
+      toast.error('Submission error: ' + error.message);
     }
   };
 

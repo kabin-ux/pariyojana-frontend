@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, File, Camera } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface FormData {
     fileName: string;
@@ -54,13 +55,13 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
 
     const handleFileUpload = (check_photo: File) => {
         if (check_photo.size > 10 * 1024 * 1024) {
-            alert('फाइल साइज 10MB भन्दा बढी हुन सक्दैन।');
+            toast.error('फाइल साइज 10MB भन्दा बढी हुन सक्दैन।');
             return;
         }
 
         const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
         if (!allowedTypes.includes(check_photo.type)) {
-            alert('केवल JPEG, PNG, PDF, र MP4 फाइलहरू मात्र अपलोड गर्न सकिन्छ।');
+            toast.error('केवल JPEG, PNG, PDF, र MP4 फाइलहरू मात्र अपलोड गर्न सकिन्छ।');
             return;
         }
 
@@ -104,13 +105,13 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
         if (isAccountPhoto) {
             // Validation for account photo
             if (!formData.bank_account_number.trim()) {
-                alert('खाता नम्बर आवश्यक छ।');
+                toast.error('खाता नम्बर आवश्यक छ।');
                 return;
             }
         } else {
             // Validation for bank recommendation
             if (!formData.fileName.trim()) {
-                alert('फाइलको नाम आवश्यक छ।');
+                toast.error('फाइलको नाम आवश्यक छ।');
                 return;
             }
         }

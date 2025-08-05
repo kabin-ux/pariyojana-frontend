@@ -870,7 +870,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                                             window.URL.revokeObjectURL(url);
                                                         } catch (error) {
                                                             console.error('PDF download failed:', error);
-                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                            toast.error('डाउनलोड गर्न समस्या भयो।');
                                                         }
                                                     }}
                                                 >
@@ -952,7 +952,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                                             window.URL.revokeObjectURL(url);
                                                         } catch (error) {
                                                             console.error('PDF download failed:', error);
-                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                            toast.error('डाउनलोड गर्न समस्या भयो।');
                                                         }
                                                     }}
                                                 >
@@ -1034,7 +1034,7 @@ const PaymentInstallment: React.FC<ProjectDetailProps> = ({ project }) => {
                                                             window.URL.revokeObjectURL(url);
                                                         } catch (error) {
                                                             console.error('PDF download failed:', error);
-                                                            alert('डाउनलोड गर्न समस्या भयो।');
+                                                            toast.error('डाउनलोड गर्न समस्या भयो।');
                                                         }
                                                     }}
                                                 >

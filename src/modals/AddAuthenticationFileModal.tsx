@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, File } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface FormData {
     fileName: string;
@@ -49,13 +50,13 @@ const AddAuthenticationFileModal: React.FC<AddDocumentModalProps> = ({
 
     const handleFileUpload = (file: File) => {
         if (file.size > 10 * 1024 * 1024) {
-            alert('फाइल साइज 10MB भन्दा बढी हुन सक्दैन।');
+            toast.error('फाइल साइज 10MB भन्दा बढी हुन सक्दैन।');
             return;
         }
 
         const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
         if (!allowedTypes.includes(file.type)) {
-            alert('केवल JPEG, PNG, PDF, र MP4 फाइलहरू मात्र अपलोड गर्न सकिन्छ।');
+            toast.error('केवल JPEG, PNG, PDF, र MP4 फाइलहरू मात्र अपलोड गर्न सकिन्छ।');
             return;
         }
 
@@ -97,7 +98,7 @@ const AddAuthenticationFileModal: React.FC<AddDocumentModalProps> = ({
 
     const handleSubmit = () => {
         if (!formData.fileName.trim()) {
-            alert('फाइलको नाम आवश्यक छ।');
+            toast.error('फाइलको नाम आवश्यक छ।');
             return;
         }
 

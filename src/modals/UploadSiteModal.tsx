@@ -18,7 +18,7 @@ const OperationSiteUploadModal: React.FC<Props> = ({ onClose, projectId, serialN
   const { loadOperationDetails } = useProjectDetail(projectId);
   const handleUpload = async () => {
     if (!image || !description) {
-      alert("फोटो र कैफियत अनिवार्य छन्।");
+      toast.error("फोटो र कैफियत अनिवार्य छन्।");
       return;
     }
 

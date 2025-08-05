@@ -194,7 +194,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       setEditingProjectId(projectToEdit.serial_number);
     } catch (error) {
       console.error('Error preparing edit:', error);
-      alert('परियोजना सम्पादन गर्न सकिएन');
+      toast.error('परियोजना सम्पादन गर्न सकिएन');
     }
   };
 
@@ -206,7 +206,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         console.log('Project deleted successfully');
       } catch (error) {
         console.error('Error deleting project:', error);
-        alert('परियोजना मेटाउन सकिएन');
+        toast.error('परियोजना मेटाउन सकिएन');
       }
     }
   };
