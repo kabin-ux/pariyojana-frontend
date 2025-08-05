@@ -164,7 +164,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
     formData.append('file', file);
 
     await axios.post(
-      `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee/upload/`,
+      `http://213.199.53.33/api/projects/${project.serial_number}/consumer-committee/upload/`,
       formData,
       {
         headers: {
