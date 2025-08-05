@@ -318,7 +318,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
           <div>
             <p className="text-sm text-gray-600 mb-1">आर्थिक वर्ष</p>
             <p className="text-lg font-semibold">
-              {workInProgressDets?.fiscal_year_display}
+              {toNepaliNumber(workInProgressDets?.fiscal_year_display)}
             </p>
           </div>
           <div>
@@ -330,7 +330,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
           <div>
             <p className="text-sm text-gray-600 mb-1">मात्रा</p>
             <p className="text-lg font-semibold">
-              {workInProgressDets?.quantity}
+              {toNepaliNumber(workInProgressDets?.quantity)}
             </p>
           </div>
           <div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { toNepaliNumber } from '../../utils/formatters';
 
 interface NewProjectForm {
   project_name: string;
@@ -208,7 +209,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               >
                 <option value="">आर्थिक वर्ष</option>
                 {fiscalYears.map(year => (
-                  <option key={year.id} value={year.id.toString()}>{year.year}</option>
+                  <option key={year.id} value={year.id.toString()}>{toNepaliNumber(year.year)}</option>
                 ))}
               </select>
             </div>

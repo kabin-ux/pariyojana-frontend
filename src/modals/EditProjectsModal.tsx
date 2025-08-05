@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useSettings } from '../hooks/useSetting';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface EditProjectModalProps {
     isOpen: boolean;
@@ -464,7 +465,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                 <option value="">आर्थिक वर्ष</option>
                                 {fiscalYears?.map((year: any) => (
                                     <option key={year.id} value={year.id.toString()}>
-                                        {year.name || year.year} {/* Use whichever property exists */}
+                                        {year.name || toNepaliNumber(year.year)} {/* Use whichever property exists */}
                                     </option>
                                 ))}
                             </select>

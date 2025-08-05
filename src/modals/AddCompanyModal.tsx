@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface AddCompanyModalProps {
   open: boolean;
@@ -177,7 +178,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
                 <option value="">आर्थिक वर्ष छान्नुहोस्</option>
                 {fiscalYears.map((year) => (
                   <option key={year.id} value={year.year}>
-                    {year.year}
+                    {toNepaliNumber(year.year)}
                   </option>
                 ))}
               </select>

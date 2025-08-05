@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../hooks/useSetting';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface CostEstimateData {
     id?: number;
@@ -135,7 +136,7 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                         >
                             <option value="">आर्थिक वर्ष</option>
                             {fiscalYears.map(year => (
-                                <option key={year.id} value={year.id.toString()}>{'year' in year && (year.year)}</option>
+                                <option key={year.id} value={year.id.toString()}>{'year' in year && (toNepaliNumber(year.year))}</option>
                             ))}
                         </select>
                     </div>

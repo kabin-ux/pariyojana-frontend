@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../hooks/useSetting';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface WorkTypeData {
   id?: number;
@@ -137,7 +138,7 @@ const WorkInProgressModal: React.FC<CostEstimateModalProps> = ({
               <option value="">आर्थिक वर्ष</option>
               {fiscalYears?.map((year: any) => (
                 <option key={year.id} value={year.id.toString()}>
-                  {year.year}
+                  {toNepaliNumber(year.year)}
                 </option>
               ))}
             </select>

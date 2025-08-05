@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import axios from 'axios';
 import { useSettings } from '../hooks/useSetting';
 import toast from 'react-hot-toast';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface Props {
   onClose: () => void;
@@ -215,7 +216,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
               >
                 <option value="">आर्थिक वर्ष</option>
                 {fiscalYears.map(year => (
-                  <option key={year.id} value={year.id.toString()}>{'year' in year && (year.year)}</option>
+                  <option key={year.id} value={year.id.toString()}>{'year' in year && (toNepaliNumber(year.year))}</option>
                 ))}
               </select>
             </div>            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1 cursor-pointer">
