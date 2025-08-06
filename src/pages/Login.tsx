@@ -5,6 +5,7 @@ import toplogo from '../assets/toplogo.png';
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/hooks';
 import { Eye, EyeOff } from 'lucide-react';
+import axios from 'axios';
 
 interface LoginResponse {
   access: string;
@@ -12,7 +13,15 @@ interface LoginResponse {
   user_id: number;
   full_name: string;
   email?: string;
-  role: "admin" | "planning section" | "ward/office seceratery" | "engineer" | "ward engineer" | "user committee" | "Data Entry" | "Department chief";
+  role:
+    | 'admin'
+    | 'planning section'
+    | 'ward/office seceratery'
+    | 'engineer'
+    | 'ward engineer'
+    | 'user committee'
+    | 'Data Entry'
+    | 'Department chief';
   ward_no?: number;
 }
 
@@ -25,56 +34,70 @@ const LoginPage: FC = () => {
     localStorage.getItem('remember_me') === 'true'
   );
 
+  const [showForgotDialog, setShowForgotDialog] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotError, setForgotError] = useState('');
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: FormEvent) => {
-  e.preventDefault();
-  try {
-    const res = await loginUser(email, password);
-    const data: LoginResponse = res.data;
+    e.preventDefault();
+    try {
+      const res = await loginUser(email, password);
+      const data: LoginResponse = res.data;
 
-    if (rememberMe) {
-      localStorage.setItem('saved_email', email);
-      localStorage.setItem('saved_password', password);
-      localStorage.setItem('remember_me', 'true');
-    } else {
-      localStorage.removeItem('saved_email');
-      localStorage.removeItem('saved_password');
-      localStorage.setItem('remember_me', 'false');
+      if (rememberMe) {
+        localStorage.setItem('saved_email', email);
+        localStorage.setItem('saved_password', password);
+        localStorage.setItem('remember_me', 'true');
+      } else {
+        localStorage.removeItem('saved_email');
+        localStorage.removeItem('saved_password');
+        localStorage.setItem('remember_me', 'false');
+      }
+
+      const userData = {
+        user_id: data.user_id,
+        full_name: data.full_name,
+        role: data.role,
+      };
+
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      login(userData);
+      navigate('/');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Invalid email or password');
     }
+  };
 
-    // Prepare user data for storage and context
-    const userData = {
-      user_id: data.user_id,
-      full_name: data.full_name,
-      role: data.role,
-    };
+  const handleForgotPassword = async () => {
+    setForgotMessage('');
+    setForgotError('');
 
-    // Store tokens and user data
-    localStorage.setItem('access_token', data.access);
-    localStorage.setItem('refresh_token', data.refresh);
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    // Pass the user data to your auth context
-    login(userData);
-
-    navigate('/');
-  } catch (err) {
-    console.error('Login error:', err);
-    setError('Invalid email or password');
-  }
-};
+    try {
+      await axios.post('http://213.199.53.33:8000/api/auth/forgot-password/', {
+        email: forgotEmail,
+      });
+      setForgotMessage('A new password has been sent to your email.');
+      setForgotEmail('');
+    } catch (error) {
+      setForgotError('Failed to send email. Please try again.');
+    }
+  };
 
   return (
     <div
       className="flex bg-cover bg-center h-screen w-screen overflow-hidden"
       style={{ backgroundImage: `url(${logo})` }}
     >
-      {/* Left Side - Clear Image */}
       <div className="flex-1 relative hidden md:block" />
 
-      {/* Right Side - Login Form */}
       <div className="w-165 flex items-center justify-center relative backdrop-blur-sm bg-slate-600/90 rounded-lg">
         <div className="absolute inset-0" />
         <div className="absolute inset-0 bg-opacity-40" />
@@ -142,6 +165,7 @@ const LoginPage: FC = () => {
               </label>
               <button
                 type="button"
+                onClick={() => setShowForgotDialog(true)}
                 className="text-blue-300 hover:text-blue-100 underline drop-shadow"
               >
                 Forgot Password?
@@ -157,6 +181,42 @@ const LoginPage: FC = () => {
           </form>
         </div>
       </div>
+
+      {/* Forgot Password Dialog */}
+      {showForgotDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg relative">
+            <h3 className="text-lg font-semibold mb-4">Forgot Password</h3>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              className="p-2 border border-gray-300 rounded w-full mb-3"
+            />
+            {forgotMessage && (
+              <p className="text-green-600 text-sm mb-2">{forgotMessage}</p>
+            )}
+            {forgotError && (
+              <p className="text-red-600 text-sm mb-2">{forgotError}</p>
+            )}
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowForgotDialog(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForgotPassword}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
