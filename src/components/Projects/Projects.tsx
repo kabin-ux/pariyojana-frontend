@@ -15,6 +15,7 @@ import SearchAndFilter from './SearchAndFilter';
 import ProjectsHeader from './ProjectHeader';
 import ProjectDetail from '../ProjectDetails/ProjectDetail';
 import Breadcrumb from '../BreadCrumb';
+import Swal from 'sweetalert2';
 
 interface ProjectsProps {
   onProjectSelect?: (projectId: string) => void;
@@ -41,7 +42,7 @@ interface NewProjectForm {
 const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   // State management
   const [searchTerm, setSearchTerm] = useState('');
- // Update the filters state structure
+  // Update the filters state structure
   const [filters, setFilters] = useState({
     area: "", // Changed from thematic_area
     sub_area: "",
@@ -89,7 +90,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
 
   // Fetch projects from API
-// Update the useProjects call
+  // Update the useProjects call
   const {
     data: projects,
     loading: projectsLoading,
@@ -119,7 +120,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   ];
 
   // Filter sub-areas based on selected thematic area
-   // Update the formData thematic_area reference in filteredsub_areas
+  // Update the formData thematic_area reference in filteredsub_areas
   const filteredsub_areas = sub_areas.filter((sub_area) => {
     if (!formData.thematic_area) return true
     const selectedThematicArea = thematicAreas.find((area) => area.id.toString() === formData.thematic_area)
@@ -136,7 +137,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   }, [searchTerm, filters]);
 
   // Filter change handler
-   // Update the handleFilterChange function
+  // Update the handleFilterChange function
   const handleFilterChange = (filterName: string, value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -199,17 +200,26 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('के तपाईं यो परियोजना मेटाउन चाहनुहुन्छ?')) {
+    const result = await Swal.fire({
+      title: 'के तपाईं यो परियोजना मेटाउन चाहनुहुन्छ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'हो',
+      cancelButtonText: 'होइन',
+    });
+
+    if (result.isConfirmed) {
       try {
         await projectApi.delete(id);
         refetchProjects();
-        console.log('Project deleted successfully');
+        toast.success('परियोजना सफलतापूर्वक मेटाइयो');
       } catch (error) {
         console.error('Error deleting project:', error);
         toast.error('परियोजना मेटाउन सकिएन');
       }
     }
   };
+
 
   const handleProjectClick = (project: any) => {
     setSelectedProject(project);

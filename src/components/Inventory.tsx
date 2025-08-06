@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import FileUploadModal from '../modals/FileUploadModal';
 import { toNepaliNumber } from '../utils/formatters';
 import FileViewerModal from '../modals/FileViewerModal';
+import Swal from 'sweetalert2';
 
 interface InventoryData {
   id: number;
@@ -74,7 +75,18 @@ const Inventory: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('के तपाईं यो कम्पनी हटाउन निश्चित हुनुहुन्छ?')) return;
+    const result = await Swal.fire({
+      title: 'के तपाईं निश्चित हुनुहुन्छ?',
+      text: 'यो कम्पनी हटाएपछि फिर्ता ल्याउन सकिँदैन!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'हो, हटाउनुहोस्',
+      cancelButtonText: 'रद्द गर्नुहोस्',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const token = localStorage.getItem('access_token');

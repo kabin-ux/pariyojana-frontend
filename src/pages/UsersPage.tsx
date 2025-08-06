@@ -19,6 +19,7 @@ import {
 import UserFormModal from '../components/UserFormModal';
 import toast from 'react-hot-toast';
 import type { User } from '../context/types';
+import Swal from 'sweetalert2';
 
 
 // Create a separate component for the UserRow to use hooks properly
@@ -139,21 +140,8 @@ const UserRow: React.FC<{
                                         <Edit3 className="h-4 w-4 text-blue-600" />
                                         <span>सम्पादन गर्नुहोस्</span>
                                     </button>
-
-                                    {/* <button
-                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors cursor-pointer"
-                                        onClick={() => {
-                                            setResetPasswordUser(user);
-                                            setShowPasswordModal(true);
-                                            setMenuOpen(false);
-                                        }}
-                                    >
-                                        <Key className="h-4 w-4 text-orange-600" />
-                                        <span>पासवर्ड रिसेट गर्नुहोस्</span>
-                                    </button> */}
-
                                     <button
-                                        // ...existing props...
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors cursor-pointer"
                                         onClick={() => {
                                             handleResetPassword(user);
                                             setMenuOpen(false);
@@ -165,9 +153,20 @@ const UserRow: React.FC<{
 
                                     <button
                                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors cursor-pointer"
-                                        onClick={() => {
+                                        onClick={async () => {
                                             const action = user.is_active ? 'निष्क्रिय' : 'सक्रिय';
-                                            if (window.confirm(`${user.full_name} लाई ${action} गर्नुहुन्छ?`)) {
+
+                                            const result = await Swal.fire({
+                                                title: `${user.full_name} लाई ${action} गर्नुहुन्छ?`,
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                confirmButtonText: 'हो',
+                                                cancelButtonText: 'होइन',
+                                            });
+
+                                            if (result.isConfirmed) {
                                                 toggleUserStatus(user.user_id, !user.is_active);
                                             }
                                             setMenuOpen(false);
@@ -186,9 +185,18 @@ const UserRow: React.FC<{
                                     <div className="border-t border-gray-100 mt-1 pt-1">
                                         <button
                                             className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 flex items-center gap-3 text-red-600 transition-colors cursor-pointer"
-                                            onClick={() => {
-                                                if (window.confirm(`${user.full_name} लाई स्थायी रूपमा मेटाउनुहुन्छ? यो कार्य फिर्ता गर्न सकिँदैन।`)) {
-                                                    deleteUser(user.user_id);
+                                            onClick={async () => {
+                                                const result = await Swal.fire({
+                                                    title: `${user.full_name} लाई स्थायी रूपमा मेटाउनुहुन्छ?`,
+                                                    text: 'यो कार्य फिर्ता गर्न सकिँदैन।',
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonText: 'मेटाउनुहोस्',
+                                                    cancelButtonText: 'रद्द गर्नुहोस्',
+                                                });
+
+                                                if (result.isConfirmed) {
+                                                    await deleteUser(user.user_id);
                                                 }
                                                 setMenuOpen(false);
                                             }}
@@ -196,6 +204,7 @@ const UserRow: React.FC<{
                                             <Trash2 className="h-4 w-4" />
                                             <span>मेटाउनुहोस्</span>
                                         </button>
+
                                     </div>
 
                                     <div className="border-t border-gray-100 mt-1 pt-1">

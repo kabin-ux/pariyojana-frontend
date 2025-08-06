@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 interface DropdownMenuProps {
   id: number;
@@ -20,14 +21,26 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ id, onEdit, onDelete }) => 
   };
 
   const handleDelete = () => {
-    if (window.confirm('के तपाईं यो मेटाउन चाहनुहुन्छ?')) {
-      if (onDelete) {
-        onDelete(id);
-      } else {
-        console.log('Delete item:', id);
+    Swal.fire({
+      title: 'पक्का हुनुहुन्छ?',
+      text: 'के तपाईं यो मेटाउन चाहनुहुन्छ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'हो, मेटाउनुहोस्!',
+      cancelButtonText: 'रद्द गर्नुहोस्',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (onDelete) {
+          onDelete(id);
+        } else {
+          console.log('Delete item:', id);
+        }
+        setIsOpen(false);
+        Swal.fire('मेटाइयो!', 'तपाईंको डेटा मेटाइयो।', 'success');
       }
-    }
-    setIsOpen(false);
+    });
   };
 
   return (
@@ -41,8 +54,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ id, onEdit, onDelete }) => 
       {isOpen && (
         <>
           {/* Backdrop to close dropdown */}
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute right-0 top-full mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-20">

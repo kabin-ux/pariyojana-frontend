@@ -25,7 +25,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           <h2 className="text-lg font-semibold text-gray-900">पुष्टि गर्नुहोस्</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -50,14 +50,14 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             रद्द गर्नुहोस्
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center space-x-2 disabled:opacity-50"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center space-x-2 disabled:opacity-50 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>{loading ? 'मेटाउँदै...' : 'मेटाउनुहोस्'}</span>
