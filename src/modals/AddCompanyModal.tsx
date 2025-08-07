@@ -122,7 +122,12 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
         license_file: null,
         tax_clearance_file: null,
         pan_file: null,
-        existing_inventory_list: null
+        existing_inventory_list: null,
+        goods_description: '',
+        construction_description: '',
+        consulting_description: '',
+        other_services_description: '',
+        fiscal_year: ''
       });
     }
   }, [initialData]);
@@ -173,34 +178,34 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
       const formDataToSend = new FormData();
 
       // Append all non-file fields
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key.endsWith('_file') || key === 'existing_inventory_list') return;
-      if (value !== null && value !== undefined) {
-        formDataToSend.append(key, value.toString());
-      }
-    });
-        // Handle file fields conditionally
-    const fileFieldMappings = [
-      { field: 'registration_certificate_file', enabled: formData.has_registration_certificate },
-      { field: 'license_file', enabled: formData.has_license_copy },
-      { field: 'tax_clearance_file', enabled: formData.has_tax_clearance },
-      { field: 'pan_file', enabled: formData.has_vat_pan_certificate },
-      { field: 'existing_inventory_list', enabled: true } // Always required
-    ];
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key.endsWith('_file') || key === 'existing_inventory_list') return;
+        if (value !== null && value !== undefined) {
+          formDataToSend.append(key, value.toString());
+        }
+      });
+      // Handle file fields conditionally
+      const fileFieldMappings = [
+        { field: 'registration_certificate_file', enabled: formData.has_registration_certificate },
+        { field: 'license_file', enabled: formData.has_license_copy },
+        { field: 'tax_clearance_file', enabled: formData.has_tax_clearance },
+        { field: 'pan_file', enabled: formData.has_vat_pan_certificate },
+        { field: 'existing_inventory_list', enabled: true } // Always required
+      ];
 
       fileFieldMappings.forEach(({ field, enabled }) => {
-      if (!enabled) return;
+        if (!enabled) return;
 
-      const value = formData[field as keyof FormData];
-      
-      if (value instanceof File) {
-        formDataToSend.append(field, value);
-      } else if (value === null) {
-        formDataToSend.append(field, ''); // Clear existing file
-      } else if (typeof value === 'string' && value.startsWith('http')) {
-        // Keep existing file - don't append anything
-      }
-    });
+        const value = formData[field as keyof FormData];
+
+        if (value instanceof File) {
+          formDataToSend.append(field, value);
+        } else if (value === null) {
+          formDataToSend.append(field, ''); // Clear existing file
+        } else if (typeof value === 'string' && value.startsWith('http')) {
+          // Keep existing file - don't append anything
+        }
+      });
 
       // 3. Include ID for edits
       if (companyId) {
@@ -223,7 +228,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
       const method = companyId ? 'patch' : 'post';
 
       // 5. Make the API call
-      const response = await axios[method](url, formDataToSend, config);
+      await axios[method](url, formDataToSend, config);
 
       toast.success(companyId
         ? 'कम्पनी विवरण सफलतापूर्वक सम्पादन गरियो।'
