@@ -21,17 +21,6 @@ const MunicipalOfficeSearch: React.FC<MunicipalOfficeSearchProps> = ({ searchTer
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Search className="w-4 h-4" />
-          </button>
-          <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
-            प्राथमिकता सेट गर्नुहोस्
-          </button>
-          <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
-            नगर सभामा पेश गर्नुहोस्
-          </button>
-        </div>
       </div>
     </div>
   );

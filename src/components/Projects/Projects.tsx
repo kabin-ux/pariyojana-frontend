@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSettings } from '../../hooks/useSetting';
 import { useProjects } from '../../hooks/useProject';
 import { projectApi } from '../../services/projectsApi';
@@ -42,15 +42,7 @@ interface NewProjectForm {
 const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   // State management
   const [searchTerm, setSearchTerm] = useState('');
-  // Update the filters state structure
-  const [filters, setFilters] = useState({
-    area: "", // Changed from thematic_area
-    sub_area: "",
-    source: "",
-    expenditure_center: "",
-    ward_no: "",
-    status: "",
-  })
+
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,26 +81,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const { data: units } = useSettings('इकाई', true);
   const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
 
-  // Fetch projects from API
-  // Update the useProjects call
-  const {
-    data: projects,
-    loading: projectsLoading,
-    error: projectsError,
-    totalCount,
-    hasNext,
-    hasPrevious,
-    refetch: refetchProjects,
-  } = useProjects({
-    page: currentPage,
-    search: searchTerm,
-    area: filters.area, // Changed from thematic_area
-    sub_area: filters.sub_area,
-    source: filters.source,
-    expenditure_center: filters.expenditure_center,
-    ward_no: filters.ward_no,
-    status: filters.status,
-  })
+
   // Ward options with proper mapping
   const wardOptions = [
     { value: 1, label: 'वडा नं. - १' },
@@ -127,40 +100,19 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     return (sub_area as any).thematic_area === selectedThematicArea?.id
   })
 
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setCurrentPage(1); // Reset to first page when searching
-    }, 500);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, filters]);
-
-  // Filter change handler
-  // Update the handleFilterChange function
-  const handleFilterChange = (filterName: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterName]: value,
-      // Reset sub_area when area changes
-      ...(filterName === "area" && { sub_area: "" }), // Changed from thematic_area
-    }))
-    setCurrentPage(1)
-  }
-
-  // Clear filters handler
-  const handleClearFilters = () => {
-    setFilters({
-      area: "", // Changed from thematic_area
-      sub_area: "",
-      source: "",
-      expenditure_center: "",
-      ward_no: "",
-      status: "",
-    })
-    setSearchTerm("")
-    setCurrentPage(1)
-  }
+  const {
+    data: projects,
+    loading: projectsLoading,
+    error: projectsError,
+    totalCount,
+    hasNext,
+    hasPrevious,
+    refetch: refetchProjects,
+  } = useProjects({
+    page: currentPage,
+    search: searchTerm,
+  })
 
   // Event handlers
   const handleEdit = async (id: number) => {
@@ -198,6 +150,12 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       toast.error('परियोजना सम्पादन गर्न सकिएन');
     }
   };
+
+   // Handle search input change
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term)
+    setCurrentPage(1) // Reset to first page when searching
+  }
 
   const handleDelete = async (id: number) => {
     const result = await Swal.fire({
@@ -432,15 +390,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
           <SearchAndFilter
             searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            onFilterChange={handleFilterChange}
-            onClearFilters={handleClearFilters}
-            filters={filters}
-            thematicAreas={thematicAreas}
-            sub_areas={sub_areas}
-            sources={sources}
-            expenditureCenters={expenditureCenters}
-            wardOptions={wardOptions}
+            onSearchChange={handleSearchChange}
           />
 
           {/* Error Message */}

@@ -40,9 +40,7 @@ const ProjectTable: React.FC = () => {
             </button>
           </div>
           <div className="flex items-center space-x-2">
-            <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
-              प्राथमिकता सेट गर्नुहोस्
-            </button>
+           
             <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
               प्राथमिकरण गर्नुहोस्
             </button>
