@@ -1,4 +1,4 @@
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface SubjectCommitteeSearchProps {
   searchTerm: string;
@@ -24,10 +24,6 @@ export const SubjectCommitteeSearch = ({ searchTerm, onSearchChange }: SubjectCo
         </select>
       </div>
       <div className="flex items-center space-x-2">
-        <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-          <Filter className="w-4 h-4" />
-          <span>फिल्टरहरू</span>
-        </button>
       </div>
     </div>
   </div>

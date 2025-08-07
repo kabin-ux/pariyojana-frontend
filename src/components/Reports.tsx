@@ -8,6 +8,7 @@ import {
   RotateCcw,
   FileText
 } from 'lucide-react';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface DropdownOption {
   label: string;
@@ -38,7 +39,7 @@ const Reports: React.FC = () => {
         const data = res.data;
         setDropdownData({
           fiscal_years: data.fiscal_years.map((y: any) => ({
-            label: y.year,
+            label: toNepaliNumber(y.year),
             value: y.id
           })),
           report_types: data.report_types.map((r: any) => ({
@@ -105,8 +106,6 @@ const Reports: React.FC = () => {
       ward: selectedWard || null,
       status: selectedStatus || null
     };
-
-    console.log('📤 Payload being sent to backend:', payload);
 
     try {
       const response = await axios.post('http://213.199.53.33:8000/api/reports/export-excel/', payload, {

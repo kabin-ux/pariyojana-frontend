@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, Home, Check, ThumbsUp, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Home, Check, ThumbsUp, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/hooks';
 
@@ -159,10 +159,10 @@ const Authentication: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              {/* <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                 <Filter className="w-4 h-4" />
                 <span>फिल्टरहरू</span>
-              </button>
+              </button> */}
               <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                 <Search className="w-4 h-4" />
               </button>

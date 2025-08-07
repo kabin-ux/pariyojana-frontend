@@ -1,4 +1,4 @@
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface SearchAndFilterProps {
   searchTerm: string;
@@ -18,10 +18,6 @@ export const SearchAndFilter = ({ searchTerm, onSearchChange }: SearchAndFilterP
       <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
     </div>
     <div className="flex items-center space-x-2">
-      <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-        <Filter className="w-4 h-4" />
-        <span>फिल्टरहरू</span>
-      </button>
     </div>
   </div>
 );
