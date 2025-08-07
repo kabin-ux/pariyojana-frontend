@@ -28,6 +28,11 @@ interface FormData {
   telephone_number: string;
   company_registration_number: string;
   pan_number: string;
+  registration_certificate_file?: File | string | null;
+  license_file?: File | string | null;
+  tax_clearance_file?: File | string | null;
+  pan_file?: File | string | null;
+  existing_inventory_list?: File | string | null;
   has_registration_certificate: boolean,
   is_renewed: boolean,
   has_vat_pan_certificate: boolean,
@@ -86,8 +91,39 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
     if (initialData) {
       setFormData(prev => ({
         ...prev,
-        ...initialData
+        ...initialData,
+        // Convert string dates to proper format if needed
+        fiscal_year: initialData.fiscal_year || '',
+        // Handle boolean fields
+        has_registration_certificate: initialData.has_registration_certificate || false,
+        is_renewed: initialData.is_renewed || false,
+        has_vat_pan_certificate: initialData.has_vat_pan_certificate || false,
+        has_tax_clearance: initialData.has_tax_clearance || false,
+        has_license_copy: initialData.has_license_copy || false
       }));
+    } else {
+      // Reset form when adding new
+      setFormData({
+        company_name: '',
+        address: '',
+        correspondence_address: '',
+        contact_person: '',
+        email: '',
+        mobile_number: '',
+        telephone_number: '',
+        company_registration_number: '',
+        pan_number: '',
+        has_registration_certificate: false,
+        is_renewed: false,
+        has_vat_pan_certificate: false,
+        has_tax_clearance: false,
+        has_license_copy: false,
+        registration_certificate_file: null,
+        license_file: null,
+        tax_clearance_file: null,
+        pan_file: null,
+        existing_inventory_list: null
+      });
     }
   }, [initialData]);
 
@@ -98,6 +134,22 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof FormData) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({
+        ...prev,
+        [fieldName]: e.target.files![0]
+      }));
+    }
+  };
+
+  const handleRemoveFile = (fieldName: keyof FormData) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: null
     }));
   };
 
@@ -118,35 +170,126 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
 
     try {
       const token = localStorage.getItem('access_token');
+      const formDataToSend = new FormData();
 
-      if (companyId) {
-        // Editing mode
-        await axios.put(
-          `http://213.199.53.33:8000/api/inventory/supplier-registry/${companyId}/`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        toast.success('कम्पनी विवरण सफलतापूर्वक सम्पादन गरियो।');
-      } else {
-        // Adding new
-        await axios.post(
-          'http://213.199.53.33:8000/api/inventory/supplier-registry/',
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        toast.success('तपाईंको निवेदन सफलतापूर्वक पेश गरियो। धन्यवाद!');
+      // Append all non-file fields
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key.endsWith('_file') || key === 'existing_inventory_list') return;
+      if (value !== null && value !== undefined) {
+        formDataToSend.append(key, value.toString());
       }
+    });
+        // Handle file fields conditionally
+    const fileFieldMappings = [
+      { field: 'registration_certificate_file', enabled: formData.has_registration_certificate },
+      { field: 'license_file', enabled: formData.has_license_copy },
+      { field: 'tax_clearance_file', enabled: formData.has_tax_clearance },
+      { field: 'pan_file', enabled: formData.has_vat_pan_certificate },
+      { field: 'existing_inventory_list', enabled: true } // Always required
+    ];
+
+      fileFieldMappings.forEach(({ field, enabled }) => {
+      if (!enabled) return;
+
+      const value = formData[field as keyof FormData];
+      
+      if (value instanceof File) {
+        formDataToSend.append(field, value);
+      } else if (value === null) {
+        formDataToSend.append(field, ''); // Clear existing file
+      } else if (typeof value === 'string' && value.startsWith('http')) {
+        // Keep existing file - don't append anything
+      }
+    });
+
+      // 3. Include ID for edits
+      if (companyId) {
+        formDataToSend.append('id', companyId.toString());
+      }
+
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+          'X-CSRFToken': localStorage.getItem('csrftoken') || ''
+        }
+      };
+
+      // 4. Determine API endpoint and method
+      const url = companyId
+        ? `http://213.199.53.33:8000/api/inventory/supplier-registry/${companyId}/`
+        : 'http://213.199.53.33:8000/api/inventory/supplier-registry/';
+
+      const method = companyId ? 'patch' : 'post';
+
+      // 5. Make the API call
+      const response = await axios[method](url, formDataToSend, config);
+
+      toast.success(companyId
+        ? 'कम्पनी विवरण सफलतापूर्वक सम्पादन गरियो।'
+        : 'तपाईंको निवेदन सफलतापूर्वक पेश गरियो। धन्यवाद!');
 
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting company:', error);
-      toast.error('त्रुटि भयो। कृपया पुन: प्रयास गर्नुहोस्।');
+      const errorMsg = error.response?.data?.registration_certificate_file?.[0] ||
+        error.response?.data?.detail ||
+        'त्रुटि भयो। कृपया पुन: प्रयास गर्नुहोस्।';
+      toast.error(errorMsg);
     }
   };
 
 
+  const renderFileInput = (field: {
+    key: string;
+    label: string;
+    required: boolean;
+    currentFile: string | null;
+    enabled: boolean; // New prop to control enabled state
+  }) => (
+    <div key={field.key} className="space-y-2">
+      <label className={`block text-sm font-medium ${field.enabled ? 'text-gray-700' : 'text-gray-400'}`}>
+        {field.label} {field.required && field.enabled && <span className="text-red-500">*</span>}
+      </label>
 
+      {!field.enabled ? (
+        <div className="text-sm text-gray-500 italic">
+          यो फिल्ड सक्रिय गर्न उपरको चेकबक्स चयन गर्नुहोस्
+        </div>
+      ) : field.currentFile ? (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-blue-600 truncate">
+            {field.currentFile.split('/').pop()}
+          </span>
+          <button
+            type="button"
+            onClick={() => handleRemoveFile(field.key as keyof FormData)}
+            className="text-sm text-red-500 hover:text-red-700"
+          >
+            हटाउनुहोस्
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <input
+            type="file"
+            onChange={(e) => handleFileChange(e, field.key as keyof FormData)}
+            className={`block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm file:font-semibold
+              ${field.enabled ? 'file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100' : 'file:bg-gray-100 file:text-gray-500'}
+              ${!field.enabled ? 'cursor-not-allowed' : ''}`}
+            required={field.required}
+            accept=".pdf,.jpg,.jpeg,.png"
+            disabled={!field.enabled}
+          />
+          <p className="text-xs text-gray-500">PDF, JPG, PNG मात्र स्वीकार्य</p>
+        </div>
+      )}
+    </div>
+  );
   if (!open) return null;
 
   return (
@@ -462,6 +605,59 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b-2 border-gray-200 pb-2">
+                प्रमाणपत्रहरू अपलोड गर्नुहोस्
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {renderFileInput({
+                  key: 'registration_certificate_file',
+                  label: 'संस्था वा फर्म दर्ताको प्रमाणपत्र',
+                  required: formData.has_registration_certificate,
+                  currentFile: typeof formData.registration_certificate_file === 'string' ?
+                    formData.registration_certificate_file : null,
+                  enabled: formData.has_registration_certificate
+                })}
+
+                {renderFileInput({
+                  key: 'license_file',
+                  label: 'इजाजत पत्रको प्रतिलिपि',
+                  required: formData.has_license_copy,
+                  currentFile: typeof formData.license_file === 'string' ?
+                    formData.license_file : null,
+                  enabled: formData.has_license_copy
+                })}
+
+                {renderFileInput({
+                  key: 'tax_clearance_file',
+                  label: 'कर चुक्ताको प्रमाणपत्र',
+                  required: formData.has_tax_clearance,
+                  currentFile: typeof formData.tax_clearance_file === 'string' ?
+                    formData.tax_clearance_file : null,
+                  enabled: formData.has_tax_clearance
+                })}
+
+                {renderFileInput({
+                  key: 'pan_file',
+                  label: 'प्यान दर्ताको प्रमाणपत्र',
+                  required: formData.has_vat_pan_certificate,
+                  currentFile: typeof formData.pan_file === 'string' ?
+                    formData.pan_file : null,
+                  enabled: formData.has_vat_pan_certificate
+                })}
+
+                {renderFileInput({
+                  key: 'existing_inventory_list',
+                  label: 'वर्तमान सूची',
+                  required: formData.is_renewed,
+                  currentFile: typeof formData.existing_inventory_list === 'string' ?
+                    formData.existing_inventory_list : null,
+                  enabled: formData.is_renewed // Always enabled as it's required
+                })}
               </div>
             </div>
           </div>
