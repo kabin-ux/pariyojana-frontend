@@ -16,6 +16,8 @@ interface PaymentDetail {
     physical_progress?: number;
     payment_percent: number;
     amount_paid: number;
+    is_active?:boolean;
+    
 }
 
 export const useInstallmentDetails = (projectId: number) => {

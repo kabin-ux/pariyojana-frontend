@@ -18,6 +18,11 @@ export const toNepaliNumber = (num: number | string): string => {
   return num?.toString().split('').map(d => (/\d/.test(d) ? nepaliDigits[+d] : d)).join('');
 };
 
+export const convertNepaliToEnglish = (num: string) =>
+  num.replace(/[०-९]/g, d => String("०१२३४५६७८९".indexOf(d)));
+
+
+
 export const formatWardNumber = (wardNo: number | number[] | undefined): string => {
   if (!wardNo || (Array.isArray(wardNo) && wardNo.length === 0)) return 'N/A';
 

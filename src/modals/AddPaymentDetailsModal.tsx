@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { toNepaliNumber } from '../utils/formatters';
+import { convertNepaliToEnglish, toNepaliNumber } from '../utils/formatters';
 
 export interface BudgetFormData {
     id?: number | null;
@@ -40,11 +40,19 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
     const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (field: keyof BudgetFormData, value: string | number) => {
+        let processedValue: string | number = value;
+
+        // For numeric fields, convert Nepali digits to English and ensure number type
+        if (['amount_paid', 'payment_percent', 'physical_progress', 'agreement_amount'].includes(field)) {
+            processedValue = Number(convertNepaliToEnglish(String(value))) || 0;
+        }
+
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            [field]: processedValue
         }));
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,7 +109,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700">सम्झौता बजेट:</span>
-                            <span className="text-sm text-gray-900">रु. {formData.agreement_amount.toLocaleString('ne-NP', { minimumFractionDigits: 2 })}</span>
+                            <span className="text-sm text-gray-900">रु. {toNepaliNumber(formData.agreement_amount.toLocaleString('ne-NP', { minimumFractionDigits: 2 }))}</span>
                         </div>
                     </div>
 
@@ -149,6 +157,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 required
                             />
+
                         </div>
 
                         <div>
