@@ -118,12 +118,12 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
 
         const dataToSend = isAccountPhoto ? {
             bank_account_number: formData.bank_account_number,
-            check_photo: formData.uploadedFile,
+            file: formData.uploadedFile,
             remarks: formData.description,
             project: projectId.toString(),
         } : {
             title: formData.fileName,
-            check_photo: formData.uploadedFile,
+            file: formData.uploadedFile,
             remarks: formData.description,
             project: projectId.toString(),
         };
