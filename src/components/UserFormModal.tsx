@@ -25,7 +25,7 @@ interface UserFormModalProps {
 
 type InputField = {
   label: string;
-  name: keyof Omit<User, 'user_id' | 'is_active' | 'isSelf'>; // Exclude non-form fields
+  name: keyof Omit<User, 'id' | 'is_active' | 'isSelf'>; // Exclude non-form fields
   type?: string;
   required?: boolean;
 };
@@ -48,7 +48,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   user,
   onSuccess,
 }) => {
-  const [formData, setFormData] = useState<Omit<User, 'user_id' | 'is_active' | 'isSelf'>>({
+  const [formData, setFormData] = useState<Omit<User, 'id' | 'is_active' | 'isSelf'>>({
     full_name: '',
     email: '',
     phone: '',
@@ -102,8 +102,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       let url = 'http://213.199.53.33:8000/api/users/';
       let method: 'post' | 'put' = 'post';
 
-      if (editMode && user?.user_id) { // Changed from id to user_id
-        url += `${user.user_id}/`;
+      if (editMode && user?.id) { // Changed from id to user_id
+        url += `${user.id}/`;
         method = 'put';
       }
 
@@ -117,7 +117,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         body: JSON.stringify({
           ...formData,
           // Include user_id if editing
-          ...(editMode && user?.user_id && { user_id: user.user_id })
+          ...(editMode && user?.id && { id: user.id })
         }),
       });
 

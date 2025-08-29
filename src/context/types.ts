@@ -13,8 +13,8 @@ const roles = [
 export type UserRole = typeof roles[number];
 
 export interface User {
-  user_id: number;
-  id?: number; // For form operations
+  user_id?: number;
+  id: number; // For form operations
   full_name: string;
   last_name?: string;
   email?: string;

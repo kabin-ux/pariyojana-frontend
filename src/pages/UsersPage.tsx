@@ -167,7 +167,7 @@ const UserRow: React.FC<{
                                             });
 
                                             if (result.isConfirmed) {
-                                                toggleUserStatus(user.user_id, !user.is_active);
+                                                toggleUserStatus(user.id, !user.is_active);
                                             }
                                             setMenuOpen(false);
                                         }}
@@ -196,7 +196,7 @@ const UserRow: React.FC<{
                                                 });
 
                                                 if (result.isConfirmed) {
-                                                    await deleteUser(user.user_id);
+                                                    await deleteUser(user.id);
                                                 }
                                                 setMenuOpen(false);
                                             }}
