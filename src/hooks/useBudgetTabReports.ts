@@ -55,26 +55,26 @@ export const useBudgetReports = () => {
                 thematicBudgetReportPDFRes,
                 wardLevelBudgetReportPDFRes,
             ] = await Promise.all([
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitylevel-chart/'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/federalgov-chart/'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitypride-chart/'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/provinciallytransfer-chart/'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/thematiccommittee-chart/'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/wardlevel-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitylevel-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/federalgov-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitypride-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/provinciallytransfer-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/thematiccommittee-chart/'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/wardlevel-chart/'),
 
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitylevel/report/?type=excel'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/federalgov/report/?type=excel'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitypride/report/?type=excel'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/provinciallytransfer/report/?type=excel'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/thematiccommittee/report/?type=excel'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/wardlevel/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitylevel/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/federalgov/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitypride/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/provinciallytransfer/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/thematiccommittee/report/?type=excel'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/wardlevel/report/?type=excel'),
 
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitylevel/report/?type=pdf'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/federalgov/report/?type=pdf'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/municipalitypride/report/?type=pdf'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/provinciallytransfer/report/?type=pdf'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/thematiccommittee/report/?type=pdf'),
-                axios.get('http://43.205.255.142/api/planning/budget-committee/wardlevel/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitylevel/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/federalgov/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/municipalitypride/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/provinciallytransfer/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/thematiccommittee/report/?type=pdf'),
+                axios.get('http://3.108.67.147/api/planning/budget-committee/wardlevel/report/?type=pdf'),
             ]);
 
             // Set Chart Data
@@ -141,7 +141,7 @@ export const useBudgetReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `http://43.205.255.142/api/planning/budget-committee/${endpoint}/report/?type=${type}`,
+                `http://3.108.67.147/api/planning/budget-committee/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);

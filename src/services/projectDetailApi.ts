@@ -10,7 +10,7 @@ import type {
   Document 
 } from '../types/projectDetail';
 
-const API_BASE_URL = 'http://43.205.255.142/api/projects';
+const API_BASE_URL = 'http://3.108.67.147/api/projects';
 
 // Get auth token
 const getAuthToken = () => localStorage.getItem('access_token');

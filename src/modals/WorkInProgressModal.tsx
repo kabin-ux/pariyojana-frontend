@@ -83,8 +83,8 @@ const WorkInProgressModal: React.FC<CostEstimateModalProps> = ({
     try {
       const hasId = formData.id !== undefined;
       const url = hasId
-        ? `http://43.205.255.142/api/projects/${projectId}/work-progress/${formData.id}/`
-        : `http://43.205.255.142/api/projects/${projectId}/work-progress/work-type/1/`;
+        ? `http://3.108.67.147/api/projects/${projectId}/work-progress/${formData.id}/`
+        : `http://3.108.67.147/api/projects/${projectId}/work-progress/work-type/1/`;
 
       const method = hasId ? 'patch' : 'post';
 
