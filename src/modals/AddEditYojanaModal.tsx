@@ -57,7 +57,7 @@ const BeneficiaryDialog: React.FC<BeneficiaryDialogProps> = ({
 
         try {
             const res = await axios.patch(
-                `http://3.108.67.147/api/projects/${projectId}/beneficiaries/`,
+                `http://13.233.254.0/api/projects/${projectId}/beneficiaries/`,
                 formData
             );
             toast.success('डेटा सफलतापूर्वक सेभ गरियो!');

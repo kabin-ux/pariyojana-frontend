@@ -45,7 +45,7 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
             }
 
             await axios.post(
-                `http://3.108.67.147/api/projects/${endpoint}/${project.serial_number}/upload/`,
+                `http://13.233.254.0/api/projects/${endpoint}/${project.serial_number}/upload/`,
                 formData,
                 {
                     headers: {
@@ -79,7 +79,7 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
             }
 
             const response = await axios.get(
-                `http://3.108.67.147/api/projects/${endpoint}/generate-pdf/${serial_no}/${project.serial_number}/`,
+                `http://13.233.254.0/api/projects/${endpoint}/generate-pdf/${serial_no}/${project.serial_number}/`,
                 { responseType: 'blob' }
             );
 

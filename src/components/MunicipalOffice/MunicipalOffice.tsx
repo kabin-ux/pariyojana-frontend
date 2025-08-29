@@ -33,7 +33,7 @@ const MunicipalOffice: React.FC = () => {
 
   const handleCouncilProjects = async (id: number) => {
     try {
-      await axios.post(`http://3.108.67.147/api/planning/municipality-executive/pre-assembly-projects/${id}/submit-to-assembly/`);
+      await axios.post(`http://13.233.254.0/api/planning/municipality-executive/pre-assembly-projects/${id}/submit-to-assembly/`);
       toast.success('परियोजना सफलतापूर्वक नगर सभामा पेश गरियो।');
       window.location.reload();
     } catch (error) {

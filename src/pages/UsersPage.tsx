@@ -260,7 +260,7 @@ const UsersPage: React.FC = () => {
             }
             console.log(viewMode)
 
-            const response = await axios.get('http://3.108.67.147/api/users/', {
+            const response = await axios.get('http://13.233.254.0/api/users/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -286,7 +286,7 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             await axios.patch(
-                `http://3.108.67.147/api/users/${userId}/`,
+                `http://13.233.254.0/api/users/${userId}/`,
                 { is_active: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -299,7 +299,7 @@ const UsersPage: React.FC = () => {
     const deleteUser = async (userId: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            await axios.delete(`http://3.108.67.147/api/users/${userId}/`, {
+            await axios.delete(`http://13.233.254.0/api/users/${userId}/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchUsers();
@@ -325,8 +325,8 @@ const UsersPage: React.FC = () => {
     //         console.log("reset user:", resetPasswordUser)
 
     //         const url = resetPasswordUser.isSelf
-    //             ? `http://3.108.67.147/api/auth/reset-password/`
-    //             : `http://3.108.67.147/api/auth/reset-password/${resetPasswordUser.id}/`;
+    //             ? `http://13.233.254.0/api/auth/reset-password/`
+    //             : `http://13.233.254.0/api/auth/reset-password/${resetPasswordUser.id}/`;
 
     //         await axios.post(
     //             url,
@@ -351,8 +351,8 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             const url = resetPasswordUser.isSelf
-                ? `http://3.108.67.147/api/auth/reset-password/`
-                : `http://3.108.67.147/api/auth/reset-password/${resetPasswordUser.id}/`;
+                ? `http://13.233.254.0/api/auth/reset-password/`
+                : `http://13.233.254.0/api/auth/reset-password/${resetPasswordUser.id}/`;
 
             await axios.post(
                 url,

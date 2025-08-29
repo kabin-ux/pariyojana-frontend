@@ -180,7 +180,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     }
 
     try {
-      await axios.post(`http://3.108.67.147${endpoint}`, {
+      await axios.post(`http://13.233.254.0${endpoint}`, {
         ...formData,
         ward_no: formData.ward_no,
       }, {

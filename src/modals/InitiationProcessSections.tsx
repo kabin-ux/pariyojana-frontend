@@ -30,7 +30,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
     const fetchInitiationProcess = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://3.108.67.147/api/projects/${projectId}/initiation-process/`);
+            const res = await axios.get(`http://13.233.254.0/api/projects/${projectId}/initiation-process/`);
             setInitiationProcess(res.data);
         } catch (err) {
             console.error('Error fetching initiation process:', err);
@@ -45,7 +45,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
 
         const bsDate = BS.ADToBS(today); // Convert to BS
         try {
-            await axios.post(`http://3.108.67.147/api/projects/${projectId}/initiation-process/`, {
+            await axios.post(`http://13.233.254.0/api/projects/${projectId}/initiation-process/`, {
                 project: projectId,
                 initiation_method: selectedMethod,
                 started_at: bsDate,

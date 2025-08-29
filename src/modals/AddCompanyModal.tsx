@@ -74,7 +74,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
     const fetchFiscalYears = async () => {
       const token = localStorage.getItem('access_token');
       try {
-        const res = await axios.get<FiscalYear[]>('http://3.108.67.147/api/settings/fiscal-year/',
+        const res = await axios.get<FiscalYear[]>('http://13.233.254.0/api/settings/fiscal-year/',
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -222,8 +222,8 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose, onSucc
 
       // 4. Determine API endpoint and method
       const url = companyId
-        ? `http://3.108.67.147/api/inventory/supplier-registry/${companyId}/`
-        : 'http://3.108.67.147/api/inventory/supplier-registry/';
+        ? `http://13.233.254.0/api/inventory/supplier-registry/${companyId}/`
+        : 'http://13.233.254.0/api/inventory/supplier-registry/';
 
       const method = companyId ? 'patch' : 'post';
 

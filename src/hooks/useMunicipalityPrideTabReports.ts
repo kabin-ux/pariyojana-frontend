@@ -32,14 +32,14 @@ export const useMunicipalityPrideReports = () => {
                 municipalityPrideReportPDFRes,
                 municipalityPrideSubmitBudgetReportPDFRes,
             ] = await Promise.all([
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/entered-municipality-chart/'),
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/submitted-budget-chart/'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/entered-municipality-chart/'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/submitted-budget-chart/'),
 
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/entered-municipality/report/?type=excel'),
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/submitted-budget/report/?type=excel'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/entered-municipality/report/?type=excel'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/submitted-budget/report/?type=excel'),
 
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/entered-municipality/report/?type=pdf'),
-                axios.get('http://3.108.67.147/api/planning/municipality-pride-project/submitted-budget/report/?type=pdf'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/entered-municipality/report/?type=pdf'),
+                axios.get('http://13.233.254.0/api/planning/municipality-pride-project/submitted-budget/report/?type=pdf'),
             ]);
 
             // Set Chart Data
@@ -86,7 +86,7 @@ export const useMunicipalityPrideReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `http://3.108.67.147/api/planning/municipality-pride-project/${endpoint}/report/?type=${type}`,
+                `http://13.233.254.0/api/planning/municipality-pride-project/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);
