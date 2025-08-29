@@ -81,7 +81,7 @@ const LoginPage: FC = () => {
     setForgotError('');
 
     try {
-      await axios.post('http://13.233.254.0/api/auth/forgot-password/', {
+      await axios.post('http://43.205.239.123/api/auth/forgot-password/', {
         email: forgotEmail,
       });
       setForgotMessage('A new password has been sent to your email.');

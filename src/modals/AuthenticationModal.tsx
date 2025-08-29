@@ -44,7 +44,7 @@ export default function AuthenticationModal({
     const fetchUsers = async () => {
         const token = localStorage.getItem('access_token')
         try {
-            const response = await fetch('http://13.233.254.0/api/users/', {
+            const response = await fetch('http://43.205.239.123/api/users/', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -71,7 +71,7 @@ export default function AuthenticationModal({
 
         try {
             const response = await fetch(
-                `http://13.233.254.0/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`,
+                `http://43.205.239.123/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`,
                 {
                     method: 'PATCH',
                     headers: {

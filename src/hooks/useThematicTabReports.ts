@@ -38,17 +38,17 @@ export const useThematicReports = () => {
                 thematicReportPDFRes,
                 thematicRecommendedReportPDFRes,
             ] = await Promise.all([
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevel-chart/'),
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevelthemtic-chart/'),
-                axios.get('http://13.233.254.0/api/planning/thematic/Wardrecommended-chart/'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevel-chart/'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevelthemtic-chart/'),
+                axios.get('http://43.205.239.123/api/planning/thematic/Wardrecommended-chart/'),
 
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevel-chart/report/?type=excel'),
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevelthemtic-chart/report/?type=excel'),
-                axios.get('http://13.233.254.0/api/planning/thematic/Wardrecommended-chart/report/?type=excel'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevel-chart/report/?type=excel'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevelthemtic-chart/report/?type=excel'),
+                axios.get('http://43.205.239.123/api/planning/thematic/Wardrecommended-chart/report/?type=excel'),
 
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevel-chart/report/?type=pdf'),
-                axios.get('http://13.233.254.0/api/planning/thematic/wardlevelthemtic-chart/report/?type=pdf'),
-                axios.get('http://13.233.254.0/api/planning/thematic/Wardrecommended-chart/report/?type=pdf'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevel-chart/report/?type=pdf'),
+                axios.get('http://43.205.239.123/api/planning/thematic/wardlevelthemtic-chart/report/?type=pdf'),
+                axios.get('http://43.205.239.123/api/planning/thematic/Wardrecommended-chart/report/?type=pdf'),
             ]);
 
             // Set Chart Data
@@ -100,7 +100,7 @@ export const useThematicReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `http://13.233.254.0/api/planning/thematic/${endpoint}/report/?type=${type}`,
+                `http://43.205.239.123/api/planning/thematic/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);

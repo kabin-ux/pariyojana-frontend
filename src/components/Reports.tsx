@@ -34,7 +34,7 @@ const Reports: React.FC = () => {
   const [reportDownloadUrl, setReportDownloadUrl] = useState('');
 
   useEffect(() => {
-    axios.get('http://13.233.254.0/api/reports/dropdowns/')
+    axios.get('http://43.205.239.123/api/reports/dropdowns/')
       .then(res => {
         const data = res.data;
         setDropdownData({
@@ -108,7 +108,7 @@ const Reports: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('http://13.233.254.0/api/reports/export-excel/', payload, {
+      const response = await axios.post('http://43.205.239.123/api/reports/export-excel/', payload, {
         responseType: 'blob'
       });
 

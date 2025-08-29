@@ -1,6 +1,6 @@
 import type { Project, ProjectsApiResponse } from '../types/project';
 
-const API_BASE_URL = 'http://13.233.254.0/api/projects';
+const API_BASE_URL = 'http://43.205.239.123/api/projects';
 
 // Get auth token
 const getAuthToken = () => localStorage.getItem('access_token');
