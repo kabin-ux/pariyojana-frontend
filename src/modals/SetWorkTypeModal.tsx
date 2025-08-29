@@ -75,8 +75,8 @@ const WorkTypeModal: React.FC<CostEstimateModalProps> = ({
         try {
             const hasId = formData.id !== undefined;
             const url = hasId
-                ? `http://213.199.53.33:8000/api/projects/${projectId}/work-types/${formData.id}/`
-                : `http://213.199.53.33:8000/api/projects/${projectId}/work-types/`;
+                ? `http://43.205.255.142/api/projects/${projectId}/work-types/${formData.id}/`
+                : `http://43.205.255.142/api/projects/${projectId}/work-types/`;
 
             const method = hasId ? 'patch' : 'post';
 

@@ -70,7 +70,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/`,
+        `http://43.205.255.142/api/projects/project-plan-tracker/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -93,7 +93,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://213.199.53.33:8000/api/projects/project-aggrement/${project.serial_number}/`,
+        `http://43.205.255.142/api/projects/project-aggrement/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+        `http://43.205.255.142/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -174,7 +174,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
 //     formData.append('document_type', serialNo.toString());
 
 //     const response = await axios.post(
-//       `http://213.199.53.33:8000/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+//       `http://43.205.255.142/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
 //       formData,
 //       {
 //         headers: {
@@ -213,7 +213,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://213.199.53.33:8000/api/projects/project-aggrement/${project.serial_number}/upload/`,
+        `http://43.205.255.142/api/projects/project-aggrement/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
