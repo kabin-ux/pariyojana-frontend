@@ -124,7 +124,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                     <th className="border border-gray-300 p-3 text-left text-sm font-medium text-gray-700">नागरिकता प्र. नं.</th>
                                     <th className="border border-gray-300 p-3 text-left text-sm font-medium text-gray-700">सम्पर्क नं.</th>
                                     <th className="border border-gray-300 p-3 text-left text-sm font-medium text-gray-700">नागरिकता प्रतिलिपी</th>
-                                    <th className="border border-gray-300 p-3 text-left text-sm font-medium text-gray-700">कार्य</th>
                                 </tr>
                             </thead>
                             <tbody>
