@@ -66,15 +66,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">नक्सा तथा लागत अनुमान</h3>
         <div className="space-y-4">
-          <div className="flex justify-end">
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-              onClick={() => onGenerateBill(project.serial_number)}
-            >
-              <FileText className="w-4 h-4" />
-              <span>Generate Bill</span>
-            </button>
-          </div>
+
 
           <div className="overflow-x-auto rounded-lg border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
@@ -341,6 +333,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
           </div>
         </div>
 
+
         {isSetWorkInProgressOpen && (
           <WorkInProgressModal
             isOpen={isSetWorkInProgressOpen}
@@ -364,7 +357,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             onClick={() => setIsCostModalOpen(true)}
           >
             <Edit className="w-4 h-4" />
-            <span>इडिट गर्नुहोस्</span>
+            <span>सम्पादन गर्नुहोस्</span>
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -384,6 +377,29 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             <p className="text-sm text-gray-600 mb-1">कुल लागत अनुमान:</p>
             <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.total_estimated_cost))}</p>
           </div>
+        </div>
+        {/* Actions */}
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={() => onGenerateBill(project.serial_number)}
+            disabled={
+              !costDetail?.estimated_cost ||
+              !costDetail?.contingency_percent ||
+              !costDetail?.contingency_amount ||
+              !costDetail?.total_estimated_cost
+            }
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg transition cursor-pointer
+        ${!costDetail?.estimated_cost ||
+                !costDetail?.contingency_percent ||
+                !costDetail?.contingency_amount ||
+                !costDetail?.total_estimated_cost
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>बिल उत्पन्न गर्नुहोस्</span>
+          </button>
         </div>
 
         {isCostModalOpen && (

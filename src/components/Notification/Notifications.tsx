@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bell, FileText, Clock, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Notification {
   id: number;
@@ -17,6 +18,7 @@ interface NotificationsProps {
 
 const Notifications: React.FC<NotificationsProps> = ({ limit = 10, showHeader = true }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +79,10 @@ const Notifications: React.FC<NotificationsProps> = ({ limit = 10, showHeader = 
     return message.substring(0, maxLength) + '...';
   };
 
+  const handleNavigate = () => {
+    navigate('/projects')
+  }
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -122,11 +128,12 @@ const Notifications: React.FC<NotificationsProps> = ({ limit = 10, showHeader = 
         notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`flex items-start space-x-3 p-3 rounded-lg transition-colors duration-150 ${
+            className={`flex items-start space-x-3 p-3 rounded-lg transition-colors duration-150 cursor-pointer ${
               notification.is_read 
                 ? 'hover:bg-gray-50' 
                 : 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-500'
             }`}
+            onClick={handleNavigate}
           >
             <div className={`p-2 rounded-lg ${
               notification.is_read ? 'bg-gray-100' : 'bg-blue-100'
