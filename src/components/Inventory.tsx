@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload } from 'lucide-react';
+import { Search, Info, Edit, FileText, Copy, Plus, ChevronLeft, ChevronRight, Home, Trash2, Upload, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import AddCompanyModal from '../modals/AddCompanyModal';
 import toast from 'react-hot-toast';
@@ -34,16 +34,20 @@ const Inventory: React.FC = () => {
   const [fieldKey, setSelectedFieldKey] = useState(''); // default
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentFileUrl, setCurrentFileUrl] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const fetchInventory = async () => {
     try {
       const token = localStorage.getItem('access_token')
+      setLoading(true);
       const response = await axios.get('http://213.199.53.33:8000/api/inventory/supplier-registry/', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventoryData(response.data);
     } catch (error) {
       console.error('Error fetching inventory:', error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -216,73 +220,79 @@ const Inventory: React.FC = () => {
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
         </div>
-
-        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स.</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनीको नाम</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनी दर्ता</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">प्यान दर्ता</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कर चुक्ता प्रमाणपत्र</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">इन्जाजत पत्र</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">मौजुदा सूची पत्र</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">अन्य</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {filteredData.map((item, index) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition">
-                  <td className="py-3 px-4 text-sm text-gray-800">{toNepaliNumber(index + 1)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">{item.company_name}</td>
-                  <td className="py-3 px-4">
-                    {renderDocumentCell(
-                      !!item.registration_certificate_file,
-                      item.id,
-                      'registration_certificate_file',
-                      item.registration_certificate_file
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    {renderDocumentCell(
-                      !!item.pan_file,
-                      item.id,
-                      'pan_file',
-                      item.pan_file
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    {renderDocumentCell(
-                      !!item.tax_clearance_file,
-                      item.id,
-                      'tax_clearance_file',
-                      item.tax_clearance_file
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    {renderDocumentCell(
-                      !!item.license_file,
-                      item.id,
-                      'license_file',
-                      item.license_file
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    {renderDocumentCell(
-                      !!item.existing_inventory_list,
-                      item.id,
-                      'existing_inventory_list',
-                      item.existing_inventory_list
-                    )}
-                  </td>
-                  <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            <span className="ml-3 text-gray-600">डेटा लोड हुँदैछ...</span>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स.</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनीको नाम</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कम्पनी दर्ता</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">प्यान दर्ता</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">कर चुक्ता प्रमाणपत्र</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">इन्जाजत पत्र</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">मौजुदा सूची पत्र</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">अन्य</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
+              <tbody className="divide-y divide-gray-100 bg-white">
+                {filteredData.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50 transition">
+                    <td className="py-3 px-4 text-sm text-gray-800">{toNepaliNumber(index + 1)}</td>
+                    <td className="py-3 px-4 text-sm text-gray-800">{item.company_name}</td>
+                    <td className="py-3 px-4">
+                      {renderDocumentCell(
+                        !!item.registration_certificate_file,
+                        item.id,
+                        'registration_certificate_file',
+                        item.registration_certificate_file
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {renderDocumentCell(
+                        !!item.pan_file,
+                        item.id,
+                        'pan_file',
+                        item.pan_file
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {renderDocumentCell(
+                        !!item.tax_clearance_file,
+                        item.id,
+                        'tax_clearance_file',
+                        item.tax_clearance_file
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {renderDocumentCell(
+                        !!item.license_file,
+                        item.id,
+                        'license_file',
+                        item.license_file
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {renderDocumentCell(
+                        !!item.existing_inventory_list,
+                        item.id,
+                        'existing_inventory_list',
+                        item.existing_inventory_list
+                      )}
+                    </td>
+                    <td className="py-3 px-4">{renderActionCell(item.actions || ['edit'], item.id)}</td>
+                  </tr>
+                ))}
+              </tbody>
 
-          </table>
-        </div>
+            </table>
+          </div>
+        )}
 
 
         <div className="flex items-center justify-center mt-6">

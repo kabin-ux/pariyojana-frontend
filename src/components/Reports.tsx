@@ -6,7 +6,8 @@ import {
   Home,
   ChevronDown,
   RotateCcw,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 import { toNepaliNumber } from '../utils/formatters';
 
@@ -149,7 +150,10 @@ const Reports: React.FC = () => {
     </div>
   );
 
-  if (!dropdownData) return <div className="p-6 text-center">लोड हुँदैछ...</div>;
+  if (!dropdownData) return <div className="flex justify-center items-center py-12">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <span className="ml-2 text-gray-600">लोड हुँदैछ...</span>
+    </div>;
 
   return (
     <main className="flex-1 p-6">

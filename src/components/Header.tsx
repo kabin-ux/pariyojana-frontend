@@ -2,12 +2,18 @@ import  { type FC } from 'react';
 import {  User } from 'lucide-react';
 import toplogo from '../assets/toplogo.png';
 import { useAuth } from '../context/hooks';
+import { useNavigate } from 'react-router-dom';
 
 const Header: FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/')
+  }
   return (
     <header className="bg-teal-700 text-white px-6 py-3 flex items-center justify-between">
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 cursor-pointer" onClick={handleClick}>
         <div className="w-10 h-10 rounded-full flex items-center justify-center">
           <img src={toplogo} alt="toplogo" />
         </div>

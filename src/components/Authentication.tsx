@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, ChevronLeft, ChevronRight, Home, Check, ThumbsUp, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Home, Check, ThumbsUp, X, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/hooks';
 
@@ -25,7 +25,8 @@ const Authentication: React.FC = () => {
   const [selectedDocument, setSelectedDocument] = useState<AuthDocument | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [comment, setComment] = useState('');
-  console.log("user", user)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   useEffect(() => {
     fetchAuthenticationDocuments();
@@ -33,6 +34,7 @@ const Authentication: React.FC = () => {
 
   const fetchAuthenticationDocuments = async () => {
     const token = localStorage.getItem('access_token');
+    setIsLoading(true);
     try {
       const response = await fetch(`http://213.199.53.33:8000/api/authentication/verification-logs/?all=true`, {
         headers: {
@@ -45,6 +47,8 @@ const Authentication: React.FC = () => {
     } catch (err) {
       console.error('Error fetching documents:', err);
       toast.error("Error fetching auth documents");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,6 +62,7 @@ const Authentication: React.FC = () => {
     if (!selectedDocument) return;
 
     const token = localStorage.getItem('access_token');
+    setIsActionLoading(true);
     try {
       const response = await fetch(
         `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument?.source_id}/check/`,
@@ -80,6 +85,8 @@ const Authentication: React.FC = () => {
     } catch (err) {
       console.error('Error checking document:', err);
       toast.error("Error checking document");
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -87,6 +94,7 @@ const Authentication: React.FC = () => {
     if (!selectedDocument) return;
 
     const token = localStorage.getItem('access_token');
+    setIsActionLoading(true);
     try {
       const response = await fetch(
         `http://213.199.53.33:8000/api/authentication/documents/${selectedDocument.source_id}/approve/`,
@@ -109,15 +117,14 @@ const Authentication: React.FC = () => {
     } catch (err) {
       console.error('Error approving document:', err);
       toast.error("Error approving document");
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
   // Determine if current user is the checker for this document
-  console.log(user)
-
   const isChecker = selectedDocument?.checker === user?.user_id;
   // Determine if current user is the approver for this document
-  console.log(user)
   const isApprover = selectedDocument?.approver === user?.user_id;
   // Document is ready for checking (based on status)
   const needsChecking = selectedDocument?.status === 'चेक जाँचको लागी पठाइएको';
@@ -127,6 +134,15 @@ const Authentication: React.FC = () => {
   const filteredData = authenticationDocuments.filter(item =>
     item.file_title_display.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Loading component
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center py-12">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <span className="ml-2 text-gray-600">लोड हुँदैछ...</span>
+    </div>
+  );
+
   return (
     <main className="flex-1 p-6">
       {/* BreadCrumb */}
@@ -159,23 +175,21 @@ const Authentication: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              {/* <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Filter className="w-4 h-4" />
-                <span>फिल्टरहरू</span>
-              </button> */}
-              <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Search className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
+
         {/* Modal for document actions */}
         {isModalOpen && selectedDocument && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900">प्रमाणिकरण विवरण</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 cursor-pointer">
+                <button 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                  disabled={isActionLoading}
+                >
                   <X />
                 </button>
               </div>
@@ -212,15 +226,21 @@ const Authentication: React.FC = () => {
                   placeholder="टिप्पणी थप्नुहोस् (वैकल्पिक)"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   rows={3}
+                  disabled={isActionLoading}
                 />
 
                 <div className="flex space-x-3 mt-3">
                   {isChecker && needsChecking && (
                     <button
                       onClick={handleCheckDocument}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
+                      disabled={isActionLoading}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Check className="w-4 h-4" />
+                      {isActionLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Check className="w-4 h-4" />
+                      )}
                       <span>जाँच गर्नुहोस्</span>
                     </button>
                   )}
@@ -228,9 +248,14 @@ const Authentication: React.FC = () => {
                   {isApprover && needsApproval && (
                     <button
                       onClick={handleApproveDocument}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer"
+                      disabled={isActionLoading}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <ThumbsUp className="w-4 h-4" />
+                      {isActionLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <ThumbsUp className="w-4 h-4" />
+                      )}
                       <span>स्वीकृत गर्नुहोस्</span>
                     </button>
                   )}
@@ -241,49 +266,60 @@ const Authentication: React.FC = () => {
         )}
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-          <table className="min-w-full bg-white divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">फाइल शीर्षक</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">भूमिका</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">स्थिति</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">कार्य</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredData.map((item, index) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-3 px-4 text-sm text-gray-900">{index + 1}</td>
-                  <td className="py-3 px-4 text-sm text-gray-900">{item.file_title_display}</td>
-                  <td className="py-3 px-4 text-sm text-gray-900">{item.uploader_role}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block px-2 py-1 text-xs font-medium rounded-full
-                ${item.status_nepali.includes('स्वीकृत')
-                          ? 'bg-green-100 text-green-800'
-                          : item.status_nepali.includes('जाँच गरिएको')
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'}`}
-                    >
-                      {item.status_nepali}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <button
-                      onClick={() => handleDocumentClick(item)}
-                      className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-                    >
-                      <ChevronRight className="w-4 h-4 inline-block" />
-                    </button>
-                  </td>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+            <table className="min-w-full bg-white divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">फाइल शीर्षक</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">भूमिका</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">स्थिति</th>
+                  <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">कार्य</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredData.length > 0 ? (
+                  filteredData.map((item, index) => (
+                    <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4 text-sm text-gray-900">{index + 1}</td>
+                      <td className="py-3 px-4 text-sm text-gray-900">{item.file_title_display}</td>
+                      <td className="py-3 px-4 text-sm text-gray-900">{item.uploader_role}</td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full
+                            ${item.status_nepali.includes('स्वीकृत')
+                              ? 'bg-green-100 text-green-800'
+                              : item.status_nepali.includes('जाँच गरिएको')
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-blue-100 text-blue-800'}`}
+                        >
+                          {item.status_nepali}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => handleDocumentClick(item)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+                        >
+                          <ChevronRight className="w-4 h-4 inline-block" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500">
+                      {searchTerm ? 'कुनै परिणाम फेला परेन' : 'कुनै डाटा उपलब्ध छैन'}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -10,7 +10,7 @@ import axios from 'axios';
 interface LoginResponse {
   access: string;
   refresh: string;
-  user_id: number;
+  id?: number;
   full_name: string;
   email?: string;
   role:
@@ -59,7 +59,7 @@ const LoginPage: FC = () => {
       }
 
       const userData = {
-        user_id: data.user_id,
+        id: data.id ?? 0,
         full_name: data.full_name,
         role: data.role,
       };
