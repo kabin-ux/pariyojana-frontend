@@ -37,25 +37,25 @@ export const usePlanning = () => {
     setError(null);
     try {
       const [wardRes, muniRes, wardThematicRes, prioritizedWardRes, prioritizedWardThematicRes, thematicRes, prioritizedThematicRes, municipalityPrideRes, recommendedThematicWardProjectsRes, thematicBudgetRes, municipalityPrideBudgetRes, wardLevelBudgetRes, municipalityLevelBudgetRes, provincialGovernmentBudgetRes, federalGovernmentBudgetRes, preAssemblyProjectsRes, councilProjectsRes, submittedProjectsRes, approvedProjectsRes] = await Promise.all([
-        axios.get('http://213.199.53.33:8000/api/planning/ward-office/ward-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/ward-office/municipality-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/ward-office/ward-thematic-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/ward-office/prioritized-ward-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/ward-office/prioritized-ward-thematic/'),
-        axios.get('http://213.199.53.33:8000/api/planning/thematic/thematic-plans/'),
-        axios.get('http://213.199.53.33:8000/api/planning/thematic/prioritized-plans/'),
-        axios.get('http://213.199.53.33:8000/api/planning/municipality-pride-project/municipality-pride-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/thematic/wardrecommend-project/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/thematic-committee/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/municipality-pride/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/budget-ward-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/municipality-programs/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/provience-transfer-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/budget-committee/federal-gov-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/municipality-executive/pre-assembly-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/municipality-executive/council-submitted-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/municipal-assembly/submitted-projects/'),
-        axios.get('http://213.199.53.33:8000/api/planning/municipal-assembly/approved-projects/')
+        axios.get('http://43.205.239.123/api/planning/ward-office/ward-projects/'),
+        axios.get('http://43.205.239.123/api/planning/ward-office/municipality-projects/'),
+        axios.get('http://43.205.239.123/api/planning/ward-office/ward-thematic-projects/'),
+        axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-ward-projects/'),
+        axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-ward-thematic/'),
+        axios.get('http://43.205.239.123/api/planning/thematic/thematic-plans/'),
+        axios.get('http://43.205.239.123/api/planning/thematic/prioritized-plans/'),
+        axios.get('http://43.205.239.123/api/planning/municipality-pride-project/municipality-pride-projects/'),
+        axios.get('http://43.205.239.123/api/planning/thematic/wardrecommend-project/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/thematic-committee/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/municipality-pride/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/budget-ward-projects/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/municipality-programs/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/provience-transfer-projects/'),
+        axios.get('http://43.205.239.123/api/planning/budget-committee/federal-gov-projects/'),
+        axios.get('http://43.205.239.123/api/planning/municipality-executive/pre-assembly-projects/'),
+        axios.get('http://43.205.239.123/api/planning/municipality-executive/council-submitted-projects/'),
+        axios.get('http://43.205.239.123/api/planning/municipal-assembly/submitted-projects/'),
+        axios.get('http://43.205.239.123/api/planning/municipal-assembly/approved-projects/')
       ]);
 
       setWardProjects(wardRes.data || []);

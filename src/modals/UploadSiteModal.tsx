@@ -30,7 +30,7 @@ const OperationSiteUploadModal: React.FC<Props> = ({ onClose, projectId, serialN
 
     try {
       const token = localStorage.getItem('access_token');
-      await axios.post(`http://213.199.53.33:8000/api/projects/${projectId}/operation-site-photos/`, formData, {
+      await axios.post(`http://43.205.239.123/api/projects/${projectId}/operation-site-photos/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
