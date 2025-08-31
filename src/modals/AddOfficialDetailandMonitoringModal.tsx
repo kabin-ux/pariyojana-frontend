@@ -39,30 +39,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
 
     if (!isOpen) return null;
 
-    // const handleAddMember = () => {
-    //     const newId = Math.max(...formRows.map(row => row.id)) + 1;
-    //     const newRow: FormRow = {
-    //         id: newId,
-    //         post: 'सदस्य',
-    //         full_name: '',
-    //         gender: '',
-    //         address: '',
-    //         citizenship_no: '',
-    //         contact_no: '',
-    //         citizenshipCopy: '',
-    //         citizenship_front: null,
-    //         citizenship_back: null
-    //     };
-    //     setFormRows(prev => [...prev, newRow]);
+    // const handleDeleteRow = (id: number) => {
+    //     // Only allow deletion if it's a सदस्य position and there are more than the original rows
+    //     const rowToDelete = formRows.find(row => row.id === id);
+    //     if (rowToDelete && rowToDelete.post === 'सदस्य' && formRows.length > rows.length) {
+    //         setFormRows(prev => prev.filter(row => row.id !== id));
+    //     }
     // };
-
-    const handleDeleteRow = (id: number) => {
-        // Only allow deletion if it's a सदस्य position and there are more than the original rows
-        const rowToDelete = formRows.find(row => row.id === id);
-        if (rowToDelete && rowToDelete.post === 'सदस्य' && formRows.length > rows.length) {
-            setFormRows(prev => prev.filter(row => row.id !== id));
-        }
-    };
     const handleInputChange = (id: number, field: keyof FormRow, value: string) => {
         setFormRows(prev =>
             prev.map(row =>
@@ -127,10 +110,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                 </tr>
                             </thead>
                             <tbody>
-                                {formRows.map((row) => (
+                                {formRows.map((row, index) => (
                                     <tr key={row.id} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 p-2">
-                                            <div className="text-sm text-gray-700 text-center">{row.id}</div>
+                                            <div className="text-sm text-gray-700 text-center">{index +1}</div>
                                         </td>
                                         <td className="border border-gray-300 p-2">
                                             <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded text-sm font-medium">
@@ -209,7 +192,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="border border-gray-300 p-2">
+                                        {/* <td className="border border-gray-300 p-2">
                                             {row.post === 'सदस्य' && formRows.length > rows.length && (
                                                 <button
                                                     onClick={() => handleDeleteRow(row.id)}
@@ -218,7 +201,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, rows, onSave }) =
                                                     <X size={12} />
                                                 </button>
                                             )}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>
