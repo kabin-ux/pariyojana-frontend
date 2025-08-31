@@ -83,8 +83,8 @@ const CostEstimateModal: React.FC<CostEstimateModalProps> = ({
             const isEditing = !!formData.id;
 
             const url = isEditing
-                ? `http://43.205.239.123/api/projects/cost-estimate-details/${formData?.id}/`
-                : `http://43.205.239.123/api/projects/${projectId}/cost-estimate-details/`;
+                ? `http://213.199.53.33/api/projects/cost-estimate-details/${formData?.id}/`
+                : `http://213.199.53.33/api/projects/${projectId}/cost-estimate-details/`;
 
             const method = isEditing ? 'patch' : 'post';
 

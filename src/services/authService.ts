@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const BASE_URL = 'http://localhost:8000/api/auth';
-const BASE_URL = 'http://43.205.239.123/api/auth';
+const BASE_URL = 'http://213.199.53.33/api/auth';
 
 
 

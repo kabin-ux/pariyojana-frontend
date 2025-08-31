@@ -62,19 +62,19 @@ const Dashboard: React.FC = () => {
       const token = localStorage.getItem('access_token');
       try {
         const [summaryRes, budgetRes, areaRes, wardRes, budgetAreaRes] = await Promise.all([
-          axios.get('http://43.205.239.123/api/dashboard/summary/', {
+          axios.get('http://213.199.53.33/api/dashboard/summary/', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://43.205.239.123/api/dashboard/budget-summary/', {
+          axios.get('http://213.199.53.33/api/dashboard/budget-summary/', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://43.205.239.123/api/dashboard/area-wise-distribution/', {
+          axios.get('http://213.199.53.33/api/dashboard/area-wise-distribution/', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://43.205.239.123/api/dashboard/wardwise-budget/', {
+          axios.get('http://213.199.53.33/api/dashboard/wardwise-budget/', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://43.205.239.123/api/dashboard/budget-area/', {
+          axios.get('http://213.199.53.33/api/dashboard/budget-area/', {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
