@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { SettingsItem, ApiResponse, SubThematicArea } from '../types/settings';
 
-const API_BASE_URL = 'http://213.199.53.33/api/settings';
+const API_BASE_URL = 'http://213.199.53.33:8000/api/settings';
 
 // Get auth token
 const getAuthToken = () => localStorage.getItem('access_token');

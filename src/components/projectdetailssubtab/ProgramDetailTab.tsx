@@ -20,7 +20,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
     if (!projectData || !projectData.serial_number) return;
     setBeneficiaryLoading(true);
 
-    fetch(`http://213.199.53.33/api/projects/${projectData.serial_number}/beneficiaries/`)
+    fetch(`http://213.199.53.33:8000/api/projects/${projectData.serial_number}/beneficiaries/`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch beneficiary data');
         return res.json();

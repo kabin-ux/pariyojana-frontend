@@ -130,7 +130,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     };
 
     const getApiEndpoint = () => {
-        const baseUrl = 'http://213.199.53.33/api/planning';
+        const baseUrl = 'http://213.199.53.33:8000/api/planning';
         switch (projectType) {
             case 'ward':
                 return `${baseUrl}/ward-office/ward-projects/${projectData.id}/`;
