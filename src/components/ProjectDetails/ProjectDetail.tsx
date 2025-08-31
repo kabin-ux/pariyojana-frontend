@@ -175,11 +175,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         const formData = new FormData();
         formData.append("project", project.serial_number);
         formData.append("post", row.post);
-        formData.append("full_name", row.full_name);
-        formData.append("address", row.address);
-        formData.append("gender", row.gender);
-        formData.append("citizenship_no", row.citizenship_no);
-        formData.append("contact_no", row.contact_no);
+        formData.append("full_name", row.full_name || '');
+        formData.append("address", row.address || '');
+        formData.append("gender", row.gender || '');
+        formData.append("citizenship_no", row.citizenship_no || '');
+        formData.append("contact_no", row.contact_no || '');
 
         if (row.citizenship_front && typeof row.citizenship_front === 'object') {
           formData.append("citizenship_front", row.citizenship_front);
@@ -204,7 +204,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       toast.success("पदाधिकारी विवरण सफलतापूर्वक अपडेट गरियो।");
     } catch (error) {
       console.error("Error saving official details:", error);
-      toast.error("पदाधिकारी विवरण अपडेट गर्न सकिएन।");
+      // toast.error("पदाधिकारी विवरण अपडेट गर्न सकिएन।");
     }
   };
 
@@ -256,7 +256,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
       toast.success("अनुगमन तथा सहजिकरण समिति सफलतापूर्वक अपडेट गरियो।");
     } catch (error) {
       console.error("Error saving monitoring committee:", error);
-      toast.error("अनुगमन समिति सेभ गर्न सकिएन।");
+      // toast.error("अनुगमन समिति सेभ गर्न सकिएन।");
     }
   };
 
