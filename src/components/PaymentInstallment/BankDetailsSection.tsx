@@ -136,19 +136,13 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
             formData.append('remarks', data.remarks);
             formData.append('project', data.project);
 
-            if (data.check_photo) {
-                // If it's a new file upload
-                if (data.check_photo instanceof File) {
-                    formData.append('check_photo', data.check_photo);
-                }
-                // If it's an existing photo URL (during edit)
-                else if (typeof data.check_photo === 'string') {
-                    formData.append('check_photo', data.check_photo);
-                }
+            // Only append the file if it's a new File object
+            if (data.check_photo && data.check_photo instanceof File) {
+                formData.append('check_photo', data.check_photo);
             }
 
             let url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/`;
-            let method = 'post';
+            let method: 'post' | 'patch' = 'post';
 
             if (editAccountPhotoId) {
                 url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
@@ -161,11 +155,12 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 data: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             toast.success(editAccountPhotoId ? 'खाता फोटो सम्पादन भयो' : 'खाता फोटो सफलतापूर्वक थपियो');
+
             const updatedData = await fetchBankAccountPhotos(project.serial_number);
             setBankAccountPhotos(updatedData);
             setIsBankAccountPhotosModalOpen(false);
@@ -175,6 +170,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
             toast.error('खाता फोटो सेभ गर्न सकिएन');
         }
     };
+
 
     const addBankDetails = async (projectSerialNumber: number, data: {
         bank_id: number;
