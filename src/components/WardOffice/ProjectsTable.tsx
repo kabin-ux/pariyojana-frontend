@@ -40,9 +40,9 @@ export const ProjectsTable = ({
   const handlePrioritize = async (id: number) => {
     let endpoint = '';
     if (tabType === 'वडा स्तरीय परियोजना') {
-      endpoint = `http://213.199.53.33:8000/api/planning/ward-office/ward-projects/${id}/prioritize/`;
+      endpoint = `http://www.bardagoriyapms.com/api/planning/ward-office/ward-projects/${id}/prioritize/`;
     } else if (tabType === 'विषयगत समितिका परियोजना') {
-      endpoint = `http://213.199.53.33:8000/api/planning/ward-office/ward-thematic-projects/${id}/prioritize/`;
+      endpoint = `http://www.bardagoriyapms.com/api/planning/ward-office/ward-thematic-projects/${id}/prioritize/`;
     } else {
       return;
     }
@@ -80,7 +80,7 @@ export const ProjectsTable = ({
 
   const handleRecommendtoBudget = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33:8000/api/planning/ward-office/prioritized-ward-projects/${id}/recommend-to-budget-committee/`);
+      await axios.post(`http://www.bardagoriyapms.com/api/planning/ward-office/prioritized-ward-projects/${id}/recommend-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
@@ -91,7 +91,7 @@ export const ProjectsTable = ({
 
   const handleRecommendMunicipalProgramToBudget = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33:8000/api/planning/ward-office/municipality-projects/${id}/recommend-to-budget-committee/`);
+      await axios.post(`http://www.bardagoriyapms.com/api/planning/ward-office/municipality-projects/${id}/recommend-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
@@ -102,7 +102,7 @@ export const ProjectsTable = ({
 
   const handleRecommendtoThematic = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33:8000/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
+      await axios.post(`http://www.bardagoriyapms.com/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
       toast.success('परियोजना सफलतापूर्वक विषयगत समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
