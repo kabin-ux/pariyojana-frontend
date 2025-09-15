@@ -114,9 +114,21 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
 
         const payload: any = {
             bank_account_number: formData.bank_account_number,
+
+            title: formData.fileName,
             remarks: formData.description,
             project: projectId,
+            file: formData.uploadedFile,
         };
+
+        // onSave(payload);
+
+
+        // const payload: any = {
+        //     bank_account_number: formData.bank_account_number,
+        //     remarks: formData.description,
+        //     project: projectId,
+        // };
 
         if (formData.uploadedFile) {
             payload.check_photo = formData.uploadedFile;

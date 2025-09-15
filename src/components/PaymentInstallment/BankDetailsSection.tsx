@@ -272,11 +272,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                     {bankDetails?.length === 0 && (
                         <button
                             type="button"
-                            className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                             onClick={() => setIsBankModalOpen(true)}
                         >
                             <Plus className="w-4 h-4" />
-                            add गर्नुहोस्
+                            थप्नुहोस्
                         </button>
                     )}
 
@@ -310,7 +310,9 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                             <p className="text-lg font-semibold text-gray-900 bg-white p-3 rounded-lg ">
                                 <ul>
                                     {bankDetails[0].signatories_details.map((signatory: any) => (
-                                        <li key={signatory.id}>{signatory.full_name}</li>
+                                        <li key={signatory.id}>
+                                            {signatory.full_name?.trim() ? signatory.full_name : "नाम नभएको दस्तावत कर्ता"}
+                                        </li>
                                     ))}
                                 </ul>
                             </p>
@@ -420,14 +422,16 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                             <Camera className="w-5 h-5 mr-2 text-blue-600" />
                             खाता नम्बर र चेकको फोटो
                         </h3>
-                        <button
-                            type="button"
-                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
-                            onClick={() => setIsBankAccountPhotosModalOpen(true)}
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>{bankAccountPhotos.length > 0 ? 'सम्पादन गर्नुहोस्' : 'थप्नुहोस्'}</span>
-                        </button>
+                        {bankAccountPhotos?.length === 0 && (
+                            <button
+                                type="button"
+                                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
+                                onClick={() => setIsBankAccountPhotosModalOpen(true)}
+                            >
+                                <Plus className="w-4 h-4" />
+                                थप्नुहोस्
+                            </button>
+                        )}
                     </div>
                 </div>
 
