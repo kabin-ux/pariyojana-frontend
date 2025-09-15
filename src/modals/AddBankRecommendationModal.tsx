@@ -112,27 +112,19 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
             return;
         }
 
-        const form = new FormData();
-        if (isAccountPhoto) {
-            form.append('bank_account_number', formData.bank_account_number);
-            if (formData.uploadedFile) form.append('check_photo', formData.uploadedFile);
-            form.append('remarks', formData.description);
-            form.append('project', projectId.toString());
-        } else {
-            form.append('title', formData.fileName);
-            if (formData.uploadedFile) form.append('file', formData.uploadedFile);
-            form.append('remarks', formData.description);
-            form.append('project', projectId.toString());
+        const payload: any = {
+            bank_account_number: formData.bank_account_number,
+            remarks: formData.description,
+            project: projectId,
+        };
+
+        if (formData.uploadedFile) {
+            payload.check_photo = formData.uploadedFile;
         }
 
-        onSave(form);
+        onSave(payload);
 
-        setFormData({
-            fileName: '',
-            uploadedFile: null,
-            description: '',
-            bank_account_number: '',
-        });
+        setFormData({ fileName: '', uploadedFile: null, description: '', bank_account_number: '' });
     };
 
     return (
