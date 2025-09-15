@@ -45,7 +45,7 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
             }
 
             await axios.post(
-                `http://www.bardagoriyapms.com/api/projects/${endpoint}/${project.serial_number}/upload/`,
+                `https://www.bardagoriyapms.com/api/projects/${endpoint}/${project.serial_number}/upload/`,
                 formData,
                 {
                     headers: {
@@ -79,7 +79,7 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
             }
 
             const response = await axios.get(
-                `http://www.bardagoriyapms.com/api/projects/${endpoint}/generate-pdf/${serial_no}/${project.serial_number}/`,
+                `https://www.bardagoriyapms.com/api/projects/${endpoint}/generate-pdf/${serial_no}/${project.serial_number}/`,
                 { responseType: 'blob' }
             );
 

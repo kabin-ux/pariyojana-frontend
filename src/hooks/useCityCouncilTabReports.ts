@@ -30,20 +30,20 @@ export const useCityCouncilReports = () => {
                 submittedReportPDFRes,
                 approvedReportPDFRes,
             ] = await Promise.all([
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject-chart/'),
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove-chart/'),
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject-chart/'),
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove-chart/'),
 
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject/report/?type=excel', {
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject/report/?type=excel', {
                     responseType: 'blob'
                 }),
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove/report/?type=excel', {
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove/report/?type=excel', {
                     responseType: 'blob'
                 }),
 
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject/report/?type=pdf', {
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/submittedproject/report/?type=pdf', {
                     responseType: 'blob'
                 }),
-                axios.get('http://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove/report/?type=pdf', {
+                axios.get('https://www.bardagoriyapms.com/api/planning/municipal-assembly/projectapprove/report/?type=pdf', {
                     responseType: 'blob'
                 })
             ]);
@@ -93,7 +93,7 @@ export const useCityCouncilReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `http://www.bardagoriyapms.com/api/planning/municipal-assembly/${endpoint}/report/?type=${type}`,
+                `https://www.bardagoriyapms.com/api/planning/municipal-assembly/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);

@@ -34,7 +34,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://www.bardagoriyapms.com/api/projects/${projectId}/bank-details/`,
+                `https://www.bardagoriyapms.com/api/projects/${projectId}/bank-details/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -52,7 +52,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://www.bardagoriyapms.com/api/projects/${projectId}/bank-account-recommendation/`,
+                `https://www.bardagoriyapms.com/api/projects/${projectId}/bank-account-recommendation/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -70,7 +70,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://www.bardagoriyapms.com/api/projects/${projectId}/account-photos/`,
+                `https://www.bardagoriyapms.com/api/projects/${projectId}/account-photos/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -98,11 +98,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 formData.append('file', data.file);
             }
 
-            let url = `http://www.bardagoriyapms.com/api/projects/${project.serial_number}/bank-account-recommendation/`;
+            let url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/bank-account-recommendation/`;
             let method = 'post';
 
             if (editRecommendationId) {
-                url = `http://www.bardagoriyapms.com/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
+                url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
                 method = 'patch';
             }
 
@@ -147,11 +147,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 }
             }
 
-            let url = `http://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/`;
+            let url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/`;
             let method = 'post';
 
             if (editAccountPhotoId) {
-                url = `http://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
+                url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
                 method = 'patch';
             }
 
@@ -183,10 +183,10 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
     }) => {
         try {
             const token = localStorage.getItem('access_token');
-            let url = `http://www.bardagoriyapms.com/api/projects/${projectSerialNumber}/bank-details/`;
+            let url = `https://www.bardagoriyapms.com/api/projects/${projectSerialNumber}/bank-details/`;
             let method = 'post';
             if (editBankId) {
-                url = `http://www.bardagoriyapms.com/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
+                url = `https://www.bardagoriyapms.com/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
                 method = 'patch';
             }
             await axios({

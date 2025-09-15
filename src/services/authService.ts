@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const BASE_URL = 'http://localhost:8000/api/auth';
-const BASE_URL = 'http://www.bardagoriyapms.com/api/auth';
+// const BASE_URL = 'https://localhost:8000/api/auth';
+const BASE_URL = 'https://www.bardagoriyapms.com/api/auth';
 
 
 

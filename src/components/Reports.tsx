@@ -35,7 +35,7 @@ const Reports: React.FC = () => {
   const [reportDownloadUrl, setReportDownloadUrl] = useState('');
 
   useEffect(() => {
-    axios.get('http://www.bardagoriyapms.com/api/reports/dropdowns/')
+    axios.get('https://www.bardagoriyapms.com/api/reports/dropdowns/')
       .then(res => {
         const data = res.data;
         setDropdownData({
@@ -109,7 +109,7 @@ const Reports: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('http://www.bardagoriyapms.com/api/reports/export-excel/', payload, {
+      const response = await axios.post('https://www.bardagoriyapms.com/api/reports/export-excel/', payload, {
         responseType: 'blob'
       });
 

@@ -28,7 +28,7 @@ const FileUploadModal: React.FC<UploadFileModalProps> = ({ open, onClose, compan
       setIsUploading(true);
       const token = localStorage.getItem('access_token');
 
-      await axios.patch(`http://www.bardagoriyapms.com/api/inventory/supplier-registry/${companyId}/`, formData, {
+      await axios.patch(`https://www.bardagoriyapms.com/api/inventory/supplier-registry/${companyId}/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

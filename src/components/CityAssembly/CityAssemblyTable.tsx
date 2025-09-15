@@ -59,7 +59,7 @@ const CityAssemblyTable: React.FC<CityAssemblyTableProps> = ({ activeTab, data, 
                                     <div className="flex flex-col items-center justify-center space-y-4">
                                         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
                                             <svg
-                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns="https://www.w3.org/2000/svg"
                                                 className="w-8 h-8 text-gray-400"
                                                 fill="none"
                                                 viewBox="0 0 24 24"

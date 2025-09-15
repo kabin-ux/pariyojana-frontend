@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { SettingsItem, ApiResponse, SubThematicArea } from '../types/settings';
 
-const API_BASE_URL = 'http://www.bardagoriyapms.com/api/settings';
+const API_BASE_URL = 'https://www.bardagoriyapms.com/api/settings';
 
 // Get auth token
 const getAuthToken = () => localStorage.getItem('access_token');

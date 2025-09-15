@@ -99,7 +99,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      let url = 'http://www.bardagoriyapms.com/api/users/';
+      let url = 'https://www.bardagoriyapms.com/api/users/';
       let method: 'post' | 'put' = 'post';
 
       if (editMode && user?.id) { // Changed from id to user_id

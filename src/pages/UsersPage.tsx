@@ -260,7 +260,7 @@ const UsersPage: React.FC = () => {
             }
             console.log(viewMode)
 
-            const response = await axios.get('http://www.bardagoriyapms.com/api/users/', {
+            const response = await axios.get('https://www.bardagoriyapms.com/api/users/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -286,7 +286,7 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             await axios.patch(
-                `http://www.bardagoriyapms.com/api/users/${userId}/`,
+                `https://www.bardagoriyapms.com/api/users/${userId}/`,
                 { is_active: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -299,7 +299,7 @@ const UsersPage: React.FC = () => {
     const deleteUser = async (userId: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            await axios.delete(`http://www.bardagoriyapms.com/api/users/${userId}/`, {
+            await axios.delete(`https://www.bardagoriyapms.com/api/users/${userId}/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchUsers();
@@ -325,8 +325,8 @@ const UsersPage: React.FC = () => {
     //         console.log("reset user:", resetPasswordUser)
 
     //         const url = resetPasswordUser.isSelf
-    //             ? `http://www.bardagoriyapms.com/api/auth/reset-password/`
-    //             : `http://www.bardagoriyapms.com/api/auth/reset-password/${resetPasswordUser.id}/`;
+    //             ? `https://www.bardagoriyapms.com/api/auth/reset-password/`
+    //             : `https://www.bardagoriyapms.com/api/auth/reset-password/${resetPasswordUser.id}/`;
 
     //         await axios.post(
     //             url,
@@ -351,8 +351,8 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             const url = resetPasswordUser.isSelf
-                ? `http://www.bardagoriyapms.com/api/auth/reset-password/`
-                : `http://www.bardagoriyapms.com/api/auth/reset-password/${resetPasswordUser.id}/`;
+                ? `https://www.bardagoriyapms.com/api/auth/reset-password/`
+                : `https://www.bardagoriyapms.com/api/auth/reset-password/${resetPasswordUser.id}/`;
 
             await axios.post(
                 url,

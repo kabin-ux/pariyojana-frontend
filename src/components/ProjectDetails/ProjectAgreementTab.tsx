@@ -70,7 +70,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/`,
+        `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -93,7 +93,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://www.bardagoriyapms.com/api/projects/project-aggrement/${project.serial_number}/`,
+        `https://www.bardagoriyapms.com/api/projects/project-aggrement/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+        `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -174,7 +174,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
 //     formData.append('document_type', serialNo.toString());
 
 //     const response = await axios.post(
-//       `http://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+//       `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
 //       formData,
 //       {
 //         headers: {
@@ -213,7 +213,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://www.bardagoriyapms.com/api/projects/project-aggrement/${project.serial_number}/upload/`,
+        `https://www.bardagoriyapms.com/api/projects/project-aggrement/${project.serial_number}/upload/`,
         formData,
         {
           headers: {

@@ -130,7 +130,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     };
 
     const getApiEndpoint = () => {
-        const baseUrl = 'http://www.bardagoriyapms.com/api/planning';
+        const baseUrl = 'https://www.bardagoriyapms.com/api/planning';
         switch (projectType) {
             case 'ward':
                 return `${baseUrl}/ward-office/ward-projects/${projectData.id}/`;

@@ -296,12 +296,12 @@
 
 //             if (committeeDetail) {
 //                 // Update existing committee
-//                 const url = `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/${committeeDetail.id}/`;
+//                 const url = `https://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/${committeeDetail.id}/`;
 //                 await axios.patch(url, data, config);
 //                 toast.success("समिति विवरण सफलतापूर्वक अपडेट गरियो");
 //             } else {
 //                 // Create new committee
-//                 const url = `http://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/`;
+//                 const url = `https://localhost:8000/api/projects/${project.serial_number}/consumer-committee-details/`;
 //                 await axios.post(url, { ...data, project: project.serial_number }, config);
 //                 toast.success("समिति विवरण सफलतापूर्वक थपियो");
 //             }
@@ -362,7 +362,7 @@
 //                 }
 
 //                 const matchedDetail = officialDetailsArray.find(detail => detail.id === row.id);
-//                 const url = `http://localhost:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
+//                 const url = `https://localhost:8000/api/projects/${project.serial_number}/official-details/${matchedDetail.id}/`;
 
 //                 return axios.patch(url, formData, {
 //                     headers: {
@@ -398,7 +398,7 @@
 //     //             if (row.citizenship_back) formData.append("citizenship_back", row.citizenship_back);
 
 //     //             // await axios.post(
-//     //             //     `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/`,
+//     //             //     `https://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/`,
 //     //             //     formData,
 //     //             //     {
 //     //             //         headers: {
@@ -409,7 +409,7 @@
 //     //             // );
 
 //     //             await axios.patch(
-//     //                 `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${row.id}/`,
+//     //                 `https://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${row.id}/`,
 //     //                 formData,
 //     //                 {
 //     //                     headers: {
@@ -468,7 +468,7 @@
 //                 formData.append("citizenship_back", row.citizenship_back);
 //             }
 
-//             const url = `http://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
+//             const url = `https://localhost:8000/api/projects/${project.serial_number}/monitoring-committee/${matchedDetail.id}/`;
 
 //             return axios.patch(url, formData, {
 //                 headers: {
@@ -504,11 +504,11 @@
 //                 formData.append('remarks', data.remarks);
 //             }
 
-//             let url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/`;
+//             let url = `https://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/`;
 //             let method = 'post';
 
 //             if (editMapCostId) {
-//                 url = `http://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`;
+//                 url = `https://localhost:8000/api/projects/${projectIdNum}/map-cost-estimate/${editMapCostId}/`;
 //                 method = 'patch';
 //             }
 
@@ -547,7 +547,7 @@
 //     const handleDownload = async (itemSerialNo: number, projectSerialNo: number) => {
 //         try {
 //             const response = await axios.get(
-//                 `http://localhost:8000/api/projects/consumer-committee/generate-pdf/${itemSerialNo}/${projectSerialNo}/`,
+//                 `https://localhost:8000/api/projects/consumer-committee/generate-pdf/${itemSerialNo}/${projectSerialNo}/`,
 //                 {
 //                     responseType: 'blob', // Important to handle PDF blobs
 //                 }
@@ -571,7 +571,7 @@
 //     const handleDownloadProjectAgreement = async (itemSerialNo: number, projectSerialNo: number) => {
 //         try {
 //             const response = await axios.get(
-//                 `http://localhost:8000/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
+//                 `https://localhost:8000/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
 //                 {
 //                     responseType: 'blob', // Important to handle PDF blobs
 //                 }
@@ -595,7 +595,7 @@
 //     const handleDownloadProjectAgreementAndWorkLoad = async (itemSerialNo: number, projectSerialNo: number) => {
 //         try {
 //             const response = await axios.get(
-//                 `http://localhost:8000/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
+//                 `https://localhost:8000/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
 //                 {
 //                     responseType: 'blob', // Important to handle PDF blobs
 //                 }
@@ -628,12 +628,12 @@
 
 //             if (agreementDetail) {
 //                 // Update existing committee
-//                 const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/${agreementDetail.id}/`;
+//                 const url = `https://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/${agreementDetail.id}/`;
 //                 await axios.patch(url, data, config);
 //                 toast.success("समिति विवरण सफलतापूर्वक अपडेट गरियो");
 //             } else {
 //                 // Create new committee
-//                 const url = `http://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/`;
+//                 const url = `https://localhost:8000/api/projects/${project.serial_number}/project-agreement-details/`;
 //                 await axios.post(url, { ...data, project: project.serial_number }, config);
 //                 toast.success("समिति विवरण सफलतापूर्वक थपियो");
 //             }
@@ -651,7 +651,7 @@
 //     const handleDownloadOtherDocument = async (itemSerialNo: number, projectSerialNo: number) => {
 //         try {
 //             const response = await axios.get(
-//                 `http://localhost:8000/api/projects/other-documents/download/${itemSerialNo}/${projectSerialNo}/`,
+//                 `https://localhost:8000/api/projects/other-documents/download/${itemSerialNo}/${projectSerialNo}/`,
 //                 {
 //                     responseType: 'blob', // Important to handle PDF blobs
 //                 }
@@ -682,7 +682,7 @@
 //                 }
 //             };
 
-//             const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/`;
+//             const url = `https://localhost:8000/api/projects/${project.serial_number}/documents/`;
 //             await axios.post(url, formPayload, config);
 
 //             toast.success("डकुमेन्ट सफलतापूर्वक अपलोड भयो।");
@@ -712,7 +712,7 @@
 //                 formData.append('file', data.file); // only append if updated
 //             }
 
-//             const url = `http://localhost:8000/api/projects/${project.serial_number}/documents/${documentDetail.id}/`;
+//             const url = `https://localhost:8000/api/projects/${project.serial_number}/documents/${documentDetail.id}/`;
 //             await axios.patch(url, formData, config);
 
 //             toast.success("डकुमेन्ट सफलतापूर्वक सम्पादन भयो");
@@ -728,7 +728,7 @@
 //     const handleDeleteDocument = async (id: number) => {
 //         try {
 //             const token = localStorage.getItem('access_token');
-//             const res = axios.delete(`http://localhost:8000/api/projects/${project.serial_number}/documents/${id}/`,
+//             const res = axios.delete(`https://localhost:8000/api/projects/${project.serial_number}/documents/${id}/`,
 //                 {
 //                     headers: {
 //                         'Authorization': `Bearer ${token}`
@@ -798,7 +798,7 @@
 
 //     const handleGenerateBill = async (projectId: number) => {
 //         try {
-//             const response = await fetch(`http://127.0.0.1:8000/api/projects/bill/project/${projectId}/pdf/`, {
+//             const response = await fetch(`https://127.0.0.1:8000/api/projects/bill/project/${projectId}/pdf/`, {
 //                 method: 'GET',
 //                 headers: {
 //                     'Content-Type': 'application/pdf',

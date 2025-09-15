@@ -307,7 +307,7 @@
 //       formData.append('file', selectedFile);
 
 //       const response = await axios.post(
-//         'http://127.0.0.1:8000/api/projects/projects/import_excel/',
+//         'https://127.0.0.1:8000/api/projects/projects/import_excel/',
 //         formData,
 //         {
 //           headers: {
@@ -337,7 +337,7 @@
 //     const token = localStorage.getItem('access_token')
 //     try {
 //       const response = await axios.get(
-//         'http://127.0.0.1:8000/api/projects/projects/export/',
+//         'https://127.0.0.1:8000/api/projects/projects/export/',
 //         {
 //           responseType: 'blob',
 //           headers: {
