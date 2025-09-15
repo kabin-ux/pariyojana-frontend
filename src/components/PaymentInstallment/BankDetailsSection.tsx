@@ -454,13 +454,13 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                                         {photo.check_photo ? (
                                             <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300">
                                                 <img
-                                                    src={photo.check_photo}
+                                                    src={photo?.check_photo}
                                                     alt="Check Photo"
                                                     className="w-full h-40 object-contain rounded-lg"
                                                     onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                                                        (e.target as HTMLImageElement).src = 'https://dummyimage.com/300x200/cccccc/000000&text=Image+Not+Available';
                                                     }}
-                                                />
+                                                />
                                                 <button
                                                     onClick={() => handleEditAccountPhoto(photo.id)}
                                                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
