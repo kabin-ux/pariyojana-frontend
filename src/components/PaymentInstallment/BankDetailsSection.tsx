@@ -221,10 +221,10 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         setIsBankRecommendationModalOpen(true);
     };
 
-    const handleEditAccountPhoto = (photoId: number) => {
-        setEditAccountPhotoId(photoId);
-        setIsBankAccountPhotosModalOpen(true);
-    };
+    // const handleEditAccountPhoto = (photoId: number) => {
+    //     setEditAccountPhotoId(photoId);
+    //     setIsBankAccountPhotosModalOpen(true);
+    // };
 
     useEffect(() => {
         const loadBankDetails = async () => {
@@ -460,13 +460,13 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                                                     onError={(e) => {
                                                         (e.target as HTMLImageElement).src = 'https://dummyimage.com/300x200/cccccc/000000&text=Image+Not+Available';
                                                     }}
-                                                />
-                                                <button
+                                                />
+                                                {/* <button
                                                     onClick={() => handleEditAccountPhoto(photo.id)}
                                                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                                                 >
                                                     फोटो बदल्नुहोस्
-                                                </button>
+                                                </button> */}
                                             </div>
                                         ) : (
                                             <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300">
