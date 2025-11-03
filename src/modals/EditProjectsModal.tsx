@@ -82,7 +82,14 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         { value: 4, label: 'वडा नं. - ४' },
         { value: 5, label: 'वडा नं. - ५' },
         { value: 6, label: 'वडा नं. - ६' },
+        { value: 7, label: 'वडा नं. - ७' },
+        { value: 8, label: 'वडा नं. - ८' },
+        { value: 9, label: 'वडा नं. - ९' },
+        { value: 10, label: 'वडा नं. - १०' },
+        { value: 11, label: 'वडा नं. - ११' },
+        { value: 12, label: 'वडा नं. - १२' },
     ];
+
 
 
     // Load project data when modal opens

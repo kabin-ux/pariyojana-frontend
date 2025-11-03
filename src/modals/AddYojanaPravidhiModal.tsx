@@ -58,9 +58,9 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
   });
 
 
-   const [errors, setErrors] = useState<Partial<Record<keyof FormData, boolean>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, boolean>>>({});
 
-   // Fetch dynamic dropdown data
+  // Fetch dynamic dropdown data
   const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
   const { data: sub_areas } = useSettings('उप-क्षेत्र', true);
   const { data: projectLevels } = useSettings('योजनाको स्तर', true);
@@ -88,7 +88,14 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     { value: 4, label: 'वडा नं. - ४' },
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
+    { value: 7, label: 'वडा नं. - ७' },
+    { value: 8, label: 'वडा नं. - ८' },
+    { value: 9, label: 'वडा नं. - ९' },
+    { value: 10, label: 'वडा नं. - १०' },
+    { value: 11, label: 'वडा नं. - ११' },
+    { value: 12, label: 'वडा नं. - १२' },
   ];
+
 
   // Tell TS requiredFields contains keys of formData
   const requiredFields: (keyof FormDataType)[] = [
@@ -98,7 +105,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
   ];
 
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -113,12 +120,12 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     }
   };
 
-   const handleWardChange = (wardValue: number, isChecked: boolean) => {
+  const handleWardChange = (wardValue: number, isChecked: boolean) => {
     setFormData(prev => {
       const newWardNos = isChecked
         ? [...prev.ward_no, wardValue]
         : prev.ward_no.filter(w => w !== wardValue);
-      
+
       return {
         ...prev,
         ward_no: newWardNos
@@ -166,7 +173,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     federal: '/api/planning/plan-entry/'
   };
 
-    const handleSubmit = async () => {
+  const handleSubmit = async () => {
     const token = localStorage.getItem('access_token');
     if (!validateForm()) {
       toast.error('कृपया सबै आवश्यक फिल्डहरू भर्नुहोस्।');
@@ -394,29 +401,29 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-              <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          वडा नं. <span className="text-red-500">*</span>
-        </label>
-        <div
-          className={`grid grid-cols-3 gap-2 border rounded-md p-3 ${errors.ward_no ? 'border-red-500' : 'border-gray-300'}`}
-        >
-          {wardOptions.map((ward) => (
-            <label key={ward.value} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.ward_no.includes(ward.value)}
-                onChange={(e) => handleWardChange(ward.value, e.target.checked)}
-                className="accent-blue-500"
-              />
-              <span className="text-sm">{ward.label}</span>
-            </label>
-          ))}
-        </div>
-        {errors.ward_no && (
-          <p className="mt-1 text-sm text-red-600">कृपया कम्तिमा एक वडा चयन गर्नुहोस्</p>
-        )}
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                वडा नं. <span className="text-red-500">*</span>
+              </label>
+              <div
+                className={`grid grid-cols-3 gap-2 border rounded-md p-3 ${errors.ward_no ? 'border-red-500' : 'border-gray-300'}`}
+              >
+                {wardOptions.map((ward) => (
+                  <label key={ward.value} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.ward_no.includes(ward.value)}
+                      onChange={(e) => handleWardChange(ward.value, e.target.checked)}
+                      className="accent-blue-500"
+                    />
+                    <span className="text-sm">{ward.label}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.ward_no && (
+                <p className="mt-1 text-sm text-red-600">कृपया कम्तिमा एक वडा चयन गर्नुहोस्</p>
+              )}
+            </div>
 
           </div>
 

@@ -90,7 +90,14 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     { value: 4, label: 'वडा नं. - ४' },
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
+    { value: 7, label: 'वडा नं. - ७' },
+    { value: 8, label: 'वडा नं. - ८' },
+    { value: 9, label: 'वडा नं. - ९' },
+    { value: 10, label: 'वडा नं. - १०' },
+    { value: 11, label: 'वडा नं. - ११' },
+    { value: 12, label: 'वडा नं. - १२' },
   ];
+
 
   // Filter sub-areas based on selected thematic area
   // Update the formData thematic_area reference in filteredsub_areas
@@ -151,7 +158,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     }
   };
 
-   // Handle search input change
+  // Handle search input change
   const handleSearchChange = (term: string) => {
     setSearchTerm(term)
     setCurrentPage(1) // Reset to first page when searching

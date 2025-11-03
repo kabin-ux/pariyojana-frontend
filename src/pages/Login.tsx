@@ -111,7 +111,7 @@ const LoginPage: FC = () => {
               परियोजना व्यवस्थापन प्रणाली
             </h2>
             <p className="text-center font-medium text-white drop-shadow-lg">
-              बर्दगोरिया गाउँपालिकाको गाउँ कार्यपालिकाको कार्यालय
+              जलेश्वर नगरपालिका
             </p>
 
             {error && (
