@@ -43,7 +43,7 @@ export const useInstallmentDetails = (projectId: number) => {
     const fetchBanks = async () => {
         try {
             setFirstLoading(true);
-            const res = await axios.get(`http://213.199.53.33/api/settings/bank`);
+            const res = await axios.get(`http://213.199.53.33:8001/api/settings/bank`);
             setBanks(res.data);
         } catch (err) {
             setBankError('पहिलो किस्ताको विवरण लोड गर्न समस्या भयो।');
@@ -55,7 +55,7 @@ export const useInstallmentDetails = (projectId: number) => {
     const fetchFirst = async () => {
         try {
             setFirstLoading(true);
-            const res = await axios.get(`http://213.199.53.33/api/projects/first-installment/${projectId}/`);
+            const res = await axios.get(`http://213.199.53.33:8001/api/projects/first-installment/${projectId}/`);
             setFirstInstallment(res.data);
         } catch (err) {
             setFirstError('पहिलो किस्ताको विवरण लोड गर्न समस्या भयो।');
@@ -67,7 +67,7 @@ export const useInstallmentDetails = (projectId: number) => {
     const fetchSecond = async () => {
         try {
             setSecondLoading(true);
-            const res = await axios.get(`http://213.199.53.33/api/projects/second-installment/${projectId}/`);
+            const res = await axios.get(`http://213.199.53.33:8001/api/projects/second-installment/${projectId}/`);
             setSecondInstallment(res.data);
         } catch (err) {
             setSecondError('दोस्रो किस्ताको विवरण लोड गर्न समस्या भयो।');
@@ -79,7 +79,7 @@ export const useInstallmentDetails = (projectId: number) => {
     const fetchThird = async () => {
         try {
             setThirdLoading(true);
-            const res = await axios.get(`http://213.199.53.33/api/projects/third-installment/${projectId}/`);
+            const res = await axios.get(`http://213.199.53.33:8001/api/projects/third-installment/${projectId}/`);
             setThirdInstallment(res.data);
         } catch (err) {
             setThirdError('तेस्रो किस्ताको विवरण लोड गर्न समस्या भयो।');
@@ -91,7 +91,7 @@ export const useInstallmentDetails = (projectId: number) => {
     const fetchPaymentDetails = async () => {
         try {
             setFourthLoading(true);
-            const res = await axios.get(`http://213.199.53.33/api/projects/${projectId}/payment-details/`);
+            const res = await axios.get(`http://213.199.53.33:8001/api/projects/${projectId}/payment-details/`);
             setPaymentDetails(res.data);
         } catch (err) {
             setFourthError('तेस्रो किस्ताको विवरण लोड गर्न समस्या भयो।');

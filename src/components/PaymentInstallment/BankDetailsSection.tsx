@@ -34,7 +34,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://213.199.53.33/api/projects/${projectId}/bank-details/`,
+                `http://213.199.53.33:8001/api/projects/${projectId}/bank-details/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -52,7 +52,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://213.199.53.33/api/projects/${projectId}/bank-account-recommendation/`,
+                `http://213.199.53.33:8001/api/projects/${projectId}/bank-account-recommendation/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -70,7 +70,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://213.199.53.33/api/projects/${projectId}/account-photos/`,
+                `http://213.199.53.33:8001/api/projects/${projectId}/account-photos/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -98,11 +98,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 formData.append('file', data.file);
             }
 
-            let url = `http://213.199.53.33/api/projects/${project.serial_number}/bank-account-recommendation/`;
+            let url = `http://213.199.53.33:8001/api/projects/${project.serial_number}/bank-account-recommendation/`;
             let method = 'post';
 
             if (editRecommendationId) {
-                url = `http://213.199.53.33/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
+                url = `http://213.199.53.33:8001/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
                 method = 'patch';
             }
 
@@ -141,11 +141,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 formData.append('check_photo', data.check_photo);
             }
 
-            let url = `http://213.199.53.33/api/projects/${project.serial_number}/account-photos/`;
+            let url = `http://213.199.53.33:8001/api/projects/${project.serial_number}/account-photos/`;
             let method: 'post' | 'patch' = 'post';
 
             if (editAccountPhotoId) {
-                url = `http://213.199.53.33/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
+                url = `http://213.199.53.33:8001/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
                 method = 'patch';
             }
 
@@ -179,10 +179,10 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
     }) => {
         try {
             const token = localStorage.getItem('access_token');
-            let url = `http://213.199.53.33/api/projects/${projectSerialNumber}/bank-details/`;
+            let url = `http://213.199.53.33:8001/api/projects/${projectSerialNumber}/bank-details/`;
             let method = 'post';
             if (editBankId) {
-                url = `http://213.199.53.33/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
+                url = `http://213.199.53.33:8001/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
                 method = 'patch';
             }
             await axios({

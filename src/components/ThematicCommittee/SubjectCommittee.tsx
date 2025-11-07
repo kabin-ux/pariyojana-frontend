@@ -48,7 +48,7 @@ const SubjectCommittee: React.FC = () => {
 
   const handlePrioritizeThematicWardProject = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33/api/planning/thematic/wardrecommend-project/${id}/prioritize/`);
+      await axios.post(`http://213.199.53.33:8001/api/planning/thematic/wardrecommend-project/${id}/prioritize/`);
       toast.success('परियोजना सफलतापूर्वक प्राथमिकरण गरियो।');
       window.location.reload();
     } catch (error) {
@@ -59,7 +59,7 @@ const SubjectCommittee: React.FC = () => {
 
   const handlePrioritize = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33/api/planning/thematic/thematic-plans/${id}/prioritize/`);
+      await axios.post(`http://213.199.53.33:8001/api/planning/thematic/thematic-plans/${id}/prioritize/`);
       toast.success('परियोजना सफलतापूर्वक प्राथमिकरण गरियो।');
       window.location.reload();
     } catch (error) {
@@ -70,7 +70,7 @@ const SubjectCommittee: React.FC = () => {
 
   const handleRecommendtoBudget = async (id: number) => {
     try {
-      await axios.post(`http://213.199.53.33/api/planning/thematic/prioritized-plans/${id}/submit-to-budget-committee/`);
+      await axios.post(`http://213.199.53.33:8001/api/planning/thematic/prioritized-plans/${id}/submit-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {

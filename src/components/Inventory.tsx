@@ -39,7 +39,7 @@ const Inventory: React.FC = () => {
   const fetchInventory = async () => {
     try {
       const token = localStorage.getItem('access_token')
-      const response = await axios.get('http://213.199.53.33/api/inventory/supplier-registry/', {
+      const response = await axios.get('http://213.199.53.33:8001/api/inventory/supplier-registry/', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventoryData(response.data);
@@ -66,7 +66,7 @@ const Inventory: React.FC = () => {
   const handleEditClick = async (id: number) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.get(`http://213.199.53.33/api/inventory/supplier-registry/${id}/`, {
+      const response = await axios.get(`http://213.199.53.33:8001/api/inventory/supplier-registry/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setInitialFormData(response.data);
@@ -93,7 +93,7 @@ const Inventory: React.FC = () => {
 
     try {
       const token = localStorage.getItem('access_token');
-      await axios.delete(`http://213.199.53.33/api/inventory/supplier-registry/${id}/`, {
+      await axios.delete(`http://213.199.53.33:8001/api/inventory/supplier-registry/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('कम्पनी सफलतापूर्वक हटाइयो');

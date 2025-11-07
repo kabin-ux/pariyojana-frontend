@@ -260,7 +260,7 @@ const UsersPage: React.FC = () => {
             }
             console.log(viewMode)
 
-            const response = await axios.get('http://213.199.53.33/api/users/', {
+            const response = await axios.get('http://213.199.53.33:8001/api/users/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -286,7 +286,7 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             await axios.patch(
-                `http://213.199.53.33/api/users/${userId}/`,
+                `http://213.199.53.33:8001/api/users/${userId}/`,
                 { is_active: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -299,7 +299,7 @@ const UsersPage: React.FC = () => {
     const deleteUser = async (userId: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            await axios.delete(`http://213.199.53.33/api/users/${userId}/`, {
+            await axios.delete(`http://213.199.53.33:8001/api/users/${userId}/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchUsers();
@@ -325,8 +325,8 @@ const UsersPage: React.FC = () => {
     //         console.log("reset user:", resetPasswordUser)
 
     //         const url = resetPasswordUser.isSelf
-    //             ? `http://213.199.53.33/api/auth/reset-password/`
-    //             : `http://213.199.53.33/api/auth/reset-password/${resetPasswordUser.id}/`;
+    //             ? `http://213.199.53.33:8001/api/auth/reset-password/`
+    //             : `http://213.199.53.33:8001/api/auth/reset-password/${resetPasswordUser.id}/`;
 
     //         await axios.post(
     //             url,
@@ -351,8 +351,8 @@ const UsersPage: React.FC = () => {
         try {
             const token = localStorage.getItem('access_token');
             const url = resetPasswordUser.isSelf
-                ? `http://213.199.53.33/api/auth/reset-password/`
-                : `http://213.199.53.33/api/auth/reset-password/${resetPasswordUser.id}/`;
+                ? `http://213.199.53.33:8001/api/auth/reset-password/`
+                : `http://213.199.53.33:8001/api/auth/reset-password/${resetPasswordUser.id}/`;
 
             await axios.post(
                 url,
