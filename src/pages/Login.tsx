@@ -69,7 +69,9 @@ const LoginPage: FC = () => {
       localStorage.setItem('user', JSON.stringify(userData));
 
       login(userData);
-      navigate('/');
+      // navigate('/');
+      navigate('');
+
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password');
