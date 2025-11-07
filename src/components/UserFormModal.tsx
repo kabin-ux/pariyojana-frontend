@@ -105,7 +105,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     setLoading(true);
 
     try {
-      let url = "https://www.bardagoriyapms.com/api/users/";
+      let url = "http://213.199.53.33/api/users/";
       let method: "post" | "put" = "post";
 
       if (editMode && user?.id) {

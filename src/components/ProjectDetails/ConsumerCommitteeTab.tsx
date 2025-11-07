@@ -121,7 +121,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
       }
 
       const response = await axios.get(
-        `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/consumer-committee/upload/`,
+        `http://213.199.53.33/api/projects/${project.serial_number}/consumer-committee/upload/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -164,7 +164,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
     formData.append('file', file);
 
     await axios.post(
-      `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/consumer-committee/upload/`,
+      `http://213.199.53.33/api/projects/${project.serial_number}/consumer-committee/upload/`,
       formData,
       {
         headers: {

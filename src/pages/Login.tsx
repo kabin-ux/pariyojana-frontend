@@ -81,7 +81,7 @@ const LoginPage: FC = () => {
     setForgotError('');
 
     try {
-      await axios.post('https://www.bardagoriyapms.com/api/auth/forgot-password/', {
+      await axios.post('http://213.199.53.33/api/auth/forgot-password/', {
         email: forgotEmail,
       });
       setForgotMessage('A new password has been sent to your email.');
