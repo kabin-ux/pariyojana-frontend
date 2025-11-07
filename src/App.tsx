@@ -59,7 +59,7 @@ function AppRoutes() {
           <Route path="*" element={<Navigate to="/" />} />
         </>
       ) : (
-        <Route path="*" element={<Navigate to="/jaleshwar/login" />} />
+        <Route path="*" element={<Navigate to="/login" />} />
 
       )}
     </Routes>
