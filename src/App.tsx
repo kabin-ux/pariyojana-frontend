@@ -68,7 +68,7 @@ function AppRoutes() {
 function App() {
   return (
     <AppContextProvider>
-      <Router>
+      <Router basename="/jaleshwar">
         <Toaster position="top-center" reverseOrder={false} />
         <AppRoutes />
       </Router>
