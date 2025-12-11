@@ -60,7 +60,6 @@ function AppRoutes() {
         </>
       ) : (
         <Route path="*" element={<Navigate to="/login" />} />
-
       )}
     </Routes>
   );
@@ -76,6 +75,5 @@ function App() {
     </AppContextProvider>
   );
 }
-
 
 export default App;
