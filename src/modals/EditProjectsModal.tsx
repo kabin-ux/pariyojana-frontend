@@ -64,6 +64,15 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // NEW: file states
+    const [feasibilityFile, setFeasibilityFile] = useState<File | null>(null);
+    const [detailedFile, setDetailedFile] = useState<File | null>(null);
+    const [environmentalFile, setEnvironmentalFile] = useState<File | null>(null);
+
+    const [existingFeasibilityUrl, setExistingFeasibilityUrl] = useState<string | null>(null);
+    const [existingDetailedUrl, setExistingDetailedUrl] = useState<string | null>(null);
+    const [existingEnvironmentalUrl, setExistingEnvironmentalUrl] = useState<string | null>(null);
+
     // Fetch dynamic dropdown data
     const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
     const { data: sub_areas } = useSettings('उप-क्षेत्र', true);
@@ -110,6 +119,15 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 environmental_study: projectData.environmental_study || '',
                 description: projectData.remarks || ''
             });
+
+            setExistingFeasibilityUrl(projectData.feasibility_file || null);
+            setExistingDetailedUrl(projectData.detailed_file || null);
+            setExistingEnvironmentalUrl(projectData.environmental_file || null);
+
+            // Optionally: reset files on open
+            setFeasibilityFile(null);
+            setDetailedFile(null);
+            setEnvironmentalFile(null);
         }
     }, [isOpen, projectData]);
 
@@ -127,6 +145,17 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
             }
             return newData;
         });
+
+        // If radio flipped to “नभएको”, clear file
+        if (field === 'feasibility_study' && value === 'नभएको') {
+            setFeasibilityFile(null);
+        }
+        if (field === 'detailed_study' && value === 'नभएको') {
+            setDetailedFile(null);
+        }
+        if (field === 'environmental_study' && value === 'नभएको') {
+            setEnvironmentalFile(null);
+        }
     };
 
     const getApiEndpoint = () => {
@@ -158,33 +187,67 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const endpoint = getApiEndpoint();
+            if (!endpoint) {
+                toast.error('अमान्य परियोजना प्रकार।');
+                setIsSubmitting(false);
+                return;
+            }
 
-            const submitData = {
-                plan_name: formData.plan_name,
-                thematic_area: formData.thematic_area ? parseInt(formData.thematic_area) : null,
-                sub_area: formData.sub_area ? parseInt(formData.sub_area) : null,
-                project_level: formData.project_level ? parseInt(formData.project_level) : null,
-                expenditure_title: formData.expenditure_title ? parseInt(formData.expenditure_title) : null,
-                expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : null,
-                proposed_amount: formData.proposed_amount ? parseFloat(formData.proposed_amount) : null,
-                source: formData.source ? parseInt(formData.source) : null,
-                ward_no: formData.ward_no, // Send as array
-                location: formData.location,
-                gps_coordinate: formData.gps_coordinate,
-                expected_result: formData.expected_output,
-                unit: formData.unit ? parseInt(formData.unit) : null,
-                fiscal_year: formData.fiscal_year ? parseInt(formData.fiscal_year) : null,
-                feasibility_study: formData.feasibility_study,
-                detailed_study: formData.detailed_study,
-                environmental_study: formData.environmental_study,
-                remarks: formData.description
-            };
+            const payload = new FormData();
 
-            await axios.patch(endpoint, submitData, {
+            payload.append('plan_name', formData.plan_name);
+            payload.append(
+                'thematic_area',
+                formData.thematic_area ? String(parseInt(formData.thematic_area)) : ''
+            );
+            payload.append('sub_area', formData.sub_area ? String(parseInt(formData.sub_area)) : '');
+            payload.append(
+                'project_level',
+                formData.project_level ? String(parseInt(formData.project_level)) : ''
+            );
+            payload.append(
+                'expenditure_title',
+                formData.expenditure_title ? String(parseInt(formData.expenditure_title)) : ''
+            );
+            payload.append(
+                'expenditure_center',
+                formData.expenditure_center ? String(parseInt(formData.expenditure_center)) : ''
+            );
+            payload.append(
+                'proposed_amount',
+                formData.proposed_amount ? String(parseFloat(formData.proposed_amount)) : ''
+            );
+            payload.append('source', formData.source ? String(parseInt(formData.source)) : '');
+            formData.ward_no.forEach(w => payload.append('ward_no', String(w)));
+            payload.append('location', formData.location);
+            payload.append('gps_coordinate', formData.gps_coordinate);
+            payload.append('expected_result', formData.expected_output);
+            payload.append('unit', formData.unit ? String(parseInt(formData.unit)) : '');
+            payload.append(
+                'fiscal_year',
+                formData.fiscal_year ? String(parseInt(formData.fiscal_year)) : ''
+            );
+            payload.append('feasibility_study', formData.feasibility_study);
+            payload.append('detailed_study', formData.detailed_study);
+            payload.append('environmental_study', formData.environmental_study);
+            payload.append('remarks', formData.description);
+
+            // attach files if any
+            if (feasibilityFile && formData.feasibility_study === 'भएको') {
+                payload.append('feasibility_file', feasibilityFile);
+            }
+            if (detailedFile && formData.detailed_study === 'भएको') {
+                payload.append('detailed_file', detailedFile);
+            }
+            if (environmentalFile && formData.environmental_study === 'भएको') {
+                payload.append('environmental_file', environmentalFile);
+            }
+
+            await axios.patch(endpoint, payload, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             toast.success('परियोजना सफलतापूर्वक अपडेट भयो!');
@@ -192,7 +255,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
             onClose();
         } catch (error: any) {
             console.error('Error updating project:', error);
-            const errorMessage = error.response?.data?.message || 'परियोजना अपडेट गर्न असफल भयो।';
+            const errorMessage =
+                error.response?.data?.message || 'परियोजना अपडेट गर्न असफल भयो।';
             toast.error(errorMessage);
         } finally {
             setIsSubmitting(false);
@@ -502,6 +566,28 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                     नभएको
                                 </label>
                             </div>
+                            {/* show existing file link if present */}
+                            {existingFeasibilityUrl && (
+                                <a
+                                    href={existingFeasibilityUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-600 underline"
+                                >
+                                    पहिलेको फाइल हेर्नुहोस् / डाउनलोड गर्नुहोस्
+                                </a>
+                            )}
+
+                            {formData.feasibility_study === 'भएको' && (
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,image/*"
+                                    onChange={e =>
+                                        setFeasibilityFile(e.target.files ? e.target.files[0] : null)
+                                    }
+                                    className="mt-1 block w-full text-sm text-gray-700"
+                                />
+                            )}
                         </div>
 
                         <div>
@@ -532,6 +618,27 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                     नभएको
                                 </label>
                             </div>
+                            {/* show existing file link if present */}
+                            {existingDetailedUrl && (
+                                <a
+                                    href={existingDetailedUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-600 underline"
+                                >
+                                    पहिलेको फाइल हेर्नुहोस् / डाउनलोड गर्नुहोस्
+                                </a>
+                            )}
+                            {formData.detailed_study === 'भएको' && (
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,image/*"
+                                    onChange={e =>
+                                        setDetailedFile(e.target.files ? e.target.files[0] : null)
+                                    }
+                                    className="mt-1 block w-full text-sm text-gray-700"
+                                />
+                            )}
                         </div>
 
                         <div>
@@ -562,6 +669,27 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                     नभएको
                                 </label>
                             </div>
+                            {/* show existing file link if present */}
+                            {existingEnvironmentalUrl && (
+                                <a
+                                    href={existingEnvironmentalUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-600 underline"
+                                >
+                                    पहिलेको फाइल हेर्नुहोस् / डाउनलोड गर्नुहोस्
+                                </a>
+                            )}
+                            {formData.environmental_study === 'भएको' && (
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,image/*"
+                                    onChange={e =>
+                                        setEnvironmentalFile(e.target.files ? e.target.files[0] : null)
+                                    }
+                                    className="mt-1 block w-full text-sm text-gray-700"
+                                />
+                            )}
                         </div>
                     </div>
 
