@@ -59,6 +59,10 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
 
 
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, boolean>>>({});
+  // NEW: file state
+  const [feasibilityFile, setFeasibilityFile] = useState<File | null>(null);
+  const [detailedFile, setDetailedFile] = useState<File | null>(null);
+  const [environmentalFile, setEnvironmentalFile] = useState<File | null>(null);
 
   // Fetch dynamic dropdown data
   const { data: thematicAreas } = useSettings('विषयगत क्षेत्र', true);
@@ -88,14 +92,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     { value: 4, label: 'वडा नं. - ४' },
     { value: 5, label: 'वडा नं. - ५' },
     { value: 6, label: 'वडा नं. - ६' },
-    { value: 7, label: 'वडा नं. - ७' },
-    { value: 8, label: 'वडा नं. - ८' },
-    { value: 9, label: 'वडा नं. - ९' },
-    { value: 10, label: 'वडा नं. - १०' },
-    { value: 11, label: 'वडा नं. - ११' },
-    { value: 12, label: 'वडा नं. - १२' },
   ];
-
 
   // Tell TS requiredFields contains keys of formData
   const requiredFields: (keyof FormDataType)[] = [
@@ -117,6 +114,18 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
         ...prev,
         [name]: false
       }));
+    }
+
+
+    // Optional: clear file if radio changed to "नभएको"
+    if (name === 'feasibility_study' && value === 'नभएको') {
+      setFeasibilityFile(null);
+    }
+    if (name === 'detailed_study' && value === 'नभएको') {
+      setDetailedFile(null);
+    }
+    if (name === 'environmental_study' && value === 'नभएको') {
+      setEnvironmentalFile(null);
     }
   };
 
@@ -187,14 +196,37 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
     }
 
     try {
-      await axios.post(`https://43.205.239.123${endpoint}`, {
-        ...formData,
-        ward_no: formData.ward_no,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const payload = new FormData();
+
+      // append normal fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'ward_no') {
+          (value as number[]).forEach(w => {
+            payload.append('ward_no', String(w));
+          });
+        } else {
+          payload.append(key, value as string);
         }
       });
+
+      // append files with required field names
+      if (feasibilityFile && formData.feasibility_study === 'भएको') {
+        payload.append('feasibility_file', feasibilityFile);
+      }
+      if (detailedFile && formData.detailed_study === 'भएको') {
+        payload.append('detailed_file', detailedFile);
+      }
+      if (environmentalFile && formData.environmental_study === 'भएको') {
+        payload.append('environmental_file', environmentalFile);
+      }
+
+      await axios.post(`http://213.199.53.33:8001${endpoint}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       toast.success('योजना सफलतापूर्वक थपियो!');
       onClose();
     } catch (error) {
@@ -507,6 +539,14 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                   नभएको
                 </label>
               </div>
+              {formData.feasibility_study === 'भएको' && (
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,image/*"
+                    onChange={e => setFeasibilityFile(e.target.files?.[0] || null)}
+                    className="mt-1 block w-full text-sm text-gray-700"
+                  />
+                )}
             </div>
 
             {/* Detailed Study */}
@@ -538,6 +578,14 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                   नभएको
                 </label>
               </div>
+               {formData.detailed_study === 'भएको' && (
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,image/*"
+                    onChange={e => setDetailedFile(e.target.files?.[0] || null)}
+                    className="mt-1 block w-full text-sm text-gray-700"
+                  />
+                )}
             </div>
 
             {/* Environmental Study */}
@@ -569,6 +617,14 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
                   नभएको
                 </label>
               </div>
+               {formData.environmental_study === 'भएको' && (
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,image/*"
+                    onChange={e => setEnvironmentalFile(e.target.files?.[0] || null)}
+                    className="mt-1 block w-full text-sm text-gray-700"
+                  />
+                )}
             </div>
           </div>
 
