@@ -12,6 +12,7 @@ interface CostEstimateData {
     local_budget: number;
     total_without_vat: number;
     ps_amount: number;
+    contingency_percent:number;
 }
 
 interface CostEstimateModalProps {
@@ -34,7 +35,8 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
         provincial_budget: 0,
         local_budget: 0,
         total_without_vat: 0,
-        ps_amount: 0
+        ps_amount: 0,
+        contingency_percent:0
     });
     const { data: fiscalYears } = useSettings('आर्थिक वर्ष', true);
     const [loading, setLoading] = useState(false);
@@ -50,6 +52,7 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                 local_budget: Number(costDetail?.local_budget) || 0,
                 total_without_vat: Number(costDetail?.total_without_vat) || 0,
                 ps_amount: Number(costDetail?.ps_amount) || 0,
+                contingency_percent: Number(costDetail?.contingency_percent) || 0
             });
             console.log("formadatata", formData)
         } else {
@@ -59,6 +62,7 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                 local_budget: 0,
                 total_without_vat: 0,
                 ps_amount: 0,
+                contingency_percent:0,
                 id: undefined
             });
         }
@@ -185,6 +189,18 @@ const CalculateCostEstimateModal: React.FC<CostEstimateModalProps> = ({
                             type="number"
                             value={formData.ps_amount}
                             onChange={(e) => handleInputChange('ps_amount', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                             <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            कन्टिन्जेन्सी प्रतिशत:
+                        </label>
+                        <input
+                            type="number"
+                            value={formData.contingency_percent}
+                            onChange={(e) => handleInputChange('contingency_percent', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
