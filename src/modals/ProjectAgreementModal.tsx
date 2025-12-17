@@ -115,12 +115,12 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
 
                 {/* Form Content */}
                 <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><span className="text-gray-600">लागत अनुमान:</span> <span className="ml-2 font-medium">रु. 2000</span></div>
-                        <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium">84%</span></div>
-                        <div><span className="text-gray-600">करारजन्य रकम:</span> <span className="ml-2 font-medium">रु.30</span></div>
-                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium">रु. 2030</span></div>
-                    </div>
+                    {/* <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><span className="text-gray-600">लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div>
+                        <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium"></span></div>
+                        <div><span className="text-gray-600">करारजन्य रकम:</span> <span className="ml-2 font-medium"></span></div>
+                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div>
+                    </div> */}
 
                     <div className="grid grid-cols-2 gap-6">
                         {/* Left Column */}

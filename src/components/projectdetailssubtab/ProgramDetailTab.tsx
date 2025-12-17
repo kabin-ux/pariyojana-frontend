@@ -155,20 +155,6 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
 
             <div className="flex gap-2">
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
-                आर्थिक प्रगति:
-              </label>
-              <p className="text-gray-900 text-sm">०</p>
-            </div>
-
-            <div className="flex gap-2">
-              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
-                भौतिक प्रगति:
-              </label>
-              <p className="text-gray-900 text-sm">०</p>
-            </div>
-
-            <div className="flex gap-2">
-              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 सम्झौता रकम रु.:
               </label>
               <p className="text-gray-900 text-sm">रु. ०.००</p>
