@@ -70,6 +70,8 @@ const LoginPage: FC = () => {
 
       login(userData);
       navigate('/');
+      // navigate('');
+
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password');
@@ -81,7 +83,7 @@ const LoginPage: FC = () => {
     setForgotError('');
 
     try {
-      await axios.post('http://213.199.53.33:8001/api/auth/forgot-password/', {
+      await axios.post('/api/auth/forgot-password/', {
         email: forgotEmail,
       });
       setForgotMessage('A new password has been sent to your email.');
