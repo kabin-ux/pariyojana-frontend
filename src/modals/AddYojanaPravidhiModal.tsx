@@ -220,7 +220,7 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
         payload.append('environmental_file', environmentalFile);
       }
 
-      await axios.post(`http://213.199.53.33:8001${endpoint}`, payload, {
+      await axios.post(`${endpoint}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
