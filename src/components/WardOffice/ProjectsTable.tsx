@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditProjectModal from '../../modals/EditProjectsModal';
-import { formatWardNumber } from '../../utils/formatters';
+import { formatWardNumber, toNepaliNumber } from '../../utils/formatters';
 
 interface ProjectsTableProps {
   data: any[];
@@ -30,7 +30,7 @@ export const ProjectsTable = ({
   );
 
   // Updated formatWardNumber function to handle both string and array inputs
-  const formatWards = (wardData:  number[]): string => {
+  const formatWards = (wardData: number[]): string => {
     if (Array.isArray(wardData)) {
       return wardData.map(ward => formatWardNumber(ward)).join(', ');
     }
@@ -115,7 +115,7 @@ export const ProjectsTable = ({
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">परियोजनाहरू</h2>
       <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-[1400px] table-fixed divide-y divide-gray-200">
           <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
               {[
@@ -129,6 +129,7 @@ export const ProjectsTable = ({
                 'वडा नं.',
                 'स्थिति',
                 'प्राथमिकता नम्बर',
+                'प्रतिवेदनहरु',  
                 'अन्य',
               ].map((header, index) => (
                 <th
@@ -162,7 +163,7 @@ export const ProjectsTable = ({
                     {item.expenditure_center?.name || item.expenditure_center || '-'}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-800">
-                    {item.budget || '-'}
+                    रु {toNepaliNumber(item.budget) || '-'}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-800">
                     {formatWards(item.ward_no)}
@@ -173,6 +174,53 @@ export const ProjectsTable = ({
                   <td className="py-3 px-4 text-sm text-gray-800">
                     {item.priority_no || '-'}
                   </td>
+                  <td className="py-3 px-4 text-sm text-gray-800 space-y-1">
+  {item.feasibility_file && (
+    <a
+      href={item.feasibility_file}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block text-blue-600 hover:underline"
+    >
+      सम्भाव्यता अध्ययन
+    </a>
+  )}
+
+  {item.detailed_file && (
+    <a
+      href={item.detailed_file}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block text-blue-600 hover:underline"
+    >
+      विस्तृत अध्ययन
+    </a>
+  )}
+
+  {item.environmental_file && (
+    <a
+      href={item.environmental_file}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block text-blue-600 hover:underline"
+    >
+      वातावरणीय अध्ययन
+    </a>
+  )}
+
+  {!item.feasibility_file &&
+    !item.detailed_file &&
+    !item.environmental_file && (
+      <span className="text-gray-400">-</span>
+    )}
+</td>
+
+                  {/* <td className="py-3 px-4 text-sm text-gray-800">
+                   
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                  
+                  </td> */}
                   <td className="py-3 px-4">
                     {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
                       <div className="flex items-center space-x-2">
