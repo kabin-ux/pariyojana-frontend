@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit, Upload, DownloadCloud, FileMinusIcon, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Upload, DownloadCloud, Eye } from 'lucide-react';
 import { toNepaliNumber } from '../../utils/formatters';
 import ConsumerCommitteeDialog from '../../modals/ConsumerCommitteeDialog';
 import Modal from '../../modals/AddOfficialDetailandMonitoringModal';
@@ -54,7 +54,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   onSave,
   onSavePosition,
   onSaveResearch,
-  onDelete,
+  // onDelete,
   onDownload,
   onFileUpload,
   uploadedFiles = {}
@@ -153,69 +153,69 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   };
 
   const handleFileUpload = async (serialNo: number, file: File) => {
-  try {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      throw new Error('Authentication token not found');
-    }
-
-    const formData = new FormData();
-    formData.append('serial_no', serialNo.toString());
-    formData.append('file', file);
-
-    await axios.post(
-      `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/consumer-committee/upload/`,
-      formData,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Authentication token not found');
       }
-    );
 
-    toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-    fetchUploadedFiles(); // Refresh the uploaded files list
+      const formData = new FormData();
+      formData.append('serial_no', serialNo.toString());
+      formData.append('file', file);
 
-    // Call the parent's onFileUpload if provided
-    if (onFileUpload) {
-      onFileUpload(serialNo, file);
+      await axios.post(
+        `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/consumer-committee/upload/`,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+      fetchUploadedFiles(); // Refresh the uploaded files list
+
+      // Call the parent's onFileUpload if provided
+      if (onFileUpload) {
+        onFileUpload(serialNo, file);
+      }
+
+      // Update local state to track uploaded files
+      const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+      setLocalUploadedFiles(prev => ({
+        ...prev,
+        [serialNo]: { file, type: fileType }
+      }));
+    } catch (error) {
+      console.error('File upload failed:', error);
+      toast.error('फाइल अपलोड गर्न सकिएन');
+      throw error;
+    }
+  };
+
+  const handlePreviewImage = (serialNo: number) => {
+    const uploadedFile = localUploadedFiles[serialNo] ||
+      uploadedFiles[serialNo] ||
+      uploadedFilesData.find(file => file.serial_no === serialNo);
+
+    if (!uploadedFile) return;
+
+    const item = CONSUMER_COMMITTEE_TITLES.find(item => item.serial_no === serialNo);
+
+    // For API-fetched files
+    if (uploadedFile.file_url) {
+      setPreviewImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
+      return;
     }
 
-    // Update local state to track uploaded files
-    const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
-    setLocalUploadedFiles(prev => ({
-      ...prev,
-      [serialNo]: { file, type: fileType }
-    }));
-  } catch (error) {
-    console.error('File upload failed:', error);
-    toast.error('फाइल अपलोड गर्न सकिएन');
-    throw error;
-  }
-};
-
- const handlePreviewImage = (serialNo: number) => {
-  const uploadedFile = localUploadedFiles[serialNo] || 
-                      uploadedFiles[serialNo] || 
-                      uploadedFilesData.find(file => file.serial_no === serialNo);
-  
-  if (!uploadedFile) return;
-
-  const item = CONSUMER_COMMITTEE_TITLES.find(item => item.serial_no === serialNo);
-  
-  // For API-fetched files
-  if (uploadedFile.file_url) {
-    setPreviewImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
-    return;
-  }
-  
-  // For local uploads
-  if (uploadedFile.type === 'image') {
-    const url = URL.createObjectURL(uploadedFile.file);
-    setPreviewImage({ url, title: item?.title || 'Image Preview' });
-  }
-};
+    // For local uploads
+    if (uploadedFile.type === 'image') {
+      const url = URL.createObjectURL(uploadedFile.file);
+      setPreviewImage({ url, title: item?.title || 'Image Preview' });
+    }
+  };
 
   const closePreview = () => {
     if (previewImage) {
@@ -253,6 +253,23 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
     // For local uploads
     return uploadedFile.type;
   };
+
+  // Correct typing for React components
+  interface IconProps {
+    className?: string;
+  }
+
+  const FileIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+    </svg>
+  );
+
+  const NoFilesIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+      <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4z" />
+    </svg>
+  );
 
   return (
     <div className="space-y-8">
@@ -428,14 +445,42 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                     <td className="px-5 py-3 text-gray-800">{toNepaliNumber(member.contact_no)}</td>
                     <td className="px-5 py-3 text-gray-800">{member.gender}</td>
                     <td className="px-5 py-3 text-gray-800">{member.citizenship_no}</td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
-                          onClick={() => {/* Edit functionality */ }}
-                        >
-                          <FileMinusIcon className="w-5 h-5" />
-                        </button>
+                    <td className="py-3 px-4 text-sm">
+                      <div className="flex flex-col gap-2">
+                        {member.citizenship_front && (
+                          <a
+                            href={member.citizenship_front}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="नागरिकता प्रमाणपत्र (अगाडिको भाग)"
+                            className="inline-flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-2.5 py-1.5 text-xs font-medium text-green-700
+                   hover:bg-green-100 hover:border-green-300 transition"
+                          >
+                            <FileIcon className="w-4 h-4" />
+                            <span>नागरिकता (अगाडि)</span>
+                          </a>
+                        )}
+
+                        {member.citizenship_back && (
+                          <a
+                            href={member.citizenship_back}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="नागरिकता प्रमाणपत्र (पछाडिको भाग)"
+                            className="inline-flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-2.5 py-1.5 text-xs font-medium text-green-700
+                   hover:bg-green-100 hover:border-green-300 transition"
+                          >
+                            <FileIcon className="w-4 h-4" />
+                            <span>नागरिकता (पछाडि)</span>
+                          </a>
+                        )}
+
+                        {!member.citizenship_front && !member.citizenship_back && (
+                          <div className="flex items-center gap-1 text-xs text-gray-400">
+                            <NoFilesIcon className="w-4 h-4" />
+                            <span>कुनै फाइल छैन</span>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -460,8 +505,8 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
         </div>
 
         <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-[1400px] table-fixed divide-y divide-gray-200">
+            <thead className="bg-gray-100 sticky top-0 z-10">
               <tr>
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">क्र.स</th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">पद</th>
@@ -470,7 +515,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">सम्पर्क नं.</th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">लिंग</th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">नागरिकता प्र. नं.</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">कार्यहरू</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">नागरिकता</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
@@ -490,22 +535,45 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                     <td className="py-3 px-4 text-gray-900">{member.contact_no}</td>
                     <td className="py-3 px-4 text-gray-900">{member.gender}</td>
                     <td className="py-3 px-4 text-gray-900">{member.citizenship_no}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          className="text-blue-600 hover:text-blue-800 transition-colors duration-150 cursor-pointer"
-                          onClick={() => {/* Edit functionality */ }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-800 transition-colors duration-150 cursor-pointer"
-                          onClick={() => onDelete(member.id, 'official')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                    <td className="py-3 px-4 text-sm">
+                      <div className="flex flex-col gap-2">
+                        {member.citizenship_front && (
+                          <a
+                            href={member.citizenship_front}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="नागरिकता प्रमाणपत्र (अगाडिको भाग)"
+                            className="inline-flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700
+                   hover:bg-blue-100 hover:border-blue-300 transition"
+                          >
+                            <FileIcon className="w-4 h-4" />
+                            <span>नागरिकता (अगाडि)</span>
+                          </a>
+                        )}
+
+                        {member.citizenship_back && (
+                          <a
+                            href={member.citizenship_back}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="नागरिकता प्रमाणपत्र (पछाडिको भाग)"
+                            className="inline-flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700
+                   hover:bg-blue-100 hover:border-blue-300 transition"
+                          >
+                            <FileIcon className="w-4 h-4" />
+                            <span>नागरिकता (पछाडि)</span>
+                          </a>
+                        )}
+
+                        {!member.citizenship_front && !member.citizenship_back && (
+                          <div className="flex items-center gap-1 text-xs text-gray-400">
+                            <NoFilesIcon className="w-4 h-4" />
+                            <span>कुनै फाइल छैन</span>
+                          </div>
+                        )}
                       </div>
                     </td>
+
                   </tr>
                 ))
               )}

@@ -5,10 +5,10 @@ import { toNepaliNumber } from '../utils/formatters';
 
 const initiationChoices = [
     "उपभोक्ता समिति मार्फत",
-    "सिलबन्दि दरभाउपत्र मार्फत",
-    "बोलपत्र मार्फत",
     "अमानत मार्फत",
-    "सोझै खरिद"
+    "ठेक्का मार्फत",
+    "संस्था समिति मार्फत",
+    "उपभोक्ता मार्फत"
 ];
 
 interface InitiationProcessSectionProps {
@@ -65,7 +65,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
         }
     };
 
-   
+
 
     useEffect(() => {
         fetchInitiationProcess();
