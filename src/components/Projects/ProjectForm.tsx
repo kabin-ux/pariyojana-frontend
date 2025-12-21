@@ -183,13 +183,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               </select>
             </div>
 
-            <div>
+            <div className='hidden'>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 बजेट रु. <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
-                required
+                name='budget'
                 value={formData.budget}
                 onChange={(e) => onInputChange('budget', e.target.value)}
                 placeholder="बजेट"
