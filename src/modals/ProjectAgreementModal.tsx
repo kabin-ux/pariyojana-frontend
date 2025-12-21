@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import 'nepali-datepicker-reactjs/dist/index.css';
+import { toNepaliNumber } from '../utils/formatters';
 
 interface FormData {
     totalAmount: string;
@@ -14,6 +15,7 @@ interface FormData {
     public_participation_percentage: string;
     work_order_date: string;
     completion_date: string;
+    total_cost_estimate?: string;
 }
 
 interface ProjectAgreementModalProps {
@@ -36,6 +38,7 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
         work_order_date: '',
         completion_date: ''
     });
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (agreementData) {
@@ -90,9 +93,19 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
     }, [formData.agreement_amount, formData.municipality_amount]);
 
     const handleSubmit = () => {
+        const agreementAmount = Number(formData.agreement_amount || 0);
+        const totalCostEstimate = Number(agreementData?.total_cost_estimate || 0);
+
+        if (agreementAmount > totalCostEstimate) {
+            setError('साझेदारी रकम कुल लागत अनुमान भन्दा बढी हुन सक्दैन');
+            return;
+        }
+
+        setError(null);
         onSave(formData);
         onClose();
     };
+
 
     const handleCancel = () => {
         onClose();
@@ -115,12 +128,12 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
 
                 {/* Form Content */}
                 <div className="p-6 space-y-6">
-                    {/* <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><span className="text-gray-600">लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div>
-                        <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium"></span></div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> {toNepaliNumber(agreementData?.total_cost_estimate ? agreementData?.total_cost_estimate : 0)}<span className="ml-2 font-medium"></span></div>
+                        {/* <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium"></span></div>
                         <div><span className="text-gray-600">करारजन्य रकम:</span> <span className="ml-2 font-medium"></span></div>
-                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div>
-                    </div> */}
+                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div> */}
+                    </div>
 
                     <div className="grid grid-cols-2 gap-6">
                         {/* Left Column */}
@@ -135,6 +148,9 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                                     onChange={(e) => handleInputChange('agreement_amount', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                 />
+                                {error && (
+                                    <p className="text-red-600 text-sm mt-2">{error}</p>
+                                )}
                             </div>
 
                             <div>
@@ -246,6 +262,7 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                     </button>
                     <button
                         onClick={handleSubmit}
+                        disabled={Number(formData.agreement_amount) > Number(agreementData?.total_cost_estimate)}
                         className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                     >
                         {agreementData ? 'अपडेट गर्नुहोस्' : 'थप गर्नुहोस्'}

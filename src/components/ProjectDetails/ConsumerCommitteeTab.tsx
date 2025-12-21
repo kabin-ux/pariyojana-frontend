@@ -408,7 +408,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                 <th className="px-5 py-3 text-left font-semibold text-gray-700">सम्पर्क नं.</th>
                 <th className="px-5 py-3 text-left font-semibold text-gray-700">लिंग</th>
                 <th className="px-5 py-3 text-left font-semibold text-gray-700">नागरिकता प्र. नं.</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">अन्य</th>
+                <th className="px-5 py-3 text-left font-semibold text-gray-700">नागरिकता</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
