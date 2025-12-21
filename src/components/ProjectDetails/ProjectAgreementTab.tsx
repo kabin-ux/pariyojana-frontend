@@ -152,7 +152,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchAgreementFiles(); 
+      fetchAgreementFiles();
       setIsAgreementFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -161,18 +161,28 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-//   const handleAgreementFileUpload = async (serialNo: number, file: File) => {
-//   try {
-//     const token = localStorage.getItem('access_token');
-//     if (!token) {
-//       throw new Error('Authentication token not found');
-//     }
+  //   const handleAgreementFileUpload = async (serialNo: number, file: File) => {
+  //   try {
+  //     const token = localStorage.getItem('access_token');
+  //     if (!token) {
+  //       throw new Error('Authentication token not found');
+  //     }
 
-//     const formData = new FormData();
-//     formData.append('file', file);
-//     formData.append('serial_no', serialNo.toString());
-//     formData.append('document_type', serialNo.toString());
+  //     const formData = new FormData();
+  //     formData.append('file', file);
+  //     formData.append('serial_no', serialNo.toString());
+  //     formData.append('document_type', serialNo.toString());
 
+  //     const response = await axios.post(
+  //       `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       }
+  //     );
 //     const response = await axios.post(
 //       `/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
 //       formData,
@@ -184,21 +194,21 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
 //       }
 //     );
 
-//     // Correct state update
-//     setFetchedAgreementFiles(prev => [
-//       ...prev.filter(f => f.document_type !== serialNo.toString()),
-//       response.data
-//     ]);
+  //     // Correct state update
+  //     setFetchedAgreementFiles(prev => [
+  //       ...prev.filter(f => f.document_type !== serialNo.toString()),
+  //       response.data
+  //     ]);
 
-//     toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-//     fetchAgreementFiles(); 
-//     setIsAgreementFileUploadModalOpen(false);
-//   } catch (error) {
-//     console.error('File upload failed:', error);
-//     toast.error('फाइल अपलोड गर्न सकिएन');
-//     throw error;
-//   }
-// };
+  //     toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+  //     fetchAgreementFiles(); 
+  //     setIsAgreementFileUploadModalOpen(false);
+  //   } catch (error) {
+  //     console.error('File upload failed:', error);
+  //     toast.error('फाइल अपलोड गर्न सकिएन');
+  //     throw error;
+  //   }
+  // };
 
   const handleWorkFileUpload = async (serialNo: number, file: File) => {
     try {
@@ -229,7 +239,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchWorkFiles(); 
+      fetchWorkFiles();
       setIsWorkFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
