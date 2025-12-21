@@ -10,7 +10,7 @@ import type {
   Document 
 } from '../types/projectDetail';
 
-const API_BASE_URL = 'https://www.bardagoriyapms.com/api/projects';
+const API_BASE_URL = 'http://213.199.53.33:81/api/projects';
 
 // Get auth token
 const getAuthToken = () => localStorage.getItem('access_token');

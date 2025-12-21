@@ -63,7 +63,7 @@ const BudgetCommittee: React.FC = () => {
 
   const handleRecommendWardLevelToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/budget-ward-projects/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/budget-ward-projects/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {
@@ -73,7 +73,7 @@ const BudgetCommittee: React.FC = () => {
   }
   const handleRecommendThematicToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/thematic-programs/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/thematic-programs/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {
@@ -83,7 +83,7 @@ const BudgetCommittee: React.FC = () => {
   }
   const handleRecommendMunicipalityLevelToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/municipality-programs/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/municipality-programs/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {
@@ -94,7 +94,7 @@ const BudgetCommittee: React.FC = () => {
 
   const handleRecommendMunicipalityPrideToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/municipality-pride/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/municipality-pride/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {
@@ -105,7 +105,7 @@ const BudgetCommittee: React.FC = () => {
 
   const handleRecommendProvincialGovernmentToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/provience-transfer-projects/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/provience-transfer-projects/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {
@@ -116,7 +116,7 @@ const BudgetCommittee: React.FC = () => {
 
   const handleRecommendFederalGovernmentToPreAssemblyProject = async (id: number) => {
     try {
-      await axios.post(`https://www.bardagoriyapms.com/api/planning/budget-committee/federal-gov-projects/${id}/submit-to-executive/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/budget-committee/federal-gov-projects/${id}/submit-to-executive/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {

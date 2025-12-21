@@ -296,7 +296,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       formData.append('file', selectedFile);
 
       await axios.post(
-        'https://www.bardagoriyapms.com/api/projects/projects/import_excel/',
+        'http://213.199.53.33:81/api/projects/projects/import_excel/',
         formData,
         {
           headers: {
@@ -325,7 +325,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
 
     try {
       const response = await axios.get(
-        'https://www.bardagoriyapms.com/api/projects/projects/export/',
+        'http://213.199.53.33:81/api/projects/projects/export/',
         {
           responseType: 'blob',
           headers: {

@@ -60,7 +60,7 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
 
             try {
                 const response = await axios.get(
-                    `https://www.bardagoriyapms.com/api/projects/${projectId}/calculate-costestimations/`,
+                    `http://213.199.53.33:81/api/projects/${projectId}/calculate-costestimations/`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

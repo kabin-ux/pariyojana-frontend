@@ -36,7 +36,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
     const savePaymentDetails = async (data: any) => {
         try {
             const token = localStorage.getItem('access_token');
-            const url = `https://www.bardagoriyapms.com/api/projects/${project.serial_number}/payment-details/`;
+            const url = `http://213.199.53.33:81/api/projects/${project.serial_number}/payment-details/`;
 
             await axios.post(url, {
                 title: data.title,
@@ -64,7 +64,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `https://www.bardagoriyapms.com/api/projects/installment/payment/project/${projectId}/pdf/`,
+                `http://213.199.53.33:81/api/projects/installment/payment/project/${projectId}/pdf/`,
                 {
                     responseType: 'blob',
                     headers: {

@@ -38,17 +38,17 @@ export const useThematicReports = () => {
                 thematicReportPDFRes,
                 thematicRecommendedReportPDFRes,
             ] = await Promise.all([
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevel-chart/'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevelthemtic-chart/'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/Wardrecommended-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevel-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevelthemtic-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/Wardrecommended-chart/'),
 
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevel-chart/report/?type=excel'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevelthemtic-chart/report/?type=excel'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/Wardrecommended-chart/report/?type=excel'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevel-chart/report/?type=excel'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevelthemtic-chart/report/?type=excel'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/Wardrecommended-chart/report/?type=excel'),
 
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevel-chart/report/?type=pdf'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/wardlevelthemtic-chart/report/?type=pdf'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/thematic/Wardrecommended-chart/report/?type=pdf'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevel-chart/report/?type=pdf'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/wardlevelthemtic-chart/report/?type=pdf'),
+                axios.get('http://213.199.53.33:81/api/planning/thematic/Wardrecommended-chart/report/?type=pdf'),
             ]);
 
             // Set Chart Data
@@ -100,7 +100,7 @@ export const useThematicReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `https://www.bardagoriyapms.com/api/planning/thematic/${endpoint}/report/?type=${type}`,
+                `http://213.199.53.33:81/api/planning/thematic/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);

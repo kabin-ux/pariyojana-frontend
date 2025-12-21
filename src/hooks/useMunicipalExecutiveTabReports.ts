@@ -32,14 +32,14 @@ export const useMunicipalExecutiveReports = () => {
                 preAssemblyReportPDFRes,
                 councilReportPDFRes,
             ] = await Promise.all([
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/preassembly-chart/'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/councilsubmitted-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/preassembly-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/councilsubmitted-chart/'),
 
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/preassembly/report/?type=excel'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/councilsubmitted/report/?type=excel'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/preassembly/report/?type=excel'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/councilsubmitted/report/?type=excel'),
 
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/preassembly/report/?type=pdf'),
-                axios.get('https://www.bardagoriyapms.com/api/planning/municipality-executive/councilsubmitted/report/?type=pdf'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/preassembly/report/?type=pdf'),
+                axios.get('http://213.199.53.33:81/api/planning/municipality-executive/councilsubmitted/report/?type=pdf'),
             ]);
 
             // Set Chart Data
@@ -91,7 +91,7 @@ export const useMunicipalExecutiveReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `https://www.bardagoriyapms.com/api/planning/municipality-executive/${endpoint}/report/?type=${type}`,
+                `http://213.199.53.33:81/api/planning/municipality-executive/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);
