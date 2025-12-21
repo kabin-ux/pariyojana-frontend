@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import 'nepali-datepicker-reactjs/dist/index.css';
 import { toNepaliNumber } from '../utils/formatters';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface FormData {
     totalAmount: string;
@@ -25,7 +27,7 @@ interface ProjectAgreementModalProps {
     projectId?: string;
 }
 
-const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData }) => {
+const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, onSave, agreementData, projectId }) => {
     const [formData, setFormData] = useState<FormData>({
         totalAmount: '',
         contractualAmount: '',
@@ -38,7 +40,47 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
         work_order_date: '',
         completion_date: ''
     });
+
+    const [costEstimation, setCostEstimation] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        toast.error('Authentication token not found.');
+        return;
+    }
+
+    useEffect(() => {
+        if (!projectId || !token) return;
+
+        const fetchCostEstimation = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await axios.get(
+                    `https://www.bardagoriyapms.com/api/projects/${projectId}/calculate-costestimations/`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                setCostEstimation(response.data);
+            } catch (err: any) {
+                setError('Failed to load cost estimation');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCostEstimation();
+    }, [projectId, token]);
+
+    console.log(costEstimation)
 
     useEffect(() => {
         if (agreementData) {
@@ -94,7 +136,7 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
 
     const handleSubmit = () => {
         const agreementAmount = Number(formData.agreement_amount || 0);
-        const totalCostEstimate = Number(agreementData?.total_cost_estimate || 0);
+        const totalCostEstimate = Number(costEstimation[0]?.grand_total || 0);
 
         if (agreementAmount > totalCostEstimate) {
             setError('साझेदारी रकम कुल लागत अनुमान भन्दा बढी हुन सक्दैन');
@@ -129,7 +171,8 @@ const ProjectAgreementModal: React.FC<ProjectAgreementModalProps> = ({ onClose, 
                 {/* Form Content */}
                 <div className="p-6 space-y-6">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><span className="text-gray-600">कुल लागत अनुमान:</span> {toNepaliNumber(agreementData?.total_cost_estimate ? agreementData?.total_cost_estimate : 0)}<span className="ml-2 font-medium"></span></div>
+                        <div><span className="text-gray-600">कुल लागत अनुमान: </span>{loading && <p>...</p>}
+                            {toNepaliNumber(costEstimation?.[0]?.grand_total ? costEstimation[0]?.grand_total : 0)}<span className="ml-2 font-medium"></span></div>
                         {/* <div><span className="text-gray-600">करारजन्य प्रतिधत:</span> <span className="ml-2 font-medium"></span></div>
                         <div><span className="text-gray-600">करारजन्य रकम:</span> <span className="ml-2 font-medium"></span></div>
                         <div><span className="text-gray-600">कुल लागत अनुमान:</span> <span className="ml-2 font-medium"></span></div> */}
