@@ -73,14 +73,14 @@ const Reports: React.FC = () => {
           })),
         });
 
-        if (data.fiscal_years.length > 0) setSelectedYear(data.fiscal_years[0].id);
-        if (data.report_types.length > 0) setSelectedReportType(data.report_types[0]);
-        if (data.thematic_areas.length > 0) setSelectedSector(data.thematic_areas[0].id);
-        if (data.sub_areas.length > 0) setSelectedSubSector(data.sub_areas[0].id);
-        if (data.sources.length > 0) setSelectedSource(data.sources[0].id);
-        if (data.expenditure_centers.length > 0) setSelectedCostCenter(data.expenditure_centers[0].id);
-        if (data.wards.length > 0) setSelectedWard(data.wards[0].value);
-        if (data.statuses.length > 0) setSelectedStatus(data.statuses[0]);
+        // if (data.fiscal_years.length > 0) setSelectedYear(data.fiscal_years[0].id);
+        // if (data.report_types.length > 0) setSelectedReportType(data.report_types[0]);
+        // if (data.thematic_areas.length > 0) setSelectedSector(data.thematic_areas[0].id);
+        // if (data.sub_areas.length > 0) setSelectedSubSector(data.sub_areas[0].id);
+        // if (data.sources.length > 0) setSelectedSource(data.sources[0].id);
+        // if (data.expenditure_centers.length > 0) setSelectedCostCenter(data.expenditure_centers[0].id);
+        // if (data.wards.length > 0) setSelectedWard(data.wards[0].value);
+        // if (data.statuses.length > 0) setSelectedStatus(data.statuses[0]);
       })
       .catch(err => console.error('Failed to load dropdown data:', err));
   }, []);
@@ -94,6 +94,7 @@ const Reports: React.FC = () => {
     setSelectedCostCenter('');
     setSelectedWard('');
     setSelectedStatus('');
+    setReportGenerated(false);
   };
 
   const handleGenerateReport = async () => {
@@ -151,9 +152,9 @@ const Reports: React.FC = () => {
   );
 
   if (!dropdownData) return <div className="flex justify-center items-center py-12">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      <span className="ml-2 text-gray-600">लोड हुँदैछ...</span>
-    </div>;
+    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    <span className="ml-2 text-gray-600">लोड हुँदैछ...</span>
+  </div>;
 
   return (
     <main className="flex-1 p-6">
