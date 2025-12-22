@@ -20,7 +20,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
     if (!projectData || !projectData.serial_number) return;
     setBeneficiaryLoading(true);
 
-    fetch(`http://43.205.239.123/api/projects/${projectData.serial_number}/beneficiaries/`)
+    fetch(`http://213.199.53.33:81/api/projects/${projectData.serial_number}/beneficiaries/`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch beneficiary data');
         return res.json();
@@ -151,20 +151,6 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
                 अपेक्षित:
               </label>
               <p className="text-gray-900 text-sm">{projectData.status}</p>
-            </div>
-
-            <div className="flex gap-2">
-              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
-                आर्थिक प्रगति:
-              </label>
-              <p className="text-gray-900 text-sm">०</p>
-            </div>
-
-            <div className="flex gap-2">
-              <label className="text-sm font-medium text-gray-700 min-w-[220px]">
-                भौतिक प्रगति:
-              </label>
-              <p className="text-gray-900 text-sm">०</p>
             </div>
 
             <div className="flex gap-2">

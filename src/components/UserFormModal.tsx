@@ -1,6 +1,7 @@
 import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import type { User, UserRole } from '../context/types';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 // Define roles here since it's used in the component
 const roles = [
@@ -59,6 +60,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     section: '',
     administrative_level: '',
   });
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     if (user) {
@@ -96,80 +99,95 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     }));
   };
 
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      let url = 'http://43.205.239.123/api/users/';
-      let method: 'post' | 'put' = 'post';
+    setLoading(true);
 
-      if (editMode && user?.id) { // Changed from id to user_id
+    try {
+      let url = "http://213.199.53.33:81/api/users/";
+      let method: "post" | "put" = "post";
+
+      if (editMode && user?.id) {
         url += `${user.id}/`;
-        method = 'put';
+        method = "put";
       }
 
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(url, {
+      const token = localStorage.getItem("access_token");
+
+      await axios({
+        url,
         method,
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
+        data: {
           ...formData,
-          // Include user_id if editing
-          ...(editMode && user?.id && { id: user.id })
-        }),
+          ...(editMode && user?.id && { id: user.id }),
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.error('Error: ' + JSON.stringify(errorData));
-        return;
-      }
-
+      toast.success(editMode ? "प्रयोगकर्ता अपडेट भयो" : "नयाँ प्रयोगकर्ता थपियो");
       onSuccess();
+      setFormData({
+        full_name: '',
+        email: '',
+        phone: '',
+        role: '' as UserRole,
+        ward_no: '',
+        position: '',
+        department: '',
+        section: '',
+        administrative_level: '',
+      })
       onClose();
     } catch (error: any) {
-      toast.error('Submission error: ' + error.message);
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          "Error: " +
+          (error.response?.data
+            ? JSON.stringify(error.response.data)
+            : error.message)
+        );
+      } else {
+        toast.error("Submission error: " + error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   if (!open) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.4)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
-      }}
-      onClick={onClose}
-    >
+    open && (
       <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#fff',
-          padding: 20,
-          borderRadius: 8,
-          width: '500px',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-        }}
+        className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+        onClick={onClose}
       >
-        <h2 style={{ marginBottom: 15 }}>
-          {viewOnly ? 'प्रयोगकर्ता विवरण' : editMode ? 'प्रयोगकर्ता सम्पादन' : 'नयाँ प्रयोगकर्ता थप्नुहोस्'}
-        </h2>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center border-b px-6 py-4">
+            <h2 className="text-lg font-semibold">
+              {viewOnly ? 'प्रयोगकर्ता विवरण' : editMode ? 'प्रयोगकर्ता सम्पादन' : 'नयाँ प्रयोगकर्ता थप्नुहोस्'}
+            </h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              ✕
+            </button>
+          </div>
 
-        <form onSubmit={handleSubmit}>
-          {inputFields.map(({ label, name, required, type = 'text' }) => (
-            <div key={name} className="mb-4">
-              <label>
-                {label}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
+            {inputFields.map(({ label, name, required, type = 'text' }) => (
+              <div key={name}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {label}
+                </label>
                 <input
                   type={type}
                   name={name}
@@ -177,22 +195,21 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                   onChange={handleChange}
                   required={required}
                   disabled={viewOnly}
-                  style={{ width: '100%', padding: 8, marginBottom: 12 }}
+                  className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                 />
-              </label>
-            </div>
-          ))}
+              </div>
+            ))}
 
-          <div className="mb-4">
-            <label>
-              प्रयोगकर्ता भूमिका *
+            {/* Role */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">प्रयोगकर्ता भूमिका *</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 required
                 disabled={viewOnly}
-                style={{ width: '100%', padding: 8, marginBottom: 12 }}
+                className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               >
                 <option value="">-- भूमिका छान्नुहोस् --</option>
                 {roles.map((role) => (
@@ -201,12 +218,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
+            </div>
 
-          <div className="mb-4">
-            <label>
-              वडा नंं. *
+            {/* Ward */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">वडा नंं. *</label>
               <input
                 type="number"
                 name="ward_no"
@@ -215,32 +231,35 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                 required
                 min={1}
                 disabled={viewOnly}
-                style={{ width: '100%', padding: 8, marginBottom: 12 }}
+                className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
-            </label>
-          </div>
+            </div>
 
-          <div className="flex justify-end mt-5 space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition cursor-pointer"
-            >
-              Cancel
-            </button>
-            {!viewOnly && (
+            {/* Footer */}
+            <div className="flex justify-end space-x-2 border-t pt-4">
               <button
-                type="submit"
-                className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition cursor-pointer"
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
               >
-                {editMode ? 'Update' : 'Add'}
+                रद्द गर्नुहोस्
               </button>
-            )}
-          </div>
-        </form>
+              {!viewOnly && (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+                >
+                  {loading ? 'पर्खनुहोस्...' : editMode ? 'अपडेट गर्नुहोस्' : 'सेभ गर्नुहोस्'}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    )
   );
+
 };
 
 export default UserFormModal;

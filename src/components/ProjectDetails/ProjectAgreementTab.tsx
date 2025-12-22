@@ -70,7 +70,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://43.205.239.123/api/projects/project-plan-tracker/${project.serial_number}/`,
+        `http://213.199.53.33:81/api/projects/project-plan-tracker/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -93,7 +93,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       }
 
       const response = await axios.get(
-        `http://43.205.239.123/api/projects/project-aggrement/${project.serial_number}/`,
+        `http://213.199.53.33:81/api/projects/project-aggrement/${project.serial_number}/`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://43.205.239.123/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+        `http://213.199.53.33:81/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -152,7 +152,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchAgreementFiles(); 
+      fetchAgreementFiles();
       setIsAgreementFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);
@@ -161,44 +161,44 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-//   const handleAgreementFileUpload = async (serialNo: number, file: File) => {
-//   try {
-//     const token = localStorage.getItem('access_token');
-//     if (!token) {
-//       throw new Error('Authentication token not found');
-//     }
+  //   const handleAgreementFileUpload = async (serialNo: number, file: File) => {
+  //   try {
+  //     const token = localStorage.getItem('access_token');
+  //     if (!token) {
+  //       throw new Error('Authentication token not found');
+  //     }
 
-//     const formData = new FormData();
-//     formData.append('file', file);
-//     formData.append('serial_no', serialNo.toString());
-//     formData.append('document_type', serialNo.toString());
+  //     const formData = new FormData();
+  //     formData.append('file', file);
+  //     formData.append('serial_no', serialNo.toString());
+  //     formData.append('document_type', serialNo.toString());
 
-//     const response = await axios.post(
-//       `http://43.205.239.123/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
-//       formData,
-//       {
-//         headers: {
-//           'Authorization': `Bearer ${token}`,
-//           'Content-Type': 'multipart/form-data',
-//         },
-//       }
-//     );
+  //     const response = await axios.post(
+  //       `http://213.199.53.33:81/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       }
+  //     );
 
-//     // Correct state update
-//     setFetchedAgreementFiles(prev => [
-//       ...prev.filter(f => f.document_type !== serialNo.toString()),
-//       response.data
-//     ]);
+  //     // Correct state update
+  //     setFetchedAgreementFiles(prev => [
+  //       ...prev.filter(f => f.document_type !== serialNo.toString()),
+  //       response.data
+  //     ]);
 
-//     toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-//     fetchAgreementFiles(); 
-//     setIsAgreementFileUploadModalOpen(false);
-//   } catch (error) {
-//     console.error('File upload failed:', error);
-//     toast.error('फाइल अपलोड गर्न सकिएन');
-//     throw error;
-//   }
-// };
+  //     toast.success('फाइल सफलतापूर्वक अपलोड भयो');
+  //     fetchAgreementFiles(); 
+  //     setIsAgreementFileUploadModalOpen(false);
+  //   } catch (error) {
+  //     console.error('File upload failed:', error);
+  //     toast.error('फाइल अपलोड गर्न सकिएन');
+  //     throw error;
+  //   }
+  // };
 
   const handleWorkFileUpload = async (serialNo: number, file: File) => {
     try {
@@ -213,7 +213,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       formData.append('document_type', serialNo.toString());
 
       const response = await axios.post(
-        `http://43.205.239.123/api/projects/project-aggrement/${project.serial_number}/upload/`,
+        `http://213.199.53.33:81/api/projects/project-aggrement/${project.serial_number}/upload/`,
         formData,
         {
           headers: {
@@ -229,7 +229,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
       ]);
 
       toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-      fetchWorkFiles(); 
+      fetchWorkFiles();
       setIsWorkFileUploadModalOpen(false);
     } catch (error) {
       console.error('File upload failed:', error);

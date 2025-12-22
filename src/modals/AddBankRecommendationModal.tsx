@@ -102,41 +102,41 @@ const AddBankRecommendationModal: React.FC<AddDocumentModalProps> = ({
     };
 
     const handleSubmit = () => {
-        if (isAccountPhoto) {
-            // Validation for account photo
-            if (!formData.bank_account_number.trim()) {
-                toast.error('खाता नम्बर आवश्यक छ।');
-                return;
-            }
-        } else {
-            // Validation for bank recommendation
-            if (!formData.fileName.trim()) {
-                toast.error('फाइलको नाम आवश्यक छ।');
-                return;
-            }
+        if (isAccountPhoto && !formData.bank_account_number.trim()) {
+            toast.error('खाता नम्बर आवश्यक छ।');
+            return;
         }
 
-        const dataToSend = isAccountPhoto ? {
+        if (!isAccountPhoto && !formData.fileName.trim()) {
+            toast.error('फाइलको नाम आवश्यक छ।');
+            return;
+        }
+
+        const payload: any = {
             bank_account_number: formData.bank_account_number,
-            file: formData.uploadedFile,
-            remarks: formData.description,
-            project: projectId.toString(),
-        } : {
+
             title: formData.fileName,
-            file: formData.uploadedFile,
             remarks: formData.description,
-            project: projectId.toString(),
+            project: projectId,
+            file: formData.uploadedFile,
         };
 
-        onSave(dataToSend);
+        // onSave(payload);
 
-        // Clear the form after saving
-        setFormData({
-            fileName: '',
-            uploadedFile: null,
-            description: '',
-            bank_account_number: '',
-        });
+
+        // const payload: any = {
+        //     bank_account_number: formData.bank_account_number,
+        //     remarks: formData.description,
+        //     project: projectId,
+        // };
+
+        if (formData.uploadedFile) {
+            payload.check_photo = formData.uploadedFile;
+        }
+
+        onSave(payload);
+
+        setFormData({ fileName: '', uploadedFile: null, description: '', bank_account_number: '' });
     };
 
     return (

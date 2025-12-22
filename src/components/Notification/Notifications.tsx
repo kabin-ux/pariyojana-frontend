@@ -28,7 +28,7 @@ const Notifications: React.FC<NotificationsProps> = ({ limit = 10, showHeader = 
         setLoading(true);
         const token = localStorage.getItem('access_token');
         
-        const response = await axios.get('http://43.205.239.123/api/notifications/', {
+        const response = await axios.get('http://213.199.53.33:81/api/notifications/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

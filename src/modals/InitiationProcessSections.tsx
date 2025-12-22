@@ -5,10 +5,10 @@ import { toNepaliNumber } from '../utils/formatters';
 
 const initiationChoices = [
     "उपभोक्ता समिति मार्फत",
-    "सिलबन्दि दरभाउपत्र मार्फत",
-    "बोलपत्र मार्फत",
     "अमानत मार्फत",
-    "सोझै खरिद"
+    "ठेक्का मार्फत",
+    "संस्था समिति मार्फत",
+    "उपभोक्ता मार्फत"
 ];
 
 interface InitiationProcessSectionProps {
@@ -30,7 +30,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
     const fetchInitiationProcess = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://43.205.239.123/api/projects/${projectId}/initiation-process/`);
+            const res = await axios.get(`http://213.199.53.33:81/api/projects/${projectId}/initiation-process/`);
             setInitiationProcess(res.data);
         } catch (err) {
             console.error('Error fetching initiation process:', err);
@@ -45,7 +45,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
 
         const bsDate = BS.ADToBS(today); // Convert to BS
         try {
-            await axios.post(`http://43.205.239.123/api/projects/${projectId}/initiation-process/`, {
+            await axios.post(`http://213.199.53.33:81/api/projects/${projectId}/initiation-process/`, {
                 project: projectId,
                 initiation_method: selectedMethod,
                 started_at: bsDate,
@@ -65,7 +65,7 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
         }
     };
 
-   
+
 
     useEffect(() => {
         fetchInitiationProcess();

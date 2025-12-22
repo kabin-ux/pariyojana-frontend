@@ -24,7 +24,7 @@ export interface SignatoryOption {
 }
 
 interface BankAccountDetails {
-  id: number;
+  bank: number;
   bank_name: string;
   branch: string;
   signatories_details: SignatoryOption[];
@@ -45,7 +45,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
   onSubmit = () => {},
 }) => {
   const [formData, setFormData] = useState<BankAccountData>({
-    bank_id: bankDetails?.id ?? 0,
+    bank_id: bankDetails?.bank ?? 0,
     branch: bankDetails?.branch ?? '',
     signatories: bankDetails?.signatories_details?.map((s) => s.id) ?? [],
   });
@@ -57,7 +57,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
   useEffect(() => {
     if (bankDetails) {
       setFormData({
-        bank_id: bankDetails?.id,
+        bank_id: bankDetails?.bank,
         branch: bankDetails?.branch,
         signatories: bankDetails?.signatories_details?.map((s) => s.id),
       });

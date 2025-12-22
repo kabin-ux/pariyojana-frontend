@@ -3,7 +3,6 @@ import { toNepaliNumber } from '../../utils/formatters';
 import PaymentDetailModal from '../../modals/AddPaymentDetailsModal';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FileCheck, Upload } from 'lucide-react';
 import * as BS from 'bikram-sambat-js';
 
 interface PaymentDetailsSectionProps {
@@ -18,7 +17,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
     refetch
 }) => {
     const [isPaymentDetailModalOpen, setPaymentDetailModalOpen] = useState(false);
-  const today = new Date();
+    const today = new Date();
     const bsDate = BS.ADToBS(today);
 
     const totalPaid = paymentDetails?.reduce(
@@ -37,7 +36,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
     const savePaymentDetails = async (data: any) => {
         try {
             const token = localStorage.getItem('access_token');
-            const url = `http://43.205.239.123/api/projects/${project.serial_number}/payment-details/`;
+            const url = `http://213.199.53.33:81/api/projects/${project.serial_number}/payment-details/`;
 
             await axios.post(url, {
                 title: data.title,
@@ -65,7 +64,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://43.205.239.123/api/projects/installment/payment/project/${projectId}/pdf/`,
+                `http://213.199.53.33:81/api/projects/installment/payment/project/${projectId}/pdf/`,
                 {
                     responseType: 'blob',
                     headers: {
@@ -113,7 +112,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
                             <th className="text-left py-3 px-4">भुक्तानी गरिएको रकम</th>
                             <th className="text-left py-3 px-4">भुक्तनी प्रतिशत (%)</th>
                             <th className="text-left py-3 px-4">भौतिक प्रगती (%)</th>
-                            <th className="text-left py-3 px-4">अन्य</th>
+                            {/* <th className="text-left py-3 px-4">अन्य</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -131,7 +130,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
                                 <td className="py-3 px-4">
                                     {toNepaliNumber(item.physical_progress ?? 0)}%
                                 </td>
-                                <td className="py-3 px-4">
+                                {/* <td className="py-3 px-4">
                                     <div className="flex items-center space-x-3">
                                         <button
                                             type="button"
@@ -150,7 +149,7 @@ const PaymentDetailsSection: React.FC<PaymentDetailsSectionProps> = ({
                                             <FileCheck className="w-4 h-4" />
                                         </button>
                                     </div>
-                                </td>
+                                </td> */}
                             </tr>
                         ))}
                     </tbody>

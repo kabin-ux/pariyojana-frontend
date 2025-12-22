@@ -160,7 +160,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
 
                         </div>
 
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 भुक्तानी प्रतिशत (%)
                             </label>
@@ -171,7 +171,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                 placeholder="भुक्तानी प्रतिशत (%)"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

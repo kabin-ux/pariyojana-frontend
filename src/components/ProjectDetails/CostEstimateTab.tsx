@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Edit, Upload, FileSearch, FileText } from 'lucide-react';
+import { Edit, Upload, FileSearch } from 'lucide-react';
 import { toNepaliNumber, formatBudget } from '../../utils/formatters';
 import AddAuthenticationFileModal from '../../modals/AddAuthenticationFileModal';
 import AuthenticationModal from '../../modals/AuthenticationModal';
 import CalculateCostEstimateModal from '../../modals/CalculateCostEstimateModal';
 import WorkTypeModal from '../../modals/SetWorkTypeModal';
 import WorkInProgressModal from '../../modals/WorkInProgressModal';
-import CostEstimateModal from '../../modals/CostEstimateModal';
+// import CostEstimateModal from '../../modals/CostEstimateModal';
 import * as BS from 'bikram-sambat-js';
 
 interface CostEstimateTabProps {
@@ -33,14 +33,14 @@ const BUDGET_ESTIMATE_TITLES = [
 
 const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
   project,
-  costEstimateDetails,
+  // costEstimateDetails,
   mapCostEstimate,
   calculateCostEstimateDetails,
   workType,
   workInProgress,
   onFileUpload,
   onSendAuthentication,
-  onGenerateBill,
+  // onGenerateBill,
   onLoadCostEstimate
 }) => {
   const [isAuthenticationFileModalOpen, setAuthenticationFileModalOpen] = useState(false);
@@ -48,14 +48,14 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
   const [isCostEstimateModalOpen, setIsCostEstimateModalOpen] = useState(false);
   const [isSetWorkTypeModalOpen, setIsSetWorkTypeModalOpen] = useState(false);
   const [isSetWorkInProgressOpen, setIsSetWorkInProgressOpen] = useState(false);
-  const [isCostModalOpen, setIsCostModalOpen] = useState(false);
+  // const [isCostModalOpen, setIsCostModalOpen] = useState(false);
   const [selectedMapCostItem, setSelectedMapCostItem] = useState<any>(null);
   const [editMapCostId, setEditMapCostId] = useState<number | null>(null);
 
   const today = new Date();
   const bsDate = BS.ADToBS(today);
 
-  const costDetail = costEstimateDetails.find(item => item.project === project?.id);
+  // const costDetail = costEstimateDetails.find(item => item.project === project?.id);
   const calculatedEstimate = calculateCostEstimateDetails.length > 0 ? calculateCostEstimateDetails[0] : null;
   const workTypeDets = workType.length > 0 ? workType[0] : null;
   const workInProgressDets = workInProgress.length > 0 ? workInProgress[0] : null;
@@ -254,7 +254,7 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
           <div>
             <p className="text-sm text-gray-600 mb-1">परियोजनाको नाम</p>
             <p className="text-lg font-semibold">
-              {workTypeDets?.project}
+              {workTypeDets?.project_name}
             </p>
           </div>
           <div>
@@ -349,8 +349,8 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
       </div>
 
       {/* Cost Summary */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
+      {/* <div className="bg-gray-50 rounded-lg p-6"> */}
+        {/* <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">लागत अनुमान तथा अन्य विवरण:</h3>
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer"
@@ -359,8 +359,8 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             <Edit className="w-4 h-4" />
             <span>सम्पादन गर्नुहोस्</span>
           </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        </div> */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <p className="text-sm text-gray-600 mb-1">लागत अनुमान:</p>
             <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.estimated_cost))}</p>
@@ -377,9 +377,9 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             <p className="text-sm text-gray-600 mb-1">कुल लागत अनुमान:</p>
             <p className="text-lg font-semibold">{toNepaliNumber(formatBudget(costDetail?.total_estimated_cost))}</p>
           </div>
-        </div>
+        </div> */}
         {/* Actions */}
-        <div className="mt-6 flex justify-end">
+        {/* <div className="mt-6 flex justify-end">
           <button
             onClick={() => onGenerateBill(project.serial_number)}
             disabled={
@@ -400,9 +400,9 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             <FileText className="w-4 h-4" />
             <span>बिल उत्पन्न गर्नुहोस्</span>
           </button>
-        </div>
+        </div> */}
 
-        {isCostModalOpen && (
+        {/* {isCostModalOpen && (
           <CostEstimateModal
             isOpen={isCostModalOpen}
             onClose={() => setIsCostModalOpen(false)}
@@ -413,8 +413,8 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             }}
             projectId={project.serial_number}
           />
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
     </div>
   );
 };

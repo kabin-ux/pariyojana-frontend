@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditProjectModal from '../../modals/EditProjectsModal';
-import { formatWardNumber } from '../../utils/formatters';
+import { formatWardNumber, toNepaliNumber } from '../../utils/formatters';
 
 interface ProjectsTableProps {
   data: any[];
@@ -30,7 +30,7 @@ export const ProjectsTable = ({
   );
 
   // Updated formatWardNumber function to handle both string and array inputs
-  const formatWards = (wardData:  number[]): string => {
+  const formatWards = (wardData: number[]): string => {
     if (Array.isArray(wardData)) {
       return wardData.map(ward => formatWardNumber(ward)).join(', ');
     }
@@ -40,9 +40,9 @@ export const ProjectsTable = ({
   const handlePrioritize = async (id: number) => {
     let endpoint = '';
     if (tabType === 'वडा स्तरीय परियोजना') {
-      endpoint = `http://43.205.239.123/api/planning/ward-office/ward-projects/${id}/prioritize/`;
+      endpoint = `http://213.199.53.33:81/api/planning/ward-office/ward-projects/${id}/prioritize/`;
     } else if (tabType === 'विषयगत समितिका परियोजना') {
-      endpoint = `http://43.205.239.123/api/planning/ward-office/ward-thematic-projects/${id}/prioritize/`;
+      endpoint = `http://213.199.53.33:81/api/planning/ward-office/ward-thematic-projects/${id}/prioritize/`;
     } else {
       return;
     }
@@ -80,7 +80,7 @@ export const ProjectsTable = ({
 
   const handleRecommendtoBudget = async (id: number) => {
     try {
-      await axios.post(`http://43.205.239.123/api/planning/ward-office/prioritized-ward-projects/${id}/recommend-to-budget-committee/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/ward-office/prioritized-ward-projects/${id}/recommend-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
@@ -91,7 +91,7 @@ export const ProjectsTable = ({
 
   const handleRecommendMunicipalProgramToBudget = async (id: number) => {
     try {
-      await axios.post(`http://43.205.239.123/api/planning/ward-office/municipality-projects/${id}/recommend-to-budget-committee/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/ward-office/municipality-projects/${id}/recommend-to-budget-committee/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
@@ -102,7 +102,7 @@ export const ProjectsTable = ({
 
   const handleRecommendtoThematic = async (id: number) => {
     try {
-      await axios.post(`http://43.205.239.123/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/ward-office/prioritized-ward-thematic/${id}/recommend-to-ward-projects/`);
       toast.success('परियोजना सफलतापूर्वक विषयगत समितिमा सिफारिस गरियो।');
       refetch?.();
     } catch (error) {
@@ -111,11 +111,29 @@ export const ProjectsTable = ({
     }
   };
 
+  // Correct typing for React components
+  interface IconProps {
+    className?: string;
+  }
+
+  const FileIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+    </svg>
+  );
+
+  const NoFilesIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+      <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4z" />
+    </svg>
+  );
+
+
   const renderDynamicProjectsTable = () => (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">परियोजनाहरू</h2>
       <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-[1400px] table-fixed divide-y divide-gray-200">
           <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
               {[
@@ -129,6 +147,7 @@ export const ProjectsTable = ({
                 'वडा नं.',
                 'स्थिति',
                 'प्राथमिकता नम्बर',
+                'प्रतिवेदनहरु',
                 'अन्य',
               ].map((header, index) => (
                 <th
@@ -162,7 +181,7 @@ export const ProjectsTable = ({
                     {item.expenditure_center?.name || item.expenditure_center || '-'}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-800">
-                    {item.budget || '-'}
+                    रु {toNepaliNumber(item.budget) || '-'}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-800">
                     {formatWards(item.ward_no)}
@@ -173,6 +192,63 @@ export const ProjectsTable = ({
                   <td className="py-3 px-4 text-sm text-gray-800">
                     {item.priority_no || '-'}
                   </td>
+                  <td className="py-3 px-4 text-sm space-y-2">
+                    {item.feasibility_file && (
+                      <a
+                        href={item.feasibility_file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 hover:shadow-sm"
+                        title="सम्भाव्यता अध्ययन"
+                      >
+                        <FileIcon className="w-3.5 h-3.5" />
+                        सम्भाव्यता अध्ययन
+                      </a>
+                    )}
+
+                    {item.detailed_file && (
+                      <a
+                        href={item.detailed_file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs font-medium hover:bg-green-100 hover:border-green-300 transition-all duration-200 hover:shadow-sm"
+                        title="विस्तृत अध्ययन"
+                      >
+                        <FileIcon className="w-3.5 h-3.5" />
+                        विस्तृत अध्ययन
+                      </a>
+                    )}
+
+                    {item.environmental_file && (
+                      <a
+                        href={item.environmental_file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-lg text-xs font-medium hover:bg-purple-100 hover:border-purple-300 transition-all duration-200 hover:shadow-sm"
+                        title="वातावरणीय अध्ययन"
+                      >
+                        <FileIcon className="w-3.5 h-3.5" />
+                        वातावरणीय अध्ययन
+                      </a>
+                    )}
+
+                    {!item.feasibility_file &&
+                      !item.detailed_file &&
+                      !item.environmental_file && (
+                        <div className="flex items-center justify-center h-8 text-gray-400 text-xs">
+                          <NoFilesIcon className="w-4 h-4 mr-1" />
+                          कुनै फाइल छैन
+                        </div>
+                      )}
+                  </td>
+
+
+                  {/* <td className="py-3 px-4 text-sm text-gray-800">
+                   
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800">
+                  
+                  </td> */}
                   <td className="py-3 px-4">
                     {tabType === 'वडा स्तरीय परियोजना' || tabType === 'विषयगत समितिका परियोजना' ? (
                       <div className="flex items-center space-x-2">

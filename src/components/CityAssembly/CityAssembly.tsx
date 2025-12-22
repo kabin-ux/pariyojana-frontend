@@ -46,7 +46,7 @@ const CityAssembly: React.FC = () => {
 
   const handleApproveProject = async (id: number) => {
     try {
-      await axios.post(`http://43.205.239.123/api/planning/municipal-assembly/submitted-projects/${id}/approve/`);
+      await axios.post(`http://213.199.53.33:81/api/planning/municipal-assembly/submitted-projects/${id}/approve/`);
       toast.success('परियोजना सफलतापूर्वक बजेट तथा कार्यक्रम तर्जुमा समितिमा सिफारिस गरियो।');
       window.location.reload();
     } catch (error) {

@@ -49,23 +49,23 @@ export const useWardReports = () => {
                 prioritizedWardReportPDFRes,
                 prioritizedWardThematicReportPDFRes,
             ] = await Promise.all([
-                axios.get('http://43.205.239.123/api/planning/ward-office/wardlevel-chart/'),
-                axios.get('http://43.205.239.123/api/planning/ward-office/wardlevelthemtic-chart/'),
-                axios.get('http://43.205.239.123/api/planning/ward-office/municipalitylevel-chart/'),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritizedward-chart/'),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritizedwardthematic-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/wardlevel-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/wardlevelthemtic-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/municipalitylevel-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritizedward-chart/'),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritizedwardthematic-chart/'),
 
-                axios.get('http://43.205.239.123/api/planning/ward-office/ward-level/report/?type=excel', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/ward-thematic/report/?type=excel', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/municipality/report/?type=excel', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-ward/report/?type=excel', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-wardthematic/report/?type=excel', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/ward-level/report/?type=excel', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/ward-thematic/report/?type=excel', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/municipality/report/?type=excel', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritized-ward/report/?type=excel', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritized-wardthematic/report/?type=excel', { responseType: 'blob' }),
 
-                axios.get('http://43.205.239.123/api/planning/ward-office/ward-level/report/?type=pdf', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/ward-thematic/report/?type=pdf', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/municipality/report/?type=pdf', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-ward/report/?type=pdf', { responseType: 'blob' }),
-                axios.get('http://43.205.239.123/api/planning/ward-office/prioritized-wardthematic/report/?type=pdf', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/ward-level/report/?type=pdf', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/ward-thematic/report/?type=pdf', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/municipality/report/?type=pdf', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritized-ward/report/?type=pdf', { responseType: 'blob' }),
+                axios.get('http://213.199.53.33:81/api/planning/ward-office/prioritized-wardthematic/report/?type=pdf', { responseType: 'blob' }),
             ]);
 
             // Set Chart Data
@@ -128,7 +128,7 @@ export const useWardReports = () => {
         setError(null);
         try {
             const response = await axios.get(
-                `http://43.205.239.123/api/planning/ward-office/${endpoint}/report/?type=${type}`,
+                `http://213.199.53.33:81/api/planning/ward-office/${endpoint}/report/?type=${type}`,
                 { responseType: 'blob', timeout: 30000 }
             );
             downloadBlob(response.data, filename);

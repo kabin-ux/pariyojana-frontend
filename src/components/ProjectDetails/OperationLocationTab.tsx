@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileCheck } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { toNepaliNumber } from '../../utils/formatters';
 import OperationSiteUploadModal from '../../modals/UploadSiteModal';
 
@@ -60,14 +60,6 @@ const OperationLocationTab: React.FC<OperationLocationTabProps> = ({
                       }}
                     >
                       <Upload className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      className="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded transition cursor-pointer"
-                      onClick={() => console.log("Download PDF clicked")}
-                    >
-                      <FileCheck className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>

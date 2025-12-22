@@ -34,7 +34,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://43.205.239.123/api/projects/${projectId}/bank-details/`,
+                `http://213.199.53.33:81/api/projects/${projectId}/bank-details/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -52,7 +52,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://43.205.239.123/api/projects/${projectId}/bank-account-recommendation/`,
+                `http://213.199.53.33:81/api/projects/${projectId}/bank-account-recommendation/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -70,7 +70,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         try {
             const token = localStorage.getItem('access_token');
             const response = await axios.get(
-                `http://43.205.239.123/api/projects/${projectId}/account-photos/`,
+                `http://213.199.53.33:81/api/projects/${projectId}/account-photos/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -98,11 +98,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 formData.append('file', data.file);
             }
 
-            let url = `http://43.205.239.123/api/projects/${project.serial_number}/bank-account-recommendation/`;
+            let url = `http://213.199.53.33:81/api/projects/${project.serial_number}/bank-account-recommendation/`;
             let method = 'post';
 
             if (editRecommendationId) {
-                url = `http://43.205.239.123/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
+                url = `http://213.199.53.33:81/api/projects/${project.serial_number}/bank-account-recommendation/${editRecommendationId}/`;
                 method = 'patch';
             }
 
@@ -136,22 +136,16 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
             formData.append('remarks', data.remarks);
             formData.append('project', data.project);
 
-            if (data.check_photo) {
-                // If it's a new file upload
-                if (data.check_photo instanceof File) {
-                    formData.append('check_photo', data.check_photo);
-                }
-                // If it's an existing photo URL (during edit)
-                else if (typeof data.check_photo === 'string') {
-                    formData.append('check_photo', data.check_photo);
-                }
+            // Only append the file if it's a new File object
+            if (data.check_photo && data.check_photo instanceof File) {
+                formData.append('check_photo', data.check_photo);
             }
 
-            let url = `http://43.205.239.123/api/projects/${project.serial_number}/account-photos/`;
-            let method = 'post';
+            let url = `http://213.199.53.33:81/api/projects/${project.serial_number}/account-photos/`;
+            let method: 'post' | 'patch' = 'post';
 
             if (editAccountPhotoId) {
-                url = `http://43.205.239.123/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
+                url = `http://213.199.53.33:81/api/projects/${project.serial_number}/account-photos/${editAccountPhotoId}/`;
                 method = 'patch';
             }
 
@@ -161,11 +155,12 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                 data: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             toast.success(editAccountPhotoId ? 'खाता फोटो सम्पादन भयो' : 'खाता फोटो सफलतापूर्वक थपियो');
+
             const updatedData = await fetchBankAccountPhotos(project.serial_number);
             setBankAccountPhotos(updatedData);
             setIsBankAccountPhotosModalOpen(false);
@@ -176,6 +171,7 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         }
     };
 
+
     const addBankDetails = async (projectSerialNumber: number, data: {
         bank_id: number;
         branch: string;
@@ -183,10 +179,10 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
     }) => {
         try {
             const token = localStorage.getItem('access_token');
-            let url = `http://43.205.239.123/api/projects/${projectSerialNumber}/bank-details/`;
+            let url = `http://213.199.53.33:81/api/projects/${projectSerialNumber}/bank-details/`;
             let method = 'post';
             if (editBankId) {
-                url = `http://43.205.239.123/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
+                url = `http://213.199.53.33:81/api/projects/${projectSerialNumber}/bank-details/${editBankId}/`;
                 method = 'patch';
             }
             await axios({
@@ -225,10 +221,10 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
         setIsBankRecommendationModalOpen(true);
     };
 
-    const handleEditAccountPhoto = (photoId: number) => {
-        setEditAccountPhotoId(photoId);
-        setIsBankAccountPhotosModalOpen(true);
-    };
+    // const handleEditAccountPhoto = (photoId: number) => {
+    //     setEditAccountPhotoId(photoId);
+    //     setIsBankAccountPhotosModalOpen(true);
+    // };
 
     useEffect(() => {
         const loadBankDetails = async () => {
@@ -276,11 +272,11 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                     {bankDetails?.length === 0 && (
                         <button
                             type="button"
-                            className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                             onClick={() => setIsBankModalOpen(true)}
                         >
                             <Plus className="w-4 h-4" />
-                            add गर्नुहोस्
+                            थप्नुहोस्
                         </button>
                     )}
 
@@ -314,7 +310,9 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                             <p className="text-lg font-semibold text-gray-900 bg-white p-3 rounded-lg ">
                                 <ul>
                                     {bankDetails[0].signatories_details.map((signatory: any) => (
-                                        <li key={signatory.id}>{signatory.full_name}</li>
+                                        <li key={signatory.id}>
+                                            {signatory.full_name?.trim() ? signatory.full_name : "नाम नभएको दस्तावत कर्ता"}
+                                        </li>
                                     ))}
                                 </ul>
                             </p>
@@ -424,14 +422,16 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                             <Camera className="w-5 h-5 mr-2 text-blue-600" />
                             खाता नम्बर र चेकको फोटो
                         </h3>
-                        <button
-                            type="button"
-                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
-                            onClick={() => setIsBankAccountPhotosModalOpen(true)}
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>{bankAccountPhotos.length > 0 ? 'सम्पादन गर्नुहोस्' : 'थप्नुहोस्'}</span>
-                        </button>
+                        {bankAccountPhotos?.length === 0 && (
+                            <button
+                                type="button"
+                                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
+                                onClick={() => setIsBankAccountPhotosModalOpen(true)}
+                            >
+                                <Plus className="w-4 h-4" />
+                                थप्नुहोस्
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -458,19 +458,19 @@ const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
                                         {photo.check_photo ? (
                                             <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300">
                                                 <img
-                                                    src={photo.check_photo}
+                                                    src={photo?.check_photo}
                                                     alt="Check Photo"
                                                     className="w-full h-40 object-contain rounded-lg"
                                                     onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                                                        (e.target as HTMLImageElement).src = 'https://dummyimage.com/300x200/cccccc/000000&text=Image+Not+Available';
                                                     }}
                                                 />
-                                                <button
+                                                {/* <button
                                                     onClick={() => handleEditAccountPhoto(photo.id)}
                                                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                                                 >
                                                     फोटो बदल्नुहोस्
-                                                </button>
+                                                </button> */}
                                             </div>
                                         ) : (
                                             <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300">
