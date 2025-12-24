@@ -5,6 +5,7 @@ import { useAuth } from '../context/hooks';
 
 interface AuthDocument {
   id: number;
+  project_name: string;
   source_id: number;
   file_title: string;
   file_title_display: string;
@@ -124,10 +125,6 @@ const Authentication: React.FC = () => {
 
   // Determine if current user is the checker for this document
   const isChecker = selectedDocument?.checker === user?.id;
-  console.log("user",user)
-  console.log(isChecker)  
-      console.log(user?.id)
-
   // Determine if current user is the approver for this document
   const isApprover = selectedDocument?.approver === user?.id;
   // Document is ready for checking (based on status)
@@ -189,8 +186,8 @@ const Authentication: React.FC = () => {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900">प्रमाणिकरण विवरण</h2>
-                <button 
-                  onClick={() => setIsModalOpen(false)} 
+                <button
+                  onClick={() => setIsModalOpen(false)}
                   className="text-gray-400 hover:text-gray-600 cursor-pointer"
                   disabled={isActionLoading}
                 >
@@ -278,6 +275,7 @@ const Authentication: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">क्र.स</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">परियोजना शीर्षक</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">फाइल शीर्षक</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">भूमिका</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">स्थिति</th>
@@ -289,6 +287,7 @@ const Authentication: React.FC = () => {
                   filteredData.map((item, index) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3 px-4 text-sm text-gray-900">{index + 1}</td>
+                      <td className="py-3 px-4 text-sm text-gray-900">{item.project_name}</td>
                       <td className="py-3 px-4 text-sm text-gray-900">{item.file_title_display}</td>
                       <td className="py-3 px-4 text-sm text-gray-900">{item.uploader_role}</td>
                       <td className="py-3 px-4">
