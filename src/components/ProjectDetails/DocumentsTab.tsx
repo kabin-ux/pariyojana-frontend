@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, FileCheck } from 'lucide-react';
+import { Plus, Edit, Trash2, FileCheck, Eye } from 'lucide-react';
 import { toNepaliNumber } from '../../utils/formatters';
 import AddDocumentModal from '../../modals/AddDocumentModal';
 import EmptyState from './EmptyState';
@@ -23,6 +23,20 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
 }) => {
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
   const [documentDetail, setDocumentDetail] = useState<any>(null);
+  // const getFileType = (fileName?: string): 'pdf' | 'image' | null => {
+  //   if (!fileName) return null;
+  //   const extension = fileName.split('.').pop()?.toLowerCase();
+  //   return extension === 'pdf' ? 'pdf' : 'image';
+  // };
+  const handleFilePreview = (item: any) => {
+    if (!item.file) return;
+    // const fileType = getFileType(item.file);
+    window.open(item.file, '_blank', 'noopener,noreferrer');
+  };
+
+  const hasFile = (item: any) => {
+    return !!item.file;
+  };
 
   return (
     <div className="space-y-6">
@@ -121,6 +135,18 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
                         >
                           <Edit className="w-5 h-5" />
                         </button>
+                        
+                        {/* Eye button - only show when file exists */}
+                        {hasFile(item) && (
+                          <button
+                            className="text-purple-600 hover:text-purple-800 cursor-pointer"
+                            onClick={() => handleFilePreview(item)}
+                            title="फाइल हेर्नुहोस्"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                        )}
+                        
                         <button
                           className="text-red-600 hover:text-red-800 cursor-pointer"
                           onClick={() => onDeleteDocument(item.id)}
@@ -135,19 +161,19 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
             </table>
           </div>
         )}
-
-        {isDocumentModalOpen && (
-          <AddDocumentModal
-            onSave={onSaveDocument}
-            onClose={() => {
-              setIsDocumentModalOpen(false);
-              setDocumentDetail(null);
-            }}
-            documentData={documentDetail}
-            projectId={project.serial_number}
-          />
-        )}
       </div>
+
+      {isDocumentModalOpen && (
+        <AddDocumentModal
+          onSave={onSaveDocument}
+          onClose={() => {
+            setIsDocumentModalOpen(false);
+            setDocumentDetail(null);
+          }}
+          documentData={documentDetail}
+          projectId={project.serial_number}
+        />
+      )}
     </div>
   );
 };

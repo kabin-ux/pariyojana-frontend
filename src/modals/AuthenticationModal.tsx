@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Eye, User, Clock, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/hooks';
 import toast from 'react-hot-toast';
@@ -29,7 +29,7 @@ export default function AuthenticationModal({
 }: AuthenticationModalProps) {
     const { user } = useAuth();
 
-    const [currentModal, setCurrentModal] = useState('form');
+    const [currentModal, setCurrentModal] = useState<'form' | 'details'>('form');
     const [users, setUsers] = useState<User[]>([]);
     const [selectedChecker, setSelectedChecker] = useState<number | ''>('');
     const [selectedApprover, setSelectedApprover] = useState<number | ''>('');
@@ -42,11 +42,11 @@ export default function AuthenticationModal({
     }, []);
 
     const fetchUsers = async () => {
-        const token = localStorage.getItem('access_token')
+        const token = localStorage.getItem('access_token');
         try {
             const response = await fetch('/api/users/', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 }
             });
             if (!response.ok) {
@@ -76,7 +76,7 @@ export default function AuthenticationModal({
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        Authorization: `Bearer ${localStorage.getItem('access_token')}`
                     },
                     body: JSON.stringify({
                         checker: selectedChecker,
@@ -151,9 +151,24 @@ export default function AuthenticationModal({
                                 </div>
 
                                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                    <div className="text-blue-500 font-medium">{documentData.file}</div>
+                                    <div className="text-blue-500 font-medium">
+                                        {documentData.file}
+                                    </div>
+
                                     <div className="flex items-center gap-2 ml-auto">
-                                        <Eye size={16} className="text-gray-400" />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (documentData?.file) {
+                                                    window.open(documentData.file, '_blank', 'noopener,noreferrer');
+                                                }
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                                            title="फाइल हेर्नुहोस्"
+                                        >
+                                            <Eye size={16} />
+                                        </button>
+
                                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                                             <User size={16} className="text-gray-600" />
                                         </div>
@@ -188,7 +203,10 @@ export default function AuthenticationModal({
                                             </option>
                                         ))}
                                     </select>
-                                    <ChevronDown size={20} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                    <ChevronDown
+                                        size={20}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+                                    />
                                 </div>
                             </div>
 
@@ -209,7 +227,10 @@ export default function AuthenticationModal({
                                             </option>
                                         ))}
                                     </select>
-                                    <ChevronDown size={20} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                    <ChevronDown
+                                        size={20}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -246,9 +267,8 @@ export default function AuthenticationModal({
     );
 
     const DetailsModal = () => {
-        const checkerUser = users.find(u => u.id === selectedChecker);
-        console.log(checkerUser)
-        const approverUser = users.find(u => u.id === selectedApprover);
+        const checkerUser = users.find((u) => u.id === selectedChecker);
+        const approverUser = users.find((u) => u.id === selectedApprover);
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -283,9 +303,22 @@ export default function AuthenticationModal({
                                     </div>
 
                                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                        <div className="text-blue-500 font-medium">committee-template-1_5.pdf</div>
+                                        <div className="text-blue-500 font-medium">
+                                            {documentData.file}
+                                        </div>
                                         <div className="flex items-center gap-2 ml-auto">
-                                            <Eye size={16} className="text-gray-400" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (documentData?.file) {
+                                                        window.open(documentData.file, '_blank', 'noopener,noreferrer');
+                                                    }
+                                                }}
+                                                className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                                                title="फाइल हेर्नुहोस्"
+                                            >
+                                                <Eye size={16} />
+                                            </button>
                                             <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                                                 <User size={16} className="text-gray-600" />
                                             </div>
@@ -373,5 +406,9 @@ export default function AuthenticationModal({
         );
     };
 
-    return currentModal === 'form' ? <FormModal /> : <DetailsModal />;
+    return (
+        <>
+            {currentModal === 'form' ? <FormModal /> : <DetailsModal />}
+        </>
+    );
 }

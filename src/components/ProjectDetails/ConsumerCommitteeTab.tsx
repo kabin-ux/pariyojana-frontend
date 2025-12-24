@@ -65,7 +65,11 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [selectedUploadItem, setSelectedUploadItem] = useState<{ serial_no: number; title: string } | null>(null);
   const [localUploadedFiles, setLocalUploadedFiles] = useState<{ [key: number]: { file: File; type: string, file_url?: string } }>({});
-  const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    title: string;
+    type: 'image' | 'pdf';
+  } | null>(null);
   const [uploadedFilesData, setUploadedFilesData] = useState<any[]>([]);
 
   const today = new Date();
@@ -195,34 +199,51 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
   }
 };
 
- const handlePreviewImage = (serialNo: number) => {
-  const uploadedFile = localUploadedFiles[serialNo] || 
-                      uploadedFiles[serialNo] || 
-                      uploadedFilesData.find(file => file.serial_no === serialNo);
-  
-  if (!uploadedFile) return;
+  const handlePreviewImage = (serialNo: number) => {
+    const uploadedFile =
+      localUploadedFiles[serialNo] ||
+      uploadedFiles[serialNo] ||
+      uploadedFilesData.find((file: any) => file.serial_no === serialNo);
 
-  const item = CONSUMER_COMMITTEE_TITLES.find(item => item.serial_no === serialNo);
-  
-  // For API-fetched files
-  if (uploadedFile.file_url) {
-    setPreviewImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
-    return;
-  }
-  
-  // For local uploads
-  if (uploadedFile.type === 'image') {
-    const url = URL.createObjectURL(uploadedFile.file);
-    setPreviewImage({ url, title: item?.title || 'Image Preview' });
-  }
-};
+    if (!uploadedFile) return;
+
+    const item = CONSUMER_COMMITTEE_TITLES.find((item) => item.serial_no === serialNo);
+    const title = item?.title || 'File Preview';
+
+    // API-fetched files: expect { file_url: string }
+    if (uploadedFile.file_url) {
+      const url = uploadedFile.file_url as string;
+      const ext = url.split('.').pop()?.toLowerCase();
+      const type: 'image' | 'pdf' =
+        ext === 'pdf' ? 'pdf' : 'image';
+
+      setPreviewImage({ url, title, type });
+      return;
+    }
+
+    // Local uploads: expect { file: File, type: 'image' | 'pdf' }
+    const fileType = uploadedFile.type as string;
+
+    if (fileType === 'pdf') {
+      const url = URL.createObjectURL(uploadedFile.file);
+      setPreviewImage({ url, title, type: 'pdf' });
+    } else {
+      const url = URL.createObjectURL(uploadedFile.file);
+      setPreviewImage({ url, title, type: 'image' });
+    }
+  };
+
 
   const closePreview = () => {
     if (previewImage) {
-      URL.revokeObjectURL(previewImage.url);
+      // Only revoke if this is a blob URL (starts with blob:)
+      if (previewImage.url.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage.url);
+      }
       setPreviewImage(null);
     }
   };
+
 
   const getUploadStatus = (serialNo: number) => {
     const uploadedFile = localUploadedFiles[serialNo] ||
@@ -293,16 +314,17 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                       >
                         <Upload className="w-5 h-5" />
                       </button>
-                      {getFileType(item.serial_no) === 'image' && (
+                      {['image', 'pdf'].includes(getFileType(item.serial_no) || '') && (
                         <button
                           type="button"
                           className="text-purple-600 hover:text-purple-800 cursor-pointer"
                           onClick={() => handlePreviewImage(item.serial_no)}
-                          title="छवि हेर्नुहोस्"
+                          title="फाइल हेर्नुहोस्"
                         >
                           <Eye className="w-5 h-5" />
                         </button>
                       )}
+
                       <button
                         type="button"
                         className="text-green-600 hover:text-green-800 cursor-pointer"
@@ -333,7 +355,7 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
         </div>
 
         {committeeDetail ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
             <div>
               <p className="text-sm text-gray-600 mb-1">उपभोक्ता समितिको नाम:</p>
               <p className="text-gray-900">{committeeDetail.consumer_committee_name || '-'}</p>
@@ -398,20 +420,20 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
-          <table className="min-w-full divide-y divide-gray-200 text-sm">
+          <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">क्र.स</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">पद</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">नाम थर</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">ठेगाना</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">सम्पर्क नं.</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">लिंग</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">नागरिकता प्र. नं.</th>
-                <th className="px-5 py-3 text-left font-semibold text-gray-700">नागरिकता</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">क्र.स</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">पद</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">नाम थर</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">ठेगाना</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">सम्पर्क नं.</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">लिंग</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">नागरिकता प्र. नं.</th>
+                <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold text-gray-700">नागरिकता</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 bg-white">
               {officialDetails.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-10 text-center text-gray-500">
@@ -545,9 +567,12 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
 
       {/* Image Preview Modal */}
       {previewImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closePreview}>
-          <div className="max-w-4xl max-h-4xl p-4">
-            <div className="bg-white rounded-lg p-4">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+          onClick={closePreview}
+        >
+          <div className="max-w-4xl max-h-[90vh] p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-lg p-4 max-h-[90vh] flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">{previewImage.title}</h3>
                 <button
@@ -559,15 +584,25 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
                   </svg>
                 </button>
               </div>
-              <img
-                src={previewImage.url}
-                alt={previewImage.title}
-                className="max-w-full max-h-96 object-contain mx-auto"
-              />
+
+              {previewImage.type === 'image' ? (
+                <img
+                  src={previewImage.url}
+                  alt={previewImage.title}
+                  className="max-w-full max-h-[70vh] object-contain mx-auto"
+                />
+              ) : (
+                <iframe
+                  src={previewImage.url}
+                  title={previewImage.title}
+                  className="w-[80vw] max-w-4xl h-[70vh] border border-gray-200 rounded-md"
+                />
+              )}
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };
