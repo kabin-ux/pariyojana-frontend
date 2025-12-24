@@ -32,8 +32,8 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
   const handleFilePreview = (item: any) => {
     if (!item.file_url && !item.file_uploaded_name) return;
 
-    const url = item.file_url || item.file_uploaded_name;
-    const fileType = getFileType(item.file_uploaded_name || item.file_url);
+    const url = item.file_url;
+    const fileType = getFileType(item.file_url);
 
     if (fileType === 'pdf') {
       // Open PDF in new tab
@@ -175,7 +175,7 @@ const InstallmentSection: React.FC<InstallmentSectionProps> = ({
                     <button
                       type="button"
                       className="p-1 rounded text-purple-600 hover:text-purple-800 cursor-pointer"
-                      onClick={() => handleFilePreview(item.file_uploaded_name)}
+                      onClick={() => handleFilePreview(item)}
                       title="फाइल हेर्नुहोस्"
                     >
                       <Eye className="w-4 h-4" />
