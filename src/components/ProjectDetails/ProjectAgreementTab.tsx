@@ -161,45 +161,6 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-  //   const handleAgreementFileUpload = async (serialNo: number, file: File) => {
-  //   try {
-  //     const token = localStorage.getItem('access_token');
-  //     if (!token) {
-  //       throw new Error('Authentication token not found');
-  //     }
-
-  //     const formData = new FormData();
-  //     formData.append('file', file);
-  //     formData.append('serial_no', serialNo.toString());
-  //     formData.append('document_type', serialNo.toString());
-
-  //     const response = await axios.post(
-  //       `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/${project.serial_number}/upload/`,
-  //       formData,
-  //       {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //           'Content-Type': 'multipart/form-data',
-  //         },
-  //       }
-  //     );
-
-  //     // Correct state update
-  //     setFetchedAgreementFiles(prev => [
-  //       ...prev.filter(f => f.document_type !== serialNo.toString()),
-  //       response.data
-  //     ]);
-
-  //     toast.success('फाइल सफलतापूर्वक अपलोड भयो');
-  //     fetchAgreementFiles(); 
-  //     setIsAgreementFileUploadModalOpen(false);
-  //   } catch (error) {
-  //     console.error('File upload failed:', error);
-  //     toast.error('फाइल अपलोड गर्न सकिएन');
-  //     throw error;
-  //   }
-  // };
-
   const handleWorkFileUpload = async (serialNo: number, file: File) => {
     try {
       const token = localStorage.getItem('access_token');
@@ -238,47 +199,42 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
     }
   };
 
-  const handleAgreementPreviewImage = (serialNo: number) => {
-    const uploadedFile =
-      fetchedAgreementFiles.find(file => file.serial_no === serialNo);
+  // Replace these functions:
+const handleAgreementPreview = (serialNo: number) => {
+  const uploadedFile = fetchedAgreementFiles.find(file => file.serial_no === serialNo);
+  if (!uploadedFile?.file_url) return;
 
-    if (!uploadedFile) return;
+  const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
+  
+  if (getAgreementFileType(serialNo) === 'pdf') {
+    window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  
+  setPreviewAgreementImage({ 
+    url: uploadedFile.file_url, 
+    title: item?.title || 'Preview' 
+  });
+};
 
-    const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
+const handleWorkPreview = (serialNo: number) => {
+  const uploadedFile = fetchedWorkFiles.find(file => file.serial_no === serialNo);
+  if (!uploadedFile?.file_url) return;
 
-    // For API-fetched files
-    if (uploadedFile.file_url) {
-      setPreviewAgreementImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
-      return;
-    }
+  const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
+  
+  if (getWorkFileType(serialNo) === 'pdf') {
+    window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  
+  setPreviewWorkImage({ 
+    url: uploadedFile.file_url, 
+    title: item?.title || 'Preview' 
+  });
+};
 
-    // For local uploads
-    if (uploadedFile.type === 'image') {
-      const url = URL.createObjectURL(uploadedFile.file);
-      setPreviewAgreementImage({ url, title: item?.title || 'Image Preview' });
-    }
-  };
 
-  const handleWorkPreviewImage = (serialNo: number) => {
-    const uploadedFile =
-      fetchedWorkFiles.find(file => file.serial_no === serialNo);
-
-    if (!uploadedFile) return;
-
-    const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
-
-    // For API-fetched files
-    if (uploadedFile.file_url) {
-      setPreviewWorkImage({ url: uploadedFile.file_url, title: item?.title || 'Image Preview' });
-      return;
-    }
-
-    // For local uploads
-    if (uploadedFile.type === 'image') {
-      const url = URL.createObjectURL(uploadedFile.file);
-      setPreviewWorkImage({ url, title: item?.title || 'Image Preview' });
-    }
-  };
 
   const closeAgreementPreview = () => {
     if (previewAgreementImage) {
@@ -378,16 +334,17 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
                         >
                           <Upload className="w-5 h-5" />
                         </button>
-                        {uploadedFile?.file_url && getAgreementFileType(item.serial_no) === 'image' && (
+                        {uploadedFile?.file_url && (
                           <button
                             type="button"
                             className="text-purple-600 hover:text-purple-800 cursor-pointer"
-                            onClick={() => handleAgreementPreviewImage(item.serial_no)}
-                            title="छवि हेर्नुहोस्"
+                            onClick={() => handleAgreementPreview(item.serial_no)}  // Changed function name
+                            title="फाइल हेर्नुहोस्"  // Updated title
                           >
                             <Eye className="w-5 h-5" />
                           </button>
                         )}
+
                         <button
                           type="button"
                           className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -521,16 +478,17 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
                       >
                         <Upload className="w-5 h-5" />
                       </button>
-                      {uploadedFile?.file_url && getWorkFileType(item.serial_no) === 'image' && (
+                      {uploadedFile?.file_url && (
                         <button
                           type="button"
                           className="text-purple-600 hover:text-purple-800 cursor-pointer"
-                          onClick={() => handleWorkPreviewImage(item.serial_no)}
-                          title="छवि हेर्नुहोस्"
+                          onClick={() => handleWorkPreview(item.serial_no)}  // Changed function name
+                          title="फाइल हेर्नुहोस्"  // Updated title
                         >
                           <Eye className="w-5 h-5" />
                         </button>
                       )}
+
                       <button
                         type="button"
                         className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
