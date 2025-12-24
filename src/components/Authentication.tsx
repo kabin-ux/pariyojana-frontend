@@ -123,9 +123,13 @@ const Authentication: React.FC = () => {
   };
 
   // Determine if current user is the checker for this document
-  const isChecker = selectedDocument?.checker === user?.user_id;
+  const isChecker = selectedDocument?.checker === user?.id;
+  console.log("user",user)
+  console.log(isChecker)  
+      console.log(user?.id)
+
   // Determine if current user is the approver for this document
-  const isApprover = selectedDocument?.approver === user?.user_id;
+  const isApprover = selectedDocument?.approver === user?.id;
   // Document is ready for checking (based on status)
   const needsChecking = selectedDocument?.status === 'चेक जाँचको लागी पठाइएको';
   // Document is ready for approval (after being checked)

@@ -38,7 +38,7 @@ export interface AuthState {
 }
 
 export interface Project {
-    id: number;
+  id: number;
   serial_number: number;
   project_name: string;
   area: number;
