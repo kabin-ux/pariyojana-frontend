@@ -46,6 +46,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
 
   const projectIdNum = parseInt(project?.serial_number);
   const {
+    programDetails,
     consumerCommitteeDetails,
     officialDetails,
     monitoringCommittee,
@@ -475,33 +476,33 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   };
 
   const handleDeleteDocument = async (id: number) => {
-  const result = await Swal.fire({
-    title: 'के तपाईं यो कागजात मेटाउन निश्चित हुनुहुन्छ?',
-    text: 'यो कार्य फिर्ता गर्न सकिँदैन!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'हो, मेटाउनुहोस्',
-    cancelButtonText: 'रद्द गर्नुहोस्',
-  });
+    const result = await Swal.fire({
+      title: 'के तपाईं यो कागजात मेटाउन निश्चित हुनुहुन्छ?',
+      text: 'यो कार्य फिर्ता गर्न सकिँदैन!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'हो, मेटाउनुहोस्',
+      cancelButtonText: 'रद्द गर्नुहोस्',
+    });
 
-  if (result.isConfirmed) {
-    try {
-      const token = localStorage.getItem('access_token');
-      await axios.delete(`https://www.bardagoriyapms.com/api/projects/${project.serial_number}/documents/${id}/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      await loadOtherDocuments();
-      toast.success('सफलतापूर्वक मेटाइयो');
-    } catch (error) {
-      console.error('error deleting');
-      toast.error('मेटाउन सकिएन');
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('access_token');
+        await axios.delete(`https://www.bardagoriyapms.com/api/projects/${project.serial_number}/documents/${id}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        await loadOtherDocuments();
+        toast.success('सफलतापूर्वक मेटाइयो');
+      } catch (error) {
+        console.error('error deleting');
+        toast.error('मेटाउन सकिएन');
+      }
     }
-  }
-};
+  };
 
   const handleSaveDocument = (data: any) => {
     if (documentDetail) {
@@ -583,6 +584,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
         if (loading.program) return <LoadingSpinner />;
         return (
           <ProgramDetailsTab
+            programDetail={programDetails}
             projectData={project}
             loading={loading.program}
           />

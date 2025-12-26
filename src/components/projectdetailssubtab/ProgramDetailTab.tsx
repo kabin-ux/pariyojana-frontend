@@ -4,11 +4,13 @@ import { formatBudget, formatWardNumber, toNepaliNumber } from '../../utils/form
 import BeneficiaryDialog from '../../modals/AddEditYojanaModal';
 
 interface ProgramDetailsTabProps {
+  programDetail: any;
   projectData: any;
   loading?: boolean;
 }
 
 const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
+  programDetail,
   projectData,
   loading = false
 }) => {
@@ -45,6 +47,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
     children_population: 'बालबालिकाको जनसंख्या',
     other_families: 'अन्य वर्गको परिवार संख्या'
   };
+  console.log(programDetail)
 
   // const handleEditBeneficiary = () => {
   //   const firstItem = beneficiaryData[0]; // or pick specific one
@@ -143,7 +146,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना संचालन मिति:
               </label>
-              <p className="text-gray-900 text-sm">-</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(programDetail?.agreement_date)}</p>
             </div>
 
             <div className="flex gap-2">
@@ -157,7 +160,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 सम्झौता रकम रु.:
               </label>
-              <p className="text-gray-900 text-sm">रु. ०.००</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(formatBudget(programDetail.agreement_amount))}</p>
             </div>
           </div>
         </div>
@@ -204,7 +207,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना सुरु मिति:
               </label>
-              <p className="text-gray-900 text-sm">-</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(programDetail.start_date)}</p>
             </div>
 
             <div className="flex gap-2">
@@ -218,28 +221,28 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना समाप्त हुने मिति:
               </label>
-              <p className="text-gray-900 text-sm">-</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(programDetail.completion_date)}</p>
             </div>
 
             <div className="flex gap-2">
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 लगत अनुमान रु.:
               </label>
-              <p className="text-gray-900 text-sm">रु.</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(formatBudget(programDetail.estimated_cost))}</p>
             </div>
 
             <div className="flex gap-2">
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 कन्टेजेन्सी रकम:
               </label>
-              <p className="text-gray-900 text-sm">रु.</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(formatBudget(programDetail.contingency_amount))}</p>
             </div>
 
             <div className="flex gap-2">
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 उपभोगिता समितिको खर्च रकम रु.:
               </label>
-              <p className="text-gray-900 text-sm">रु. ०.००</p>
+              <p className="text-gray-900 text-sm">{toNepaliNumber(formatBudget(programDetail.public_participation_amount))}</p>
             </div>
           </div>
         </div>

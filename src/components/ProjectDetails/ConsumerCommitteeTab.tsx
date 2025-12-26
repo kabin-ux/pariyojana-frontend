@@ -207,32 +207,40 @@ const ConsumerCommitteeTab: React.FC<ConsumerCommitteeTabProps> = ({
 
     if (!uploadedFile) return;
 
-    const item = CONSUMER_COMMITTEE_TITLES.find((item) => item.serial_no === serialNo);
-    const title = item?.title || 'File Preview';
+    const item = CONSUMER_COMMITTEE_TITLES.find(
+      (item) => item.serial_no === serialNo
+    );
+    const title = item?.title || "File Preview";
 
-    // API-fetched files: expect { file_url: string }
+    // API-fetched files
     if (uploadedFile.file_url) {
       const url = uploadedFile.file_url as string;
-      const ext = url.split('.').pop()?.toLowerCase();
-      const type: 'image' | 'pdf' =
-        ext === 'pdf' ? 'pdf' : 'image';
+      const ext = url.split(".").pop()?.toLowerCase();
+      const isPdf = ext === "pdf";
 
-      setPreviewImage({ url, title, type });
+      if (isPdf) {
+        window.open(url, "_blank"); // open PDF in new tab
+        return;
+      }
+
+      setPreviewImage({ url, title, type: "image" });
       return;
     }
 
-    // Local uploads: expect { file: File, type: 'image' | 'pdf' }
+    // Local uploads: { file: File, type: 'image' | 'pdf' }
     const fileType = uploadedFile.type as string;
 
-    if (fileType === 'pdf') {
-      const url = URL.createObjectURL(uploadedFile.file);
-      setPreviewImage({ url, title, type: 'pdf' });
-    } else {
-      const url = URL.createObjectURL(uploadedFile.file);
-      setPreviewImage({ url, title, type: 'image' });
-    }
-  };
+    const url = URL.createObjectURL(uploadedFile.file);
 
+    if (fileType === "pdf") {
+      window.open(url, "_blank"); // open PDF blob in new tab
+      // optional: revoke after some delay
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      return;
+    }
+
+    setPreviewImage({ url, title, type: "image" });
+  };
 
   const closePreview = () => {
     if (previewImage) {
