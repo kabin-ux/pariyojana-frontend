@@ -8,7 +8,7 @@ const initiationChoices = [
     "अमानत मार्फत",
     "ठेक्का मार्फत",
     "संस्था समिति मार्फत",
-    "उपभोक्ता मार्फत"
+    "कोटेसन मार्फत"
 ];
 
 interface InitiationProcessSectionProps {
@@ -21,6 +21,13 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
     const [selectedMethod, setSelectedMethod] = useState<string>('');
     const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
     const [flags, setFlags] = useState({
+        is_confirmed: false,
+        has_consumer_committee: false,
+        has_agreement: false,
+        has_payment_installment: false,
+    });
+    const [editingItem, setEditingItem] = useState<any | null>(null);
+    const [editingFlags, setEditingFlags] = useState({
         is_confirmed: false,
         has_consumer_committee: false,
         has_agreement: false,
@@ -40,32 +47,70 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
     };
 
     const handleFinalConfirm = async () => {
-        // Assuming you have the BS library properly imported
-        const today = new Date(); // current Gregorian date
+        const today = new Date();
+        const bsDate = BS.ADToBS(today); // use this only when creating [web:40]
 
-        const bsDate = BS.ADToBS(today); // Convert to BS
         try {
-            await axios.post(`https://www.bardagoriyapms.com/api/projects/${projectId}/initiation-process/`, {
-                project: projectId,
-                initiation_method: selectedMethod,
-                started_at: bsDate,
-                ...flags
-            });
+            if (initiationProcess.length > 0) {
+                // there is already an initiation row → UPDATE it
+                await axios.patch(
+                    `https://www.bardagoriyapms.com/api/projects/${projectId}/initiation-process/${initiationProcess[0].id}/`,
+                    {
+                        project: projectId,
+                        initiation_method: selectedMethod,
+                        is_confirmed: flags.is_confirmed,
+                        has_consumer_committee: flags.has_consumer_committee,
+                        has_agreement: flags.has_agreement,
+                        has_payment_installment: flags.has_payment_installment,
+                    }
+                );
+            } else {
+                // no row yet → CREATE
+                await axios.post(
+                    `https://www.bardagoriyapms.com/api/projects/${projectId}/initiation-process/`,
+                    {
+                        project: projectId,
+                        initiation_method: selectedMethod,
+                        started_at: bsDate, // format as your backend expects
+                        is_confirmed: flags.is_confirmed,
+                        has_consumer_committee: flags.has_consumer_committee,
+                        has_agreement: flags.has_agreement,
+                        has_payment_installment: flags.has_payment_installment,
+                    }
+                );
+            }
+
             setSelectedMethod('');
             setFlags({
                 is_confirmed: false,
                 has_consumer_committee: false,
                 has_agreement: false,
-                has_payment_installment: false
+                has_payment_installment: false,
             });
             setShowConfirmDialog(false);
             fetchInitiationProcess();
-        } catch (err) {
-            console.error('Error adding initiation process:', err);
+        } catch (err: any) {
+            console.error(
+                'Error saving initiation process:',
+                err.response?.data || err
+            );
         }
     };
 
 
+    const toggleFlag = async (item: any, field: keyof typeof flags) => {
+        try {
+            await axios.patch(
+                `https://www.bardagoriyapms.com/api/projects/${projectId}/initiation-process/${item.id}/`,
+                {
+                    [field]: !item[field],
+                }
+            );
+            fetchInitiationProcess();
+        } catch (err) {
+            console.error('Error updating flag:', err);
+        }
+    };
 
     useEffect(() => {
         fetchInitiationProcess();
@@ -87,10 +132,32 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                         className="border rounded-md px-3 py-2 text-sm"
                         value={selectedMethod}
                         onChange={(e) => {
-                            setSelectedMethod(e.target.value);
-                            if (e.target.value) setShowConfirmDialog(true);
+                            const value = e.target.value;
+                            setSelectedMethod(value);
+
+                            if (value) {
+                                // if there is existing data, prefill flags from it, otherwise defaults
+                                const existing = initiationProcess[0];
+                                if (existing) {
+                                    setFlags({
+                                        is_confirmed: existing.is_confirmed,
+                                        has_consumer_committee: existing.has_consumer_committee,
+                                        has_agreement: existing.has_agreement,
+                                        has_payment_installment: existing.has_payment_installment,
+                                    });
+                                } else {
+                                    setFlags({
+                                        is_confirmed: false,
+                                        has_consumer_committee: false,
+                                        has_agreement: false,
+                                        has_payment_installment: false,
+                                    });
+                                }
+                                setShowConfirmDialog(true);
+                            }
                         }}
                     >
+
                         <option value="">प्रारम्भ विधि छान्नुहोस्</option>
                         {initiationChoices.map((choice, idx) => (
                             <option key={idx} value={choice}>{choice}</option>
@@ -103,27 +170,52 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                 <div className="p-4 border rounded bg-gray-50">
                     <h4 className="text-sm font-medium mb-2">विकल्पहरू चयन गर्नुहोस्:</h4>
                     <div className="space-y-2">
-                        {Object.entries(flags).map(([key, value]) => (
+                        {Object.entries(editingItem ? editingFlags : flags).map(([key, value]) => (
                             <div key={key} className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     checked={value}
-                                    onChange={() => setFlags(prev => ({ ...prev, [key]: !prev[key as keyof typeof flags] }))}
+                                    onChange={() => {
+                                        if (editingItem) {
+                                            setEditingFlags((prev) => ({
+                                                ...prev,
+                                                [key]: !prev[key as keyof typeof editingFlags],
+                                            }));
+                                        } else {
+                                            setFlags((prev) => ({
+                                                ...prev,
+                                                [key]: !prev[key as keyof typeof flags],
+                                            }));
+                                        }
+                                    }}
                                 />
                                 <label className="text-sm">
                                     {{
                                         is_confirmed: 'पुष्टि',
                                         has_consumer_committee: 'उपभोक्ता समिति',
                                         has_agreement: 'सम्झौता',
-                                        has_payment_installment: 'किस्ता भुक्तानी'
+                                        has_payment_installment: 'किस्ता भुक्तानी',
                                     }[key as keyof typeof flags]}
                                 </label>
                             </div>
                         ))}
                     </div>
                     <div className="flex gap-2 mt-4">
-                        <button onClick={handleFinalConfirm} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">सेभ गर्नुहोस्</button>
-                        <button onClick={() => setShowConfirmDialog(false)} className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer">रद्द गर्नुहोस्</button>
+                        <button
+                            onClick={handleFinalConfirm}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+                        >
+                            सेभ गर्नुहोस्
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowConfirmDialog(false);
+                                setEditingItem(null);
+                            }}
+                            className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer"
+                        >
+                            रद्द गर्नुहोस्
+                        </button>
                     </div>
                 </div>
             )}
@@ -163,16 +255,28 @@ const InitiationProcessSection: React.FC<InitiationProcessSectionProps> = ({ pro
                                             ? toNepaliNumber(new Date(item.started_at).toLocaleDateString())
                                             : '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-center text-gray-800">
+                                    <td
+                                        className="px-4 py-3 text-center text-gray-800 cursor-pointer"
+                                        onClick={() => toggleFlag(item, 'is_confirmed')}
+                                    >
                                         {item.is_confirmed ? '✓' : '✗'}
                                     </td>
-                                    <td className="px-4 py-3 text-center text-gray-800">
+                                    <td
+                                        className="px-4 py-3 text-center text-gray-800 cursor-pointer"
+                                        onClick={() => toggleFlag(item, 'has_consumer_committee')}
+                                    >
                                         {item.has_consumer_committee ? '✓' : '✗'}
                                     </td>
-                                    <td className="px-4 py-3 text-center text-gray-800">
+                                    <td
+                                        className="px-4 py-3 text-center text-gray-800 cursor-pointer"
+                                        onClick={() => toggleFlag(item, 'has_agreement')}
+                                    >
                                         {item.has_agreement ? '✓' : '✗'}
                                     </td>
-                                    <td className="px-4 py-3 text-center text-gray-800">
+                                    <td
+                                        className="px-4 py-3 text-center text-gray-800 cursor-pointer"
+                                        onClick={() => toggleFlag(item, 'has_payment_installment')}
+                                    >
                                         {item.has_payment_installment ? '✓' : '✗'}
                                     </td>
                                 </tr>
