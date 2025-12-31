@@ -214,6 +214,12 @@ const CostEstimateTab: React.FC<CostEstimateTabProps> = ({
             </p>
           </div>
           <div>
+            <p className="text-sm text-gray-600 mb-1">कुल लागत (without PS Amount) :</p>
+            <p className="text-lg font-semibold">
+              {toNepaliNumber(formatBudget(calculatedEstimate?.grand_total_without_ps))}
+            </p>
+          </div>
+          <div>
             <p className="text-sm text-gray-600 mb-1">कुल लागत (भ्याट + कन्टिन्जेन्सी सहित):</p>
             <p className="text-lg font-semibold">
               {toNepaliNumber(formatBudget(calculatedEstimate?.grand_total))}
