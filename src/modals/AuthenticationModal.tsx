@@ -40,6 +40,19 @@ export default function AuthenticationModal({
     useEffect(() => {
         fetchUsers();
     }, []);
+    useEffect(() => {
+        if (!documentData) return;
+
+        if (documentData.checker) {
+            setSelectedChecker(documentData.checker);      // number id
+        }
+        if (documentData.approver) {
+            setSelectedApprover(documentData.approver);    // number id
+        }
+        if (documentData.remarks) {
+            setRemarks(documentData.remarks);
+        }
+    }, [documentData]);
 
     const fetchUsers = async () => {
         const token = localStorage.getItem('access_token');
@@ -108,6 +121,7 @@ export default function AuthenticationModal({
     };
 
     const getUserDisplayName = (user: User) => {
+        console.log("userr", user)
         const fullName = `${user.first_name} ${user.last_name}`.trim();
         return fullName || user.username;
     };

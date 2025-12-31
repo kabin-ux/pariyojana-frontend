@@ -146,7 +146,6 @@ export const ProjectsTable = ({
                 'बजेट',
                 'वडा नं.',
                 'स्थिति',
-                'प्राथमिकता नम्बर',
                 'प्रतिवेदनहरु',
                 'अन्य',
               ].map((header, index) => (
@@ -188,9 +187,6 @@ export const ProjectsTable = ({
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-800">
                     {item.status || '-'}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-800">
-                    {item.priority_no || '-'}
                   </td>
                   <td className="py-3 px-4 text-sm space-y-2">
                     {item.feasibility_file && (

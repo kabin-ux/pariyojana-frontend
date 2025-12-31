@@ -29,7 +29,7 @@ export const MunicipalityPrideTable = ({ activeTab, projects, budget, onRecommen
                             'बजेट',
                             'वडा नं.',
                             'स्थिति',
-                            'प्राथमिकता नम्बर',
+                            'प्रतिवेदनहरु',
                             'अन्य',
                         ].map((heading, i) => (
                             <th

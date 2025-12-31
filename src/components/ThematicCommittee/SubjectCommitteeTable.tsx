@@ -23,7 +23,7 @@ export const SubjectCommitteeTable = ({ activeTab, data, onPrioritizeThematicWar
           <th className="text-left py-3 px-4 font-semibold">बजेट</th>
           <th className="text-left py-3 px-4 font-semibold">वडा नं.</th>
           <th className="text-left py-3 px-4 font-semibold">स्थिति</th>
-          <th className="text-left py-3 px-4 font-semibold">प्राथमिकता नम्बर</th>
+          <th className="text-left py-3 px-4 font-semibold">प्रतिवेदनहरु</th>
           <th className="text-center py-3 px-4 font-semibold">अन्य</th>
         </tr>
       </thead>
