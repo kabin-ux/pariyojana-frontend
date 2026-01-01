@@ -488,7 +488,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                सम्पन्न गर्ने परिणाम
+                                गर्नु पर्ने कार्य
                             </label>
                             <input
                                 type="text"

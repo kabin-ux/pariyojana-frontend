@@ -198,7 +198,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
 
             <div className="flex gap-2">
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
-                सम्पन्न गर्ने परिणाम:
+                गर्नु पर्ने कार्य:
               </label>
               <p className="text-gray-900 text-sm">{projectData.outcome || 'N/A'}</p>
             </div>

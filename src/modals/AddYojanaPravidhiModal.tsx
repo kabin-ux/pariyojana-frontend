@@ -476,14 +476,14 @@ const AddYojanaPravidhiModal: React.FC<Props> = ({ onClose, type }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                सम्पन्न गर्ने परिणाम
+                गर्नु पर्ने कार्य
               </label>
               <input
                 type="text"
                 name="expected_result"
                 value={formData.expected_result}
                 onChange={handleInputChange}
-                placeholder="सम्पन्न गर्ने परिणाम"
+                placeholder="गर्नु पर्ने कार्य"
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
