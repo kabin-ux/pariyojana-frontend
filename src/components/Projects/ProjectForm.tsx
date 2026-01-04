@@ -11,7 +11,7 @@ interface NewProjectForm {
   expenditure_center: string;
   budget: string;
   source: string;
-  operation_location: string;
+  location: string;
   ward_no: number[]; // Changed from string to string[]
   location_gps: string;
   outcome: string;
@@ -240,8 +240,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               </label>
               <input
                 type="text"
-                value={formData.operation_location}
-                onChange={(e) => onInputChange('operation_location', e.target.value)}
+                value={formData.location}
+                onChange={(e) => onInputChange('location', e.target.value)}
                 placeholder="योजना संचालन स्थान"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />

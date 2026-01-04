@@ -118,7 +118,7 @@ const ProgramDetailsTab: React.FC<ProgramDetailsTabProps> = ({
               <label className="text-sm font-medium text-gray-700 min-w-[220px]">
                 योजना संचालन स्थल:
               </label>
-              <p className="text-gray-900 text-sm">{projectData.location_gps || 'N/A'}</p>
+              <p className="text-gray-900 text-sm">{projectData.location || 'N/A'}</p>
             </div>
 
             <div className="flex gap-2">
