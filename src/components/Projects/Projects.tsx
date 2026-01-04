@@ -30,7 +30,7 @@ interface NewProjectForm {
   expenditure_center: string;
   budget: string;
   source: string;
-  operation_location: string;
+  location: string;
   ward_no: number[]; // Changed from string to string[]
   location_gps: string;
   outcome: string;
@@ -62,7 +62,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     expenditure_center: '',
     budget: '',
     source: '',
-    operation_location: '',
+    location: '',
     ward_no: [], // Initialize as empty array
     location_gps: '',
     outcome: '',
@@ -132,7 +132,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         expenditure_center: projectToEdit.expenditure_center?.toString() || '',
         budget: projectToEdit.budget?.toString() || '',
         source: projectToEdit.source?.toString() || '',
-        operation_location: projectToEdit.operation_location || '',
+        location: projectToEdit.location || '',
         ward_no: Array.isArray(projectToEdit.ward_no)
           ? projectToEdit.ward_no.map(Number) // Convert to array of numbers
           : [Number(projectToEdit.ward_no)], // Handle single value       
@@ -214,7 +214,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
         expenditure_center: formData.expenditure_center ? parseInt(formData.expenditure_center) : undefined,
         budget: formData.budget ? parseFloat(formData.budget) : undefined,
         source: formData.source ? parseInt(formData.source) : undefined,
-        operation_location: formData.operation_location,
+        location: formData.location,
         ward_no: formData.ward_no, // Already numbers, no conversion needed
         location_gps: formData.location_gps,
         outcome: formData.outcome,
@@ -254,7 +254,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
       expenditure_center: '',
       budget: '',
       source: '',
-      operation_location: '',
+      location: '',
       ward_no: [], // Initialize as empty array
       location_gps: '',
       outcome: '',

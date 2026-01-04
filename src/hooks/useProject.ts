@@ -70,7 +70,7 @@ export const useProjects = (params: UseProjectsParams = {}) => {
       result = result.filter(project =>
       (project.project_name?.toLowerCase().includes(searchLower) ||
         (project.description?.toLowerCase().includes(searchLower)) ||
-        (project.operation_location?.toLowerCase().includes(searchLower)) ||
+        (project.location?.toLowerCase().includes(searchLower)) ||
         (project.outcome?.toLowerCase().includes(searchLower)) ||
         (project.fiscal_year?.toString().includes(params.search || ""))
       ))

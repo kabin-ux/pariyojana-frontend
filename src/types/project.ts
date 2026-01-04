@@ -12,7 +12,7 @@ export interface Project {
   budget: number;
   ward_no: number[]; // Changed from string to string[]
   status: string;
-  location: string | null;
+  // location: string | null;
   location_gps: string;
   outcome: string;
   is_active: boolean;
@@ -28,7 +28,7 @@ export interface Project {
   source_name?: string;
   expenditure_title: number | null;
   description: string;
-  operation_location: string;
+  location: string;
   expenditure_center_name?: string;
   fiscal_year_name?: string;
   unit_name?: string;
@@ -53,7 +53,7 @@ export interface ProjectSubmitPayload {
   expenditure_center: number | null;
   budget: number | null;
   source: number | null;
-  operation_location: string;
+  location: string;
   ward_no: number | null;
   location_gps: string;
   outcome: string;
