@@ -331,51 +331,53 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     }
   };
 
-  const handleDownloadProjectAgreement = async (itemSerialNo: number, projectSerialNo: number) => {
+  const handleDownloadProjectAgreement = async (
+    itemSerialNo: number,
+    projectSerialNo: number
+  ) => {
     try {
       const response = await axios.get(
         `https://www.bardagoriyapms.com/api/projects/project-plan-tracker/download/${itemSerialNo}/${projectSerialNo}/`,
-        {
-          responseType: 'blob',
-        }
+        { responseType: 'blob' }
       );
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `project-agreement-template-${itemSerialNo}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      const url = URL.createObjectURL(blob);
+
+      // Preview first
+      window.open(url, '_blank', 'noopener,noreferrer');
+
+      // Optional cleanup after some time
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (error) {
-      console.error('PDF download failed:', error);
-      toast.error('डाउनलोड गर्न समस्या भयो।');
+      console.error('PDF preview failed:', error);
+      toast.error('फाइल प्रिभ्यु गर्न सकिएन।');
     }
   };
 
-  const handleDownloadProjectAgreementAndWorkLoad = async (itemSerialNo: number, projectSerialNo: number) => {
-    try {
-      const response = await axios.get(
-        `https://www.bardagoriyapms.com/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`,
-        {
-          responseType: 'blob',
-        }
-      );
-
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `project-agreement-template-${itemSerialNo}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error('PDF download failed:', error);
-      toast.error('डाउनलोड गर्न समस्या भयो।');
-    }
+  const handlePreviewProjectAgreementAndWorkLoad = (
+    itemSerialNo: number,
+    projectSerialNo: number
+  ) => {
+    const url = `https://www.bardagoriyapms.com/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+
+  const handleDownloadProjectAgreementAndWorkLoad = (
+    itemSerialNo: number,
+    projectSerialNo: number
+  ) => {
+    const url = `https://www.bardagoriyapms.com/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/?download=true`;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `project-agreement-${itemSerialNo}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
 
   const handleAddProjectAgreement = async (data: any) => {
     try {
@@ -647,6 +649,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
             projectAgreementDetails={projectAgreementDetails}
             onAddProjectAgreement={handleAddProjectAgreement}
             onDownloadProjectAgreement={handleDownloadProjectAgreement}
+            onPreviewProjectagreementAndWorkLoad = {handlePreviewProjectAgreementAndWorkLoad}
             onDownloadProjectAgreementAndWorkLoad={handleDownloadProjectAgreementAndWorkLoad}
             onFileUpload={(serialNo, file) => {
               // Track uploaded files in parent component

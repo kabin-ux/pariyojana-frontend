@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, Upload, FileCheck, Eye } from 'lucide-react';
+import { Edit, Upload, FileCheck, Eye, EyeClosed } from 'lucide-react';
 import { toNepaliNumber, formatBudget } from '../../utils/formatters';
 import ProjectAgreementModal from '../../modals/ProjectAgreementModal';
 import EmptyState from './EmptyState';
@@ -13,6 +13,7 @@ interface ProjectAgreementTabProps {
   projectAgreementDetails: any[];
   onAddProjectAgreement: (data: any) => void;
   onDownloadProjectAgreement: (itemSerialNo: number, projectSerialNo: number) => void;
+  onPreviewProjectagreementAndWorkLoad: (itemSerialNo: number, projectSerialNo: number) => void;
   onDownloadProjectAgreementAndWorkLoad: (itemSerialNo: number, projectSerialNo: number) => void;
   onAgreementFileUpload?: (serialNo: number, file: File) => void;
   onFileUpload?: (serialNo: number, file: File) => void;
@@ -43,6 +44,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   projectAgreementDetails,
   onAddProjectAgreement,
   onDownloadProjectAgreement,
+  onPreviewProjectagreementAndWorkLoad,
   onDownloadProjectAgreementAndWorkLoad,
 }) => {
   const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
@@ -200,39 +202,39 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   };
 
   // Replace these functions:
-const handleAgreementPreview = (serialNo: number) => {
-  const uploadedFile = fetchedAgreementFiles.find(file => file.serial_no === serialNo);
-  if (!uploadedFile?.file_url) return;
+  const handleAgreementPreview = (serialNo: number) => {
+    const uploadedFile = fetchedAgreementFiles.find(file => file.serial_no === serialNo);
+    if (!uploadedFile?.file_url) return;
 
-  const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
-  
-  if (getAgreementFileType(serialNo) === 'pdf') {
-    window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
-    return;
-  }
-  
-  setPreviewAgreementImage({ 
-    url: uploadedFile.file_url, 
-    title: item?.title || 'Preview' 
-  });
-};
+    const item = PROJECT_AGREEMENT_TITLES.find(item => item.serial_no === serialNo);
 
-const handleWorkPreview = (serialNo: number) => {
-  const uploadedFile = fetchedWorkFiles.find(file => file.serial_no === serialNo);
-  if (!uploadedFile?.file_url) return;
+    if (getAgreementFileType(serialNo) === 'pdf') {
+      window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
 
-  const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
-  
-  if (getWorkFileType(serialNo) === 'pdf') {
-    window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
-    return;
-  }
-  
-  setPreviewWorkImage({ 
-    url: uploadedFile.file_url, 
-    title: item?.title || 'Preview' 
-  });
-};
+    setPreviewAgreementImage({
+      url: uploadedFile.file_url,
+      title: item?.title || 'Preview'
+    });
+  };
+
+  const handleWorkPreview = (serialNo: number) => {
+    const uploadedFile = fetchedWorkFiles.find(file => file.serial_no === serialNo);
+    if (!uploadedFile?.file_url) return;
+
+    const item = PROJECT_AGREEMENT_WORK_TITLES.find(item => item.serial_no === serialNo);
+
+    if (getWorkFileType(serialNo) === 'pdf') {
+      window.open(uploadedFile.file_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    setPreviewWorkImage({
+      url: uploadedFile.file_url,
+      title: item?.title || 'Preview'
+    });
+  };
 
 
 
@@ -344,7 +346,6 @@ const handleWorkPreview = (serialNo: number) => {
                             <Eye className="w-5 h-5" />
                           </button>
                         )}
-
                         <button
                           type="button"
                           className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -488,6 +489,14 @@ const handleWorkPreview = (serialNo: number) => {
                           <Eye className="w-5 h-5" />
                         </button>
                       )}
+
+                      <button
+                        type="button"
+                        className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
+                        onClick={() => onPreviewProjectagreementAndWorkLoad(item.serial_no, project.serial_number)}
+                      >
+                        <EyeClosed className="w-4 h-4" />
+                      </button>
 
                       <button
                         type="button"
