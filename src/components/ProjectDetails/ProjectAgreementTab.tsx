@@ -37,6 +37,18 @@ const PROJECT_AGREEMENT_WORK_TITLES = [
   { "serial_no": 2, "title": "योजना/कार्यक्रम सम्झौताको लागि सम्झौता फाराम" },
   { "serial_no": 3, "title": "आयोजना सन्चालन कार्यादेश" },
   { "serial_no": 4, "title": "आयोजना सूचना पाटी को नमुना" },
+  { "serial_no": 5, "title": "योजना सम्झौताको सिफारिस" },
+  { "serial_no": 6, "title": "योजना सिफारिस मूल्यांकनको आधारमा भुक्तानीको सिफारिस" },
+  { "serial_no": 7, "title": "उपभोक्ता समिति दर्ता प्रमाणपत्र" },
+  { "serial_no": 8, "title": "बैंक खाता सञ्चालन" },
+  { "serial_no": 9, "title": "पेश्की टिप्पणी" },
+  { "serial_no": 10, "title": "म्याद थप टिप्पणी" },
+  { "serial_no": 11, "title": "म्याद थप पत्र" },
+  { "serial_no": 12, "title": "रनिङ बिल" },
+  { "serial_no": 13, "title": "बैंक खाता बन्द" },
+  { "serial_no": 14, "title": "उपभोक्ता समिति अन्तिम भुक्तानी माग निवेदन" },
+  { "serial_no": 15, "title": "मूल्यांकन टिप्पणी" },
+  { "serial_no": 16, "title": "अन्तिम किस्ता भुक्तानी" },
 ];
 
 const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
