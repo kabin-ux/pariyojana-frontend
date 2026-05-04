@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, Upload, FileCheck, Eye, EyeClosed, BookOpen } from 'lucide-react';
+import { Edit, Upload, FileCheck, Eye, BookOpen } from 'lucide-react';
 import { toNepaliNumber, formatBudget } from '../../utils/formatters';
 import ProjectAgreementModal from '../../modals/ProjectAgreementModal';
 import EmptyState from './EmptyState';
@@ -57,7 +57,7 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
   onAddProjectAgreement,
   onDownloadProjectAgreement,
   onPreviewProjectagreementAndWorkLoad,
-  onDownloadProjectAgreementAndWorkLoad,
+  // onDownloadProjectAgreementAndWorkLoad,
 }) => {
   const [isProjectAgreementModalOpen, setIsProjectAgreementModalOpen] = useState(false);
   const [isAgreementFileUploadModalOpen, setIsAgreementFileUploadModalOpen] = useState(false);
