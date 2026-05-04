@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, Upload, FileCheck, Eye, EyeClosed } from 'lucide-react';
+import { Edit, Upload, FileCheck, Eye, EyeClosed, BookOpen } from 'lucide-react';
 import { toNepaliNumber, formatBudget } from '../../utils/formatters';
 import ProjectAgreementModal from '../../modals/ProjectAgreementModal';
 import EmptyState from './EmptyState';
@@ -507,16 +507,16 @@ const ProjectAgreementTab: React.FC<ProjectAgreementTabProps> = ({
                         className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
                         onClick={() => onPreviewProjectagreementAndWorkLoad(item.serial_no, project.serial_number)}
                       >
-                        <EyeClosed className="w-4 h-4" />
+                        <BookOpen className="w-4 h-4" />
                       </button>
-
+                      {/* 
                       <button
                         type="button"
                         className="p-1 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
                         onClick={() => onDownloadProjectAgreementAndWorkLoad(item.serial_no, project.serial_number)}
                       >
                         <FileCheck className="w-4 h-4" />
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 )

@@ -359,7 +359,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
     itemSerialNo: number,
     projectSerialNo: number
   ) => {
-    const url = `https://www.bardagoriyapms.com/api/projects/project-aggrement/download/${itemSerialNo}/${projectSerialNo}/`;
+    const url = `https://www.bardagoriyapms.com/api/projects/project_aggrement_workorder/preview-template/${itemSerialNo}/${projectSerialNo}/`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
